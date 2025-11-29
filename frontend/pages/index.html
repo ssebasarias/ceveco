@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Ceveco - Tu tienda de electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas">
+    <title>Ceveco - Renueva tu hogar</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+
+    <style>
+        /* Animación de scroll para marcas */
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-scroll {
+            animation: scroll 30s linear infinite;
+        }
+
+        .animate-scroll:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="../assets/logo.png" alt="Ceveco Logo">
+            </a>
+
+            <div class="navbar-menu">
+                <a href="index.html" class="navbar-link active">Inicio</a>
+                <a href="productos.html?categoria=electro-hogar" class="navbar-link">Electro Hogar</a>
+                <a href="productos.html?categoria=muebles" class="navbar-link">Muebles</a>
+                <a href="productos.html?categoria=motos" class="navbar-link">Motos</a>
+                <a href="productos.html?categoria=herramientas" class="navbar-link">Herramientas</a>
+                <a href="sedes.html" class="navbar-link">Sedes</a>
+                <a href="contacto.html" class="navbar-link">Contacto</a>
+            </div>
+
+            <div class="navbar-actions">
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-badge" id="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge badge-new">Nueva Colección 2025</span>
+            <h1 class="hero-title">
+                Renueva tu hogar con la mejor <span style="color: var(--color-accent);">tecnología</span>
+            </h1>
+            <p class="hero-subtitle">
+                Descubre electrodomésticos eficientes y muebles de diseño para transformar tus espacios.
+            </p>
+            <div class="d-flex gap-3" style="margin-top: 2rem;">
+                <a href="productos.html" class="btn btn-primary btn-lg">
+                    Ver Catálogo Completo
+                </a>
+                <a href="productos.html?destacado=true" class="btn btn-outline btn-lg">
+                    Más Vendidos
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <main class="container" style="padding: 4rem 1rem;">
+        <div class="text-center mb-5">
+            <h2>Explora Nuestras Categorías</h2>
+            <p class="text-muted">Encuentra todo lo que necesitas para tu hogar</p>
+        </div>
+
+        <div class="product-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <!-- Electro Hogar -->
+            <a href="productos.html?categoria=electro-hogar" class="card" style="text-decoration: none;">
+                <div class="card-body text-center">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">⚡</div>
+                    <h3>Electro Hogar</h3>
+                    <p class="text-muted">Neveras, lavadoras, estufas y más</p>
+                </div>
+            </a>
+
+            <!-- Muebles -->
+            <a href="productos.html?categoria=muebles" class="card" style="text-decoration: none;">
+                <div class="card-body text-center">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🪑</div>
+                    <h3>Muebles y Organización</h3>
+                    <p class="text-muted">Escritorios, sillas, estanterías</p>
+                </div>
+            </a>
+
+            <!-- Motos -->
+            <a href="productos.html?categoria=motos" class="card" style="text-decoration: none;">
+                <div class="card-body text-center">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🏍️</div>
+                    <h3>Motos</h3>
+                    <p class="text-muted">Motos urbanas y deportivas</p>
+                </div>
+            </a>
+
+            <!-- Herramientas STIHL -->
+            <a href="productos.html?categoria=herramientas" class="card" style="text-decoration: none;">
+                <div class="card-body text-center">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🔧</div>
+                    <h3>Herramientas STIHL</h3>
+                    <p class="text-muted">Motosierras, guadañas y más</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Productos Destacados -->
+        <div class="mt-5 pt-5">
+            <div class="d-flex justify-between align-center mb-4">
+                <h2>Productos Destacados</h2>
+                <a href="productos.html?destacado=true" class="btn btn-ghost">
+                    Ver todos →
+                </a>
+            </div>
+
+            <div id="featured-products" class="product-grid">
+                <!-- Loading spinner -->
+                <div class="d-flex justify-center align-center" style="grid-column: 1 / -1; padding: 3rem;">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marcas -->
+        <div class="mt-5 pt-5" style="overflow: hidden;">
+            <h3 class="text-center text-muted mb-4">NUESTRAS MARCAS ALIADAS</h3>
+            <div style="overflow: hidden;">
+                <div class="d-flex gap-4 align-center animate-scroll" style="width: max-content;">
+                    <div class="badge badge-primary">Samsung</div>
+                    <div class="badge badge-primary">LG</div>
+                    <div class="badge badge-primary">Haceb</div>
+                    <div class="badge badge-primary">Mabe</div>
+                    <div class="badge badge-primary">Whirlpool</div>
+                    <div class="badge badge-primary">Oster</div>
+                    <div class="badge badge-primary">Sony</div>
+                    <div class="badge badge-primary">Rimax</div>
+                    <div class="badge badge-primary">STIHL</div>
+                    <div class="badge badge-primary">Honda</div>
+                    <div class="badge badge-primary">Yamaha</div>
+                    <!-- Duplicado para scroll infinito -->
+                    <div class="badge badge-primary">Samsung</div>
+                    <div class="badge badge-primary">LG</div>
+                    <div class="badge badge-primary">Haceb</div>
+                    <div class="badge badge-primary">Mabe</div>
+                    <div class="badge badge-primary">Whirlpool</div>
+                    <div class="badge badge-primary">Oster</div>
+                    <div class="badge badge-primary">Sony</div>
+                    <div class="badge badge-primary">Rimax</div>
+                    <div class="badge badge-primary">STIHL</div>
+                    <div class="badge badge-primary">Honda</div>
+                    <div class="badge badge-primary">Yamaha</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Ceveco</h3>
+                    <p>Tu tienda de confianza para electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <div class="footer-links">
+                        <a href="index.html" class="footer-link">Inicio</a>
+                        <a href="productos.html" class="footer-link">Productos</a>
+                        <a href="sedes.html" class="footer-link">Sedes</a>
+                        <a href="contacto.html" class="footer-link">Contacto</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Categorías</h3>
+                    <div class="footer-links">
+                        <a href="productos.html?categoria=electro-hogar" class="footer-link">Electro Hogar</a>
+                        <a href="productos.html?categoria=muebles" class="footer-link">Muebles</a>
+                        <a href="productos.html?categoria=motos" class="footer-link">Motos</a>
+                        <a href="productos.html?categoria=herramientas" class="footer-link">Herramientas STIHL</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <div class="footer-links">
+                        <p>📍 Carrera 5 # 9-45, Riosucio</p>
+                        <p>📞 +57 (606) 859 1234</p>
+                        <p>✉️ contacto@ceveco.com.co</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Ceveco. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Overlay -->
+    <div id="cart-overlay" onclick="closeCart()" class="modal-overlay"></div>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-sidebar" class="modal"
+        style="position: fixed; right: 0; top: 0; height: 100vh; max-width: 400px; transform: translateX(100%); transition: transform 0.3s;">
+        <div class="modal-header">
+            <h2 class="modal-title">🛒 Mi Carrito</h2>
+            <button onclick="closeCart()" class="modal-close">✕</button>
+        </div>
+
+        <div class="modal-body" style="flex: 1; overflow-y: auto;">
+            <div id="empty-cart" class="text-center" style="padding: 3rem 1rem;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🛍️</div>
+                <h3>Tu carrito está vacío</h3>
+                <p class="text-muted mb-3">Agrega productos para comenzar tu compra</p>
+                <button onclick="closeCart()" class="btn btn-primary">
+                    Continuar Comprando
+                </button>
+            </div>
+
+            <div id="cart-items" class="d-flex flex-column gap-3">
+                <!-- Items del carrito se insertan aquí -->
+            </div>
+        </div>
+
+        <div id="cart-footer" class="modal-footer" style="display: none; flex-direction: column; gap: 1rem;">
+            <div class="d-flex justify-between align-center">
+                <span class="font-semibold">Subtotal:</span>
+                <span id="cart-total" class="font-bold">$0</span>
+            </div>
+
+            <div class="badge badge-success" style="width: 100%;">
+                🚚 Envío gratis en compras superiores a $500.000
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%;">
+                Proceder al Pago
+            </button>
+            <button onclick="closeCart()" class="btn btn-outline" style="width: 100%;">
+                Continuar Comprando
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        // Cargar productos destacados al cargar la página
+        async function loadFeaturedProducts() {
+            const container = document.getElementById('featured-products');
+
+            try {
+                const response = await ProductosAPI.getDestacados(8);
+
+                if (response.success && response.data.length > 0) {
+                    container.innerHTML = response.data.map(producto => `
+                        <div class="product-card" onclick="window.location.href='detalle-producto.html?id=${producto.id_producto}'">
+                            <div class="product-image-container">
+                                <img src="${producto.imagen_principal || 'https://via.placeholder.com/400x400?text=Sin+Imagen'}" 
+                                     alt="${producto.nombre}" 
+                                     class="product-image">
+                                ${producto.badge ? `
+                                    <div class="product-badge-container">
+                                        <span class="badge badge-sale">${producto.badge}</span>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="product-info">
+                                <p class="product-category">${producto.categoria}</p>
+                                <h3 class="product-title">${producto.nombre}</h3>
+                                ${producto.calificacion_promedio > 0 ? `
+                                    <div class="product-rating">
+                                        <div class="rating">
+                                            ${Utils.generateStars(producto.calificacion_promedio)}
+                                        </div>
+                                        <span class="text-muted" style="font-size: 0.875rem;">(${producto.total_resenas})</span>
+                                    </div>
+                                ` : ''}
+                                <div class="product-price-container">
+                                    <span class="product-price">${Utils.formatPrice(producto.precio_actual)}</span>
+                                    ${producto.precio_anterior ? `
+                                        <span class="product-price-old">${Utils.formatPrice(producto.precio_anterior)}</span>
+                                        <span class="product-discount">-${Utils.calculateDiscount(producto.precio_anterior, producto.precio_actual)}%</span>
+                                    ` : ''}
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;" onclick="event.stopPropagation(); addToCart(${producto.id_producto}, '${producto.nombre}', ${producto.precio_actual}, '${producto.imagen_principal}')">
+                                    Agregar al Carrito
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
+                            <p class="text-muted">No hay productos destacados disponibles en este momento.</p>
+                            <a href="productos.html" class="btn btn-primary mt-3">Ver Todos los Productos</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error al cargar productos destacados:', error);
+                container.innerHTML = `
+                    <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
+                        <p class="text-muted">Error al cargar los productos. Por favor, intenta de nuevo más tarde.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Cargar productos cuando la página esté lista
+        document.addEventListener('DOMContentLoaded', loadFeaturedProducts);
+    </script>
+</body>
+
+</html>

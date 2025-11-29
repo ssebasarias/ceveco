@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Ceveco - Tu tienda de electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas">
+    <meta name="keywords" content="electrodomésticos, muebles, motos, herramientas, STIHL, Riosucio, Caldas">
+    <title>Contacto - Ceveco</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="../assets/logo.png" alt="Ceveco Logo">
+            </a>
+
+            <div class="navbar-menu">
+                <a href="index.html" class="navbar-link">Inicio</a>
+                <a href="productos.html" class="navbar-link">Productos</a>
+                <a href="sedes.html" class="navbar-link">Sedes</a>
+                <a href="contacto.html" class="navbar-link active">Contacto</a>
+            </div>
+
+            <div class="navbar-actions">
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-badge" id="cart-count">0</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container" style="padding: 3rem 1rem;">
+        <h1 class="text-center mb-4">Contáctanos</h1>
+
+        <div class="d-grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Formulario de Contacto -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>Envíanos un Mensaje</h2>
+                </div>
+                <div class="card-body">
+                    <form id="contact-form">
+                        <div class="input-group">
+                            <label class="input-label" for="name">Nombre Completo</label>
+                            <input type="text" id="name" class="input-field" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label" for="email">Correo Electrónico</label>
+                            <input type="email" id="email" class="input-field" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label" for="phone">Teléfono</label>
+                            <input type="tel" id="phone" class="input-field">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label" for="subject">Asunto</label>
+                            <input type="text" id="subject" class="input-field" required>
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label" for="message">Mensaje</label>
+                            <textarea id="message" class="input-field" rows="5" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            Enviar Mensaje
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Información de Contacto -->
+            <div>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h3>Información de Contacto</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h4>📍 Dirección</h4>
+                            <p>Carrera 5 # 9-45<br>Riosucio, Caldas, Colombia</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h4>📞 Teléfono</h4>
+                            <p>+57 (606) 859 1234</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h4>📱 WhatsApp</h4>
+                            <p>+57 300 123 4567</p>
+                            <a href="#" class="btn btn-success btn-sm" id="whatsapp-btn">
+                                Chatear por WhatsApp
+                            </a>
+                        </div>
+
+                        <div class="mb-3">
+                            <h4>✉️ Email</h4>
+                            <p>contacto@ceveco.com.co</p>
+                        </div>
+
+                        <div>
+                            <h4>🕐 Horario de Atención</h4>
+                            <p>
+                                Lunes a Viernes: 8:00 AM - 6:00 PM<br>
+                                Sábados: 8:00 AM - 5:00 PM<br>
+                                Domingos: Cerrado
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Síguenos en Redes Sociales</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn btn-outline btn-sm">Facebook</a>
+                            <a href="#" class="btn btn-outline btn-sm">Instagram</a>
+                            <a href="#" class="btn btn-outline btn-sm">Twitter</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Ceveco</h3>
+                    <p>Tu tienda de confianza para electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Enlaces Rápidos</h3>
+                    <div class="footer-links">
+                        <a href="index.html" class="footer-link">Inicio</a>
+                        <a href="productos.html" class="footer-link">Productos</a>
+                        <a href="sedes.html" class="footer-link">Sedes</a>
+                        <a href="contacto.html" class="footer-link">Contacto</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Categorías</h3>
+                    <div class="footer-links">
+                        <a href="productos.html?categoria=electro-hogar" class="footer-link">Electro Hogar</a>
+                        <a href="productos.html?categoria=muebles" class="footer-link">Muebles</a>
+                        <a href="productos.html?categoria=motos" class="footer-link">Motos</a>
+                        <a href="productos.html?categoria=herramientas" class="footer-link">Herramientas STIHL</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <div class="footer-links">
+                        <p>📍 Carrera 5 # 9-45, Riosucio</p>
+                        <p>📞 +57 (606) 859 1234</p>
+                        <p>✉️ contacto@ceveco.com.co</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Ceveco. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        // Manejo del formulario de contacto
+        document.getElementById('contact-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value
+            };
+
+            // Aquí puedes enviar los datos al backend
+            console.log('Formulario enviado:', formData);
+
+            // Mostrar notificación
+            Utils.showToast('¡Mensaje enviado exitosamente! Te contactaremos pronto.', 'success');
+
+            // Limpiar formulario
+            this.reset();
+        });
+
+        // WhatsApp button
+        document.getElementById('whatsapp-btn').addEventListener('click', function (e) {
+            e.preventDefault();
+            const message = '¡Hola! Me gustaría obtener más información sobre sus productos.';
+            const url = Utils.getWhatsAppUrl(CONFIG.APP.whatsapp, message);
+            window.open(url, '_blank');
+        });
+    </script>
+</body>
+
+</html>

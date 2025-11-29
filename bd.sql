@@ -2,14 +2,35 @@
 -- BASE DE DATOS CEVECO E-COMMERCE
 -- Sistema de gestión para tienda de electrodomésticos,
 -- muebles, motos y herramientas
+-- Compatible con PostgreSQL 17
 -- ============================================
 
 -- Crear base de datos
-CREATE DATABASE IF NOT EXISTS ceveco_db
-CHARACTER SET utf8mb4
-COLLATE utf8mb4_unicode_ci;
+-- Ejecutar como superusuario o con permisos CREATE DATABASE
+-- CREATE DATABASE ceveco_db
+--     WITH 
+--     ENCODING = 'UTF8'
+--     LC_COLLATE = 'es_CO.UTF-8'
+--     LC_CTYPE = 'es_CO.UTF-8'
+--     TEMPLATE = template0;
 
-USE ceveco_db;
+-- Conectar a la base de datos
+-- \c ceveco_db;
+
+-- ============================================
+-- TIPOS ENUMERADOS PERSONALIZADOS
+-- ============================================
+
+CREATE TYPE tipo_documento_enum AS ENUM ('CC', 'CE', 'NIT', 'Pasaporte');
+CREATE TYPE genero_enum AS ENUM ('M', 'F', 'Otro', 'Prefiero no decir');
+CREATE TYPE rol_usuario_enum AS ENUM ('cliente', 'vendedor', 'admin');
+CREATE TYPE tipo_direccion_enum AS ENUM ('casa', 'trabajo', 'otro');
+CREATE TYPE estado_pedido_enum AS ENUM ('pendiente', 'confirmado', 'procesando', 'enviado', 'entregado', 'cancelado', 'devuelto');
+CREATE TYPE metodo_pago_enum AS ENUM ('efectivo', 'tarjeta_credito', 'tarjeta_debito', 'transferencia', 'pse', 'contraentrega');
+CREATE TYPE estado_pago_enum AS ENUM ('pendiente', 'pagado', 'fallido', 'reembolsado');
+CREATE TYPE tipo_descuento_enum AS ENUM ('porcentaje', 'monto_fijo');
+CREATE TYPE posicion_banner_enum AS ENUM ('hero', 'sidebar', 'footer', 'popup');
+CREATE TYPE tipo_config_enum AS ENUM ('string', 'number', 'boolean', 'json');
 
 -- ============================================
 -- TABLAS DE CATÁLOGO Y PRODUCTOS
@@ -17,7 +38,7 @@ USE ceveco_db;
 
 -- Tabla de categorías principales
 CREATE TABLE categorias (
-    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    id_categoria SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL UNIQUE,
     descripcion TEXT,
@@ -26,40 +47,43 @@ CREATE TABLE categorias (
     orden INT DEFAULT 0,
     activo BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_slug (slug),
-    INDEX idx_activo (activo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_categorias_slug ON categorias(slug);
+CREATE INDEX idx_categorias_activo ON categorias(activo);
 
 -- Tabla de subcategorías
 CREATE TABLE subcategorias (
-    id_subcategoria INT AUTO_INCREMENT PRIMARY KEY,
+    id_subcategoria SERIAL PRIMARY KEY,
     id_categoria INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL,
     descripcion TEXT,
     activo BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE CASCADE,
-    INDEX idx_categoria (id_categoria),
-    INDEX idx_slug (slug)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_subcategorias_categoria ON subcategorias(id_categoria);
+CREATE INDEX idx_subcategorias_slug ON subcategorias(slug);
 
 -- Tabla de marcas
 CREATE TABLE marcas (
-    id_marca INT AUTO_INCREMENT PRIMARY KEY,
+    id_marca SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL UNIQUE,
     logo_url VARCHAR(255),
     descripcion TEXT,
     sitio_web VARCHAR(255),
     activo BOOLEAN DEFAULT TRUE,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_nombre (nombre)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_marcas_nombre ON marcas(nombre);
 
 -- Tabla de productos
 CREATE TABLE productos (
-    id_producto INT AUTO_INCREMENT PRIMARY KEY,
+    id_producto SERIAL PRIMARY KEY,
     id_categoria INT NOT NULL,
     id_subcategoria INT,
     id_marca INT NOT NULL,
@@ -67,64 +91,69 @@ CREATE TABLE productos (
     nombre VARCHAR(255) NOT NULL,
     descripcion_corta TEXT,
     descripcion_larga TEXT,
-    precio_actual DECIMAL(12, 2) NOT NULL,
-    precio_anterior DECIMAL(12, 2),
-    costo DECIMAL(12, 2),
+    precio_actual NUMERIC(12, 2) NOT NULL,
+    precio_anterior NUMERIC(12, 2),
+    costo NUMERIC(12, 2),
     stock INT DEFAULT 0,
     stock_minimo INT DEFAULT 5,
-    peso DECIMAL(8, 2) COMMENT 'Peso en kilogramos',
-    dimensiones VARCHAR(100) COMMENT 'Alto x Ancho x Profundo en cm',
+    peso NUMERIC(8, 2), -- Peso en kilogramos
+    dimensiones VARCHAR(100), -- Alto x Ancho x Profundo en cm
     garantia_meses INT DEFAULT 12,
     clasificacion_energetica VARCHAR(10),
     modelo VARCHAR(100),
     color VARCHAR(50),
     material VARCHAR(100),
-    badge VARCHAR(50) COMMENT 'Nuevo, Oferta, Destacado, etc.',
+    badge VARCHAR(50), -- Nuevo, Oferta, Destacado, etc.
     destacado BOOLEAN DEFAULT FALSE,
     activo BOOLEAN DEFAULT TRUE,
     vistas INT DEFAULT 0,
     ventas_totales INT DEFAULT 0,
-    calificacion_promedio DECIMAL(3, 2) DEFAULT 0.00,
+    calificacion_promedio NUMERIC(3, 2) DEFAULT 0.00,
     total_resenas INT DEFAULT 0,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria),
     FOREIGN KEY (id_subcategoria) REFERENCES subcategorias(id_subcategoria) ON DELETE SET NULL,
-    FOREIGN KEY (id_marca) REFERENCES marcas(id_marca),
-    INDEX idx_categoria (id_categoria),
-    INDEX idx_marca (id_marca),
-    INDEX idx_precio (precio_actual),
-    INDEX idx_destacado (destacado),
-    INDEX idx_activo (activo),
-    INDEX idx_sku (sku),
-    FULLTEXT idx_busqueda (nombre, descripcion_corta)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_marca) REFERENCES marcas(id_marca)
+);
+
+CREATE INDEX idx_productos_categoria ON productos(id_categoria);
+CREATE INDEX idx_productos_marca ON productos(id_marca);
+CREATE INDEX idx_productos_precio ON productos(precio_actual);
+CREATE INDEX idx_productos_destacado ON productos(destacado);
+CREATE INDEX idx_productos_activo ON productos(activo);
+CREATE INDEX idx_productos_sku ON productos(sku);
+
+-- Índice de búsqueda de texto completo
+CREATE INDEX idx_productos_busqueda ON productos USING GIN(to_tsvector('spanish', nombre || ' ' || COALESCE(descripcion_corta, '')));
 
 -- Tabla de imágenes de productos
 CREATE TABLE producto_imagenes (
-    id_imagen INT AUTO_INCREMENT PRIMARY KEY,
+    id_imagen SERIAL PRIMARY KEY,
     id_producto INT NOT NULL,
     url_imagen VARCHAR(255) NOT NULL,
     alt_text VARCHAR(255),
     orden INT DEFAULT 0,
     es_principal BOOLEAN DEFAULT FALSE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-    INDEX idx_producto (id_producto),
-    INDEX idx_principal (es_principal)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_producto_imagenes_producto ON producto_imagenes(id_producto);
+CREATE INDEX idx_producto_imagenes_principal ON producto_imagenes(es_principal);
 
 -- Tabla de especificaciones técnicas
 CREATE TABLE producto_especificaciones (
-    id_especificacion INT AUTO_INCREMENT PRIMARY KEY,
+    id_especificacion SERIAL PRIMARY KEY,
     id_producto INT NOT NULL,
     nombre_atributo VARCHAR(100) NOT NULL,
     valor_atributo TEXT NOT NULL,
-    grupo VARCHAR(50) COMMENT 'General, Técnico, Dimensiones, etc.',
+    grupo VARCHAR(50), -- General, Técnico, Dimensiones, etc.
     orden INT DEFAULT 0,
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-    INDEX idx_producto (id_producto)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_producto_especificaciones_producto ON producto_especificaciones(id_producto);
 
 -- ============================================
 -- TABLAS DE USUARIOS Y AUTENTICACIÓN
@@ -132,34 +161,35 @@ CREATE TABLE producto_especificaciones (
 
 -- Tabla de usuarios
 CREATE TABLE usuarios (
-    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     apellido VARCHAR(100) NOT NULL,
     telefono VARCHAR(20),
     celular VARCHAR(20),
-    tipo_documento ENUM('CC', 'CE', 'NIT', 'Pasaporte') DEFAULT 'CC',
+    tipo_documento tipo_documento_enum DEFAULT 'CC',
     numero_documento VARCHAR(50) UNIQUE,
     fecha_nacimiento DATE,
-    genero ENUM('M', 'F', 'Otro', 'Prefiero no decir'),
+    genero genero_enum,
     avatar_url VARCHAR(255),
-    rol ENUM('cliente', 'vendedor', 'admin') DEFAULT 'cliente',
+    rol rol_usuario_enum DEFAULT 'cliente',
     activo BOOLEAN DEFAULT TRUE,
     email_verificado BOOLEAN DEFAULT FALSE,
     token_verificacion VARCHAR(255),
     token_recuperacion VARCHAR(255),
     fecha_ultimo_acceso TIMESTAMP NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_email (email),
-    INDEX idx_documento (numero_documento),
-    INDEX idx_rol (rol)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_usuarios_email ON usuarios(email);
+CREATE INDEX idx_usuarios_documento ON usuarios(numero_documento);
+CREATE INDEX idx_usuarios_rol ON usuarios(rol);
 
 -- Tabla de direcciones de usuarios
 CREATE TABLE direcciones (
-    id_direccion INT AUTO_INCREMENT PRIMARY KEY,
+    id_direccion SERIAL PRIMARY KEY,
     id_usuario INT NOT NULL,
     nombre_destinatario VARCHAR(100) NOT NULL,
     telefono_contacto VARCHAR(20) NOT NULL,
@@ -171,12 +201,13 @@ CREATE TABLE direcciones (
     barrio VARCHAR(100),
     referencias TEXT,
     es_principal BOOLEAN DEFAULT FALSE,
-    tipo ENUM('casa', 'trabajo', 'otro') DEFAULT 'casa',
+    tipo tipo_direccion_enum DEFAULT 'casa',
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    INDEX idx_usuario (id_usuario),
-    INDEX idx_principal (es_principal)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_direcciones_usuario ON direcciones(id_usuario);
+CREATE INDEX idx_direcciones_principal ON direcciones(es_principal);
 
 -- ============================================
 -- TABLAS DE CARRITO Y FAVORITOS
@@ -184,42 +215,45 @@ CREATE TABLE direcciones (
 
 -- Tabla de carrito de compras
 CREATE TABLE carrito (
-    id_carrito INT AUTO_INCREMENT PRIMARY KEY,
+    id_carrito SERIAL PRIMARY KEY,
     id_usuario INT,
     session_id VARCHAR(255),
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    INDEX idx_usuario (id_usuario),
-    INDEX idx_session (session_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_carrito_usuario ON carrito(id_usuario);
+CREATE INDEX idx_carrito_session ON carrito(session_id);
 
 -- Tabla de items del carrito
 CREATE TABLE carrito_items (
-    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    id_item SERIAL PRIMARY KEY,
     id_carrito INT NOT NULL,
     id_producto INT NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
-    precio_unitario DECIMAL(12, 2) NOT NULL,
+    precio_unitario NUMERIC(12, 2) NOT NULL,
     fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_carrito) REFERENCES carrito(id_carrito) ON DELETE CASCADE,
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-    INDEX idx_carrito (id_carrito),
-    INDEX idx_producto (id_producto),
-    UNIQUE KEY unique_carrito_producto (id_carrito, id_producto)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    UNIQUE (id_carrito, id_producto)
+);
+
+CREATE INDEX idx_carrito_items_carrito ON carrito_items(id_carrito);
+CREATE INDEX idx_carrito_items_producto ON carrito_items(id_producto);
 
 -- Tabla de productos favoritos/wishlist
 CREATE TABLE favoritos (
-    id_favorito INT AUTO_INCREMENT PRIMARY KEY,
+    id_favorito SERIAL PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_producto INT NOT NULL,
     fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-    UNIQUE KEY unique_usuario_producto (id_usuario, id_producto),
-    INDEX idx_usuario (id_usuario)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    UNIQUE (id_usuario, id_producto)
+);
+
+CREATE INDEX idx_favoritos_usuario ON favoritos(id_usuario);
 
 -- ============================================
 -- TABLAS DE PEDIDOS Y VENTAS
@@ -227,7 +261,7 @@ CREATE TABLE favoritos (
 
 -- Tabla de pedidos
 CREATE TABLE pedidos (
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
+    id_pedido SERIAL PRIMARY KEY,
     numero_pedido VARCHAR(50) UNIQUE NOT NULL,
     id_usuario INT NOT NULL,
     id_direccion_envio INT NOT NULL,
@@ -237,16 +271,16 @@ CREATE TABLE pedidos (
     telefono_contacto VARCHAR(20) NOT NULL,
     
     -- Montos
-    subtotal DECIMAL(12, 2) NOT NULL,
-    descuento DECIMAL(12, 2) DEFAULT 0.00,
-    costo_envio DECIMAL(12, 2) DEFAULT 0.00,
-    impuestos DECIMAL(12, 2) DEFAULT 0.00,
-    total DECIMAL(12, 2) NOT NULL,
+    subtotal NUMERIC(12, 2) NOT NULL,
+    descuento NUMERIC(12, 2) DEFAULT 0.00,
+    costo_envio NUMERIC(12, 2) DEFAULT 0.00,
+    impuestos NUMERIC(12, 2) DEFAULT 0.00,
+    total NUMERIC(12, 2) NOT NULL,
     
     -- Estado y seguimiento
-    estado ENUM('pendiente', 'confirmado', 'procesando', 'enviado', 'entregado', 'cancelado', 'devuelto') DEFAULT 'pendiente',
-    metodo_pago ENUM('efectivo', 'tarjeta_credito', 'tarjeta_debito', 'transferencia', 'pse', 'contraentrega') NOT NULL,
-    estado_pago ENUM('pendiente', 'pagado', 'fallido', 'reembolsado') DEFAULT 'pendiente',
+    estado estado_pedido_enum DEFAULT 'pendiente',
+    metodo_pago metodo_pago_enum NOT NULL,
+    estado_pago estado_pago_enum DEFAULT 'pendiente',
     
     -- Información de envío
     empresa_envio VARCHAR(100),
@@ -262,35 +296,37 @@ CREATE TABLE pedidos (
     fecha_confirmacion TIMESTAMP NULL,
     fecha_envio TIMESTAMP NULL,
     fecha_entrega TIMESTAMP NULL,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
-    FOREIGN KEY (id_direccion_envio) REFERENCES direcciones(id_direccion),
-    INDEX idx_usuario (id_usuario),
-    INDEX idx_numero_pedido (numero_pedido),
-    INDEX idx_estado (estado),
-    INDEX idx_fecha_pedido (fecha_pedido)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_direccion_envio) REFERENCES direcciones(id_direccion)
+);
+
+CREATE INDEX idx_pedidos_usuario ON pedidos(id_usuario);
+CREATE INDEX idx_pedidos_numero_pedido ON pedidos(numero_pedido);
+CREATE INDEX idx_pedidos_estado ON pedidos(estado);
+CREATE INDEX idx_pedidos_fecha_pedido ON pedidos(fecha_pedido);
 
 -- Tabla de items de pedidos
 CREATE TABLE pedido_items (
-    id_item INT AUTO_INCREMENT PRIMARY KEY,
+    id_item SERIAL PRIMARY KEY,
     id_pedido INT NOT NULL,
     id_producto INT NOT NULL,
     cantidad INT NOT NULL,
-    precio_unitario DECIMAL(12, 2) NOT NULL,
-    subtotal DECIMAL(12, 2) NOT NULL,
-    descuento DECIMAL(12, 2) DEFAULT 0.00,
-    total DECIMAL(12, 2) NOT NULL,
+    precio_unitario NUMERIC(12, 2) NOT NULL,
+    subtotal NUMERIC(12, 2) NOT NULL,
+    descuento NUMERIC(12, 2) DEFAULT 0.00,
+    total NUMERIC(12, 2) NOT NULL,
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto),
-    INDEX idx_pedido (id_pedido),
-    INDEX idx_producto (id_producto)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+);
+
+CREATE INDEX idx_pedido_items_pedido ON pedido_items(id_pedido);
+CREATE INDEX idx_pedido_items_producto ON pedido_items(id_producto);
 
 -- Tabla de historial de estados de pedidos
 CREATE TABLE pedido_historial (
-    id_historial INT AUTO_INCREMENT PRIMARY KEY,
+    id_historial SERIAL PRIMARY KEY,
     id_pedido INT NOT NULL,
     estado_anterior VARCHAR(50),
     estado_nuevo VARCHAR(50) NOT NULL,
@@ -298,9 +334,10 @@ CREATE TABLE pedido_historial (
     id_usuario_cambio INT,
     fecha_cambio TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
-    FOREIGN KEY (id_usuario_cambio) REFERENCES usuarios(id_usuario) ON DELETE SET NULL,
-    INDEX idx_pedido (id_pedido)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_usuario_cambio) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_pedido_historial_pedido ON pedido_historial(id_pedido);
 
 -- ============================================
 -- TABLAS DE RESEÑAS Y CALIFICACIONES
@@ -308,26 +345,27 @@ CREATE TABLE pedido_historial (
 
 -- Tabla de reseñas de productos
 CREATE TABLE resenas (
-    id_resena INT AUTO_INCREMENT PRIMARY KEY,
+    id_resena SERIAL PRIMARY KEY,
     id_producto INT NOT NULL,
     id_usuario INT NOT NULL,
     id_pedido INT,
     calificacion INT NOT NULL CHECK (calificacion >= 1 AND calificacion <= 5),
     titulo VARCHAR(255),
     comentario TEXT,
-    verificado BOOLEAN DEFAULT FALSE COMMENT 'Compra verificada',
+    verificado BOOLEAN DEFAULT FALSE, -- Compra verificada
     aprobado BOOLEAN DEFAULT FALSE,
-    util_count INT DEFAULT 0 COMMENT 'Votos de utilidad',
+    util_count INT DEFAULT 0, -- Votos de utilidad
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE SET NULL,
-    INDEX idx_producto (id_producto),
-    INDEX idx_usuario (id_usuario),
-    INDEX idx_calificacion (calificacion),
-    INDEX idx_aprobado (aprobado)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_resenas_producto ON resenas(id_producto);
+CREATE INDEX idx_resenas_usuario ON resenas(id_usuario);
+CREATE INDEX idx_resenas_calificacion ON resenas(calificacion);
+CREATE INDEX idx_resenas_aprobado ON resenas(aprobado);
 
 -- ============================================
 -- TABLAS DE SEDES Y UBICACIONES
@@ -335,7 +373,7 @@ CREATE TABLE resenas (
 
 -- Tabla de sedes/tiendas físicas
 CREATE TABLE sedes (
-    id_sede INT AUTO_INCREMENT PRIMARY KEY,
+    id_sede SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) UNIQUE NOT NULL,
     departamento VARCHAR(100) NOT NULL,
@@ -345,34 +383,36 @@ CREATE TABLE sedes (
     celular VARCHAR(20),
     email VARCHAR(255),
     whatsapp VARCHAR(20),
-    latitud DECIMAL(10, 8),
-    longitud DECIMAL(11, 8),
+    latitud NUMERIC(10, 8),
+    longitud NUMERIC(11, 8),
     horario_atencion TEXT,
-    servicios TEXT COMMENT 'Servicios disponibles en JSON',
+    servicios TEXT, -- Servicios disponibles en JSON
     imagen_url VARCHAR(255),
     es_principal BOOLEAN DEFAULT FALSE,
     activo BOOLEAN DEFAULT TRUE,
     fecha_apertura DATE,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_ciudad (ciudad),
-    INDEX idx_activo (activo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_sedes_ciudad ON sedes(ciudad);
+CREATE INDEX idx_sedes_activo ON sedes(activo);
 
 -- Tabla de inventario por sede
 CREATE TABLE sede_inventario (
-    id_inventario INT AUTO_INCREMENT PRIMARY KEY,
+    id_inventario SERIAL PRIMARY KEY,
     id_sede INT NOT NULL,
     id_producto INT NOT NULL,
     stock INT DEFAULT 0,
     stock_minimo INT DEFAULT 5,
     ubicacion_fisica VARCHAR(100),
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_sede) REFERENCES sedes(id_sede) ON DELETE CASCADE,
     FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
-    UNIQUE KEY unique_sede_producto (id_sede, id_producto),
-    INDEX idx_sede (id_sede),
-    INDEX idx_producto (id_producto)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    UNIQUE (id_sede, id_producto)
+);
+
+CREATE INDEX idx_sede_inventario_sede ON sede_inventario(id_sede);
+CREATE INDEX idx_sede_inventario_producto ON sede_inventario(id_producto);
 
 -- ============================================
 -- TABLAS DE PROMOCIONES Y DESCUENTOS
@@ -380,38 +420,40 @@ CREATE TABLE sede_inventario (
 
 -- Tabla de cupones de descuento
 CREATE TABLE cupones (
-    id_cupon INT AUTO_INCREMENT PRIMARY KEY,
+    id_cupon SERIAL PRIMARY KEY,
     codigo VARCHAR(50) UNIQUE NOT NULL,
     descripcion TEXT,
-    tipo_descuento ENUM('porcentaje', 'monto_fijo') NOT NULL,
-    valor_descuento DECIMAL(12, 2) NOT NULL,
-    monto_minimo_compra DECIMAL(12, 2) DEFAULT 0.00,
+    tipo_descuento tipo_descuento_enum NOT NULL,
+    valor_descuento NUMERIC(12, 2) NOT NULL,
+    monto_minimo_compra NUMERIC(12, 2) DEFAULT 0.00,
     usos_maximos INT,
     usos_por_usuario INT DEFAULT 1,
     usos_actuales INT DEFAULT 0,
-    fecha_inicio DATETIME NOT NULL,
-    fecha_fin DATETIME NOT NULL,
+    fecha_inicio TIMESTAMP NOT NULL,
+    fecha_fin TIMESTAMP NOT NULL,
     activo BOOLEAN DEFAULT TRUE,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_codigo (codigo),
-    INDEX idx_activo (activo),
-    INDEX idx_fechas (fecha_inicio, fecha_fin)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_cupones_codigo ON cupones(codigo);
+CREATE INDEX idx_cupones_activo ON cupones(activo);
+CREATE INDEX idx_cupones_fechas ON cupones(fecha_inicio, fecha_fin);
 
 -- Tabla de uso de cupones
 CREATE TABLE cupon_usos (
-    id_uso INT AUTO_INCREMENT PRIMARY KEY,
+    id_uso SERIAL PRIMARY KEY,
     id_cupon INT NOT NULL,
     id_usuario INT NOT NULL,
     id_pedido INT NOT NULL,
-    monto_descuento DECIMAL(12, 2) NOT NULL,
+    monto_descuento NUMERIC(12, 2) NOT NULL,
     fecha_uso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_cupon) REFERENCES cupones(id_cupon) ON DELETE CASCADE,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE,
-    INDEX idx_cupon (id_cupon),
-    INDEX idx_usuario (id_usuario)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_cupon_usos_cupon ON cupon_usos(id_cupon);
+CREATE INDEX idx_cupon_usos_usuario ON cupon_usos(id_usuario);
 
 -- ============================================
 -- TABLAS DE CONTENIDO Y MARKETING
@@ -419,7 +461,7 @@ CREATE TABLE cupon_usos (
 
 -- Tabla de banners/sliders
 CREATE TABLE banners (
-    id_banner INT AUTO_INCREMENT PRIMARY KEY,
+    id_banner SERIAL PRIMARY KEY,
     titulo VARCHAR(255) NOT NULL,
     subtitulo VARCHAR(255),
     descripcion TEXT,
@@ -427,27 +469,29 @@ CREATE TABLE banners (
     imagen_mobile_url VARCHAR(255),
     enlace_url VARCHAR(255),
     texto_boton VARCHAR(50),
-    posicion ENUM('hero', 'sidebar', 'footer', 'popup') DEFAULT 'hero',
+    posicion posicion_banner_enum DEFAULT 'hero',
     orden INT DEFAULT 0,
     activo BOOLEAN DEFAULT TRUE,
-    fecha_inicio DATETIME,
-    fecha_fin DATETIME,
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_posicion (posicion),
-    INDEX idx_activo (activo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_inicio TIMESTAMP,
+    fecha_fin TIMESTAMP,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_banners_posicion ON banners(posicion);
+CREATE INDEX idx_banners_activo ON banners(activo);
 
 -- Tabla de newsletter/suscriptores
 CREATE TABLE newsletter (
-    id_suscriptor INT AUTO_INCREMENT PRIMARY KEY,
+    id_suscriptor SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
     nombre VARCHAR(100),
     activo BOOLEAN DEFAULT TRUE,
     fecha_suscripcion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    fecha_baja TIMESTAMP NULL,
-    INDEX idx_email (email),
-    INDEX idx_activo (activo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_baja TIMESTAMP NULL
+);
+
+CREATE INDEX idx_newsletter_email ON newsletter(email);
+CREATE INDEX idx_newsletter_activo ON newsletter(activo);
 
 -- ============================================
 -- TABLAS DE CONFIGURACIÓN Y SISTEMA
@@ -455,34 +499,36 @@ CREATE TABLE newsletter (
 
 -- Tabla de configuración general
 CREATE TABLE configuracion (
-    id_config INT AUTO_INCREMENT PRIMARY KEY,
+    id_config SERIAL PRIMARY KEY,
     clave VARCHAR(100) UNIQUE NOT NULL,
     valor TEXT,
-    tipo ENUM('string', 'number', 'boolean', 'json') DEFAULT 'string',
+    tipo tipo_config_enum DEFAULT 'string',
     descripcion TEXT,
     grupo VARCHAR(50),
-    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_clave (clave),
-    INDEX idx_grupo (grupo)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_configuracion_clave ON configuracion(clave);
+CREATE INDEX idx_configuracion_grupo ON configuracion(grupo);
 
 -- Tabla de logs de actividad
 CREATE TABLE logs_actividad (
-    id_log BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id_log BIGSERIAL PRIMARY KEY,
     id_usuario INT,
     accion VARCHAR(100) NOT NULL,
     tabla_afectada VARCHAR(100),
     id_registro INT,
-    datos_anteriores JSON,
-    datos_nuevos JSON,
+    datos_anteriores JSONB,
+    datos_nuevos JSONB,
     ip_address VARCHAR(45),
     user_agent TEXT,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE SET NULL,
-    INDEX idx_usuario (id_usuario),
-    INDEX idx_accion (accion),
-    INDEX idx_fecha (fecha_creacion)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_logs_actividad_usuario ON logs_actividad(id_usuario);
+CREATE INDEX idx_logs_actividad_accion ON logs_actividad(accion);
+CREATE INDEX idx_logs_actividad_fecha ON logs_actividad(fecha_creacion);
 
 -- ============================================
 -- DATOS INICIALES
@@ -589,13 +635,62 @@ INNER JOIN usuarios u ON p.id_usuario = u.id_usuario
 INNER JOIN direcciones d ON p.id_direccion_envio = d.id_direccion;
 
 -- ============================================
--- PROCEDIMIENTOS ALMACENADOS
+-- FUNCIONES Y PROCEDIMIENTOS ALMACENADOS
 -- ============================================
 
-DELIMITER //
+-- Función para actualizar fecha de actualización automáticamente
+CREATE OR REPLACE FUNCTION actualizar_fecha_actualizacion()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.fecha_actualizacion = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Aplicar trigger de actualización a tablas relevantes
+CREATE TRIGGER trigger_actualizar_categorias
+    BEFORE UPDATE ON categorias
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_productos
+    BEFORE UPDATE ON productos
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_usuarios
+    BEFORE UPDATE ON usuarios
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_carrito
+    BEFORE UPDATE ON carrito
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_pedidos
+    BEFORE UPDATE ON pedidos
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_resenas
+    BEFORE UPDATE ON resenas
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_configuracion
+    BEFORE UPDATE ON configuracion
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
+
+CREATE TRIGGER trigger_actualizar_sede_inventario
+    BEFORE UPDATE ON sede_inventario
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
 
 -- Procedimiento para actualizar calificación promedio de producto
-CREATE PROCEDURE actualizar_calificacion_producto(IN p_id_producto INT)
+CREATE OR REPLACE FUNCTION actualizar_calificacion_producto(p_id_producto INT)
+RETURNS VOID AS $$
 BEGIN
     UPDATE productos 
     SET 
@@ -610,65 +705,86 @@ BEGIN
             WHERE id_producto = p_id_producto AND aprobado = TRUE
         )
     WHERE id_producto = p_id_producto;
-END //
+END;
+$$ LANGUAGE plpgsql;
 
--- Procedimiento para generar número de pedido único
-CREATE PROCEDURE generar_numero_pedido(OUT p_numero_pedido VARCHAR(50))
+-- Función para generar número de pedido único
+CREATE OR REPLACE FUNCTION generar_numero_pedido()
+RETURNS VARCHAR(50) AS $$
+DECLARE
+    v_fecha VARCHAR(8);
+    v_contador INT;
+    v_numero_pedido VARCHAR(50);
 BEGIN
-    DECLARE v_fecha VARCHAR(8);
-    DECLARE v_contador INT;
+    v_fecha := TO_CHAR(NOW(), 'YYYYMMDD');
     
-    SET v_fecha = DATE_FORMAT(NOW(), '%Y%m%d');
-    
-    SELECT COALESCE(MAX(CAST(SUBSTRING(numero_pedido, 10) AS UNSIGNED)), 0) + 1
+    SELECT COALESCE(MAX(CAST(SUBSTRING(numero_pedido FROM 12) AS INTEGER)), 0) + 1
     INTO v_contador
     FROM pedidos
-    WHERE numero_pedido LIKE CONCAT('PED', v_fecha, '%');
+    WHERE numero_pedido LIKE 'PED' || v_fecha || '%';
     
-    SET p_numero_pedido = CONCAT('PED', v_fecha, LPAD(v_contador, 4, '0'));
-END //
-
-DELIMITER ;
+    v_numero_pedido := 'PED' || v_fecha || LPAD(v_contador::TEXT, 4, '0');
+    
+    RETURN v_numero_pedido;
+END;
+$$ LANGUAGE plpgsql;
 
 -- ============================================
 -- TRIGGERS
 -- ============================================
 
-DELIMITER //
-
 -- Trigger para actualizar stock después de crear un pedido
-CREATE TRIGGER after_pedido_item_insert
-AFTER INSERT ON pedido_items
-FOR EACH ROW
+CREATE OR REPLACE FUNCTION after_pedido_item_insert()
+RETURNS TRIGGER AS $$
 BEGIN
     UPDATE productos 
     SET stock = stock - NEW.cantidad,
         ventas_totales = ventas_totales + NEW.cantidad
     WHERE id_producto = NEW.id_producto;
-END //
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_after_pedido_item_insert
+    AFTER INSERT ON pedido_items
+    FOR EACH ROW
+    EXECUTE FUNCTION after_pedido_item_insert();
 
 -- Trigger para registrar cambios de estado en pedidos
-CREATE TRIGGER after_pedido_estado_update
-AFTER UPDATE ON pedidos
-FOR EACH ROW
+CREATE OR REPLACE FUNCTION after_pedido_estado_update()
+RETURNS TRIGGER AS $$
 BEGIN
-    IF OLD.estado != NEW.estado THEN
+    IF OLD.estado IS DISTINCT FROM NEW.estado THEN
         INSERT INTO pedido_historial (id_pedido, estado_anterior, estado_nuevo)
-        VALUES (NEW.id_pedido, OLD.estado, NEW.estado);
+        VALUES (NEW.id_pedido, OLD.estado::VARCHAR, NEW.estado::VARCHAR);
     END IF;
-END //
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_after_pedido_estado_update
+    AFTER UPDATE ON pedidos
+    FOR EACH ROW
+    EXECUTE FUNCTION after_pedido_estado_update();
 
 -- Trigger para actualizar calificación después de aprobar reseña
-CREATE TRIGGER after_resena_aprobada
-AFTER UPDATE ON resenas
-FOR EACH ROW
+CREATE OR REPLACE FUNCTION after_resena_aprobada()
+RETURNS TRIGGER AS $$
 BEGIN
     IF OLD.aprobado = FALSE AND NEW.aprobado = TRUE THEN
-        CALL actualizar_calificacion_producto(NEW.id_producto);
+        PERFORM actualizar_calificacion_producto(NEW.id_producto);
     END IF;
-END //
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
-DELIMITER ;
+CREATE TRIGGER trigger_after_resena_aprobada
+    AFTER UPDATE ON resenas
+    FOR EACH ROW
+    EXECUTE FUNCTION after_resena_aprobada();
 
 -- ============================================
 -- ÍNDICES ADICIONALES PARA OPTIMIZACIÓN
@@ -705,5 +821,14 @@ Características adicionales:
 - Sistema de calificaciones con compra verificada
 - Triggers automáticos para mantener integridad
 - Vistas optimizadas para consultas frecuentes
-- Procedimientos almacenados para operaciones comunes
+- Funciones almacenadas para operaciones comunes
+
+Compatibilidad PostgreSQL 17:
+- Uso de SERIAL/BIGSERIAL en lugar de AUTO_INCREMENT
+- Tipos ENUM personalizados
+- NUMERIC en lugar de DECIMAL
+- Índices GIN para búsqueda de texto completo
+- Funciones y triggers con sintaxis PL/pgSQL
+- JSONB para datos JSON
+- Triggers automáticos para actualización de timestamps
 */

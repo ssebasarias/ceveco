@@ -1,0 +1,108 @@
+const express = require('express');
+const router = express.Router();
+const ProductoController = require('../controllers/productos.controller');
+const { query, param } = require('express-validator');
+
+/**
+ * @route   GET /api/v1/productos
+ * @desc    Obtener todos los productos con filtros y paginación
+ * @access  Public
+ * @query   {string} categoria - Slug de la categoría
+ * @query   {number} marca - ID de la marca
+ * @query   {number} precioMin - Precio mínimo
+ * @query   {number} precioMax - Precio máximo
+ * @query   {boolean} destacado - Solo productos destacados
+ * @query   {string} busqueda - Término de búsqueda
+ * @query   {number} page - Número de página (default: 1)
+ * @query   {number} limit - Productos por página (default: 12)
+ * @query   {string} orderBy - Campo de ordenamiento (default: fecha_creacion)
+ * @query   {string} orderDir - Dirección de ordenamiento ASC/DESC (default: DESC)
+ */
+router.get('/',
+    [
+        query('page').optional().isInt({ min: 1 }).withMessage('Página debe ser un número mayor a 0'),
+        query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Límite debe estar entre 1 y 100'),
+        query('precioMin').optional().isFloat({ min: 0 }).withMessage('Precio mínimo debe ser mayor o igual a 0'),
+        query('precioMax').optional().isFloat({ min: 0 }).withMessage('Precio máximo debe ser mayor o igual a 0'),
+        query('marca').optional().isInt().withMessage('ID de marca debe ser un número'),
+        query('orderBy').optional().isIn(['precio_actual', 'nombre', 'fecha_creacion', 'calificacion_promedio', 'ventas_totales'])
+            .withMessage('Campo de ordenamiento inválido'),
+        query('orderDir').optional().isIn(['ASC', 'DESC']).withMessage('Dirección de ordenamiento debe ser ASC o DESC')
+    ],
+    ProductoController.getAll
+);
+
+/**
+ * @route   GET /api/v1/productos/destacados
+ * @desc    Obtener productos destacados
+ * @access  Public
+ * @query   {number} limit - Número de productos (default: 8)
+ */
+router.get('/destacados',
+    [
+        query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Límite debe estar entre 1 y 50')
+    ],
+    ProductoController.getDestacados
+);
+
+/**
+ * @route   GET /api/v1/productos/buscar
+ * @desc    Buscar productos por término
+ * @access  Public
+ * @query   {string} q - Término de búsqueda (requerido)
+ * @query   {number} page - Número de página
+ * @query   {number} limit - Productos por página
+ */
+router.get('/buscar',
+    [
+        query('q').notEmpty().withMessage('Término de búsqueda requerido'),
+        query('page').optional().isInt({ min: 1 }).withMessage('Página debe ser un número mayor a 0'),
+        query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Límite debe estar entre 1 y 100')
+    ],
+    ProductoController.buscar
+);
+
+/**
+ * @route   GET /api/v1/productos/:id
+ * @desc    Obtener un producto por ID
+ * @access  Public
+ * @param   {number} id - ID del producto
+ */
+router.get('/:id',
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido')
+    ],
+    ProductoController.getById
+);
+
+/**
+ * @route   GET /api/v1/productos/:id/relacionados
+ * @desc    Obtener productos relacionados
+ * @access  Public
+ * @param   {number} id - ID del producto
+ * @query   {number} limit - Número de productos (default: 4)
+ */
+router.get('/:id/relacionados',
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        query('limit').optional().isInt({ min: 1, max: 20 }).withMessage('Límite debe estar entre 1 y 20')
+    ],
+    ProductoController.getRelacionados
+);
+
+/**
+ * @route   GET /api/v1/productos/:id/stock
+ * @desc    Verificar disponibilidad de stock
+ * @access  Public
+ * @param   {number} id - ID del producto
+ * @query   {number} cantidad - Cantidad a verificar (default: 1)
+ */
+router.get('/:id/stock',
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        query('cantidad').optional().isInt({ min: 1 }).withMessage('Cantidad debe ser mayor a 0')
+    ],
+    ProductoController.verificarStock
+);
+
+module.exports = router;
