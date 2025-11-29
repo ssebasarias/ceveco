@@ -21,10 +21,9 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 app.use(helmet());
 
 // CORS - Configuración para permitir peticiones desde el frontend
+// CORS - Configuración para permitir peticiones desde el frontend
 const corsOptions = {
-    origin: process.env.CORS_ORIGIN
-        ? process.env.CORS_ORIGIN.split(',')
-        : ['http://localhost:5500', 'http://127.0.0.1:5500'],
+    origin: '*', // Permitir todo para desarrollo y acceso local (file://)
     credentials: true,
     optionsSuccessStatus: 200
 };

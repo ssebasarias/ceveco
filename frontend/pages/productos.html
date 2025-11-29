@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Electro Hogar - Ceveco</title>
+    <title id="page-title">Catálogo de Productos - Ceveco</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <script>
         tailwind.config = {
             theme: {
@@ -58,13 +59,13 @@
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex items-center justify-between h-20 gap-8">
                 <a href="index.html" class="flex-shrink-0">
-                    <img src="assets/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
+                    <img src="../assets/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
                 </a>
 
                 <div class="hidden md:flex flex-1 max-w-2xl relative">
-                    <input type="text" placeholder="Buscar neveras, muebles, motos..."
+                    <input type="text" id="search-input" placeholder="Buscar neveras, muebles, motos..."
                         class="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm placeholder-gray-400">
-                    <button
+                    <button onclick="handleSearch()"
                         class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-colors">
                         <i data-lucide="search" class="w-4 h-4"></i>
                     </button>
@@ -92,31 +93,32 @@
 
             <nav class="hidden md:block border-t border-gray-50">
                 <ul class="flex items-center gap-8 py-3 text-sm font-medium text-gray-600">
-                    <li><a href="electro-hogar.html" class="text-primary font-bold transition-colors">Electro Hogar</a>
+                    <li><a href="productos.html?categoria=electro-hogar"
+                            class="hover:text-primary transition-colors">Electro Hogar</a></li>
+                    <li><a href="productos.html?categoria=muebles" class="hover:text-primary transition-colors">Muebles
+                            y Organización</a>
                     </li>
-                    <li><a href="muebles.html" class="hover:text-primary transition-colors">Muebles y Organización</a>
+                    <li><a href="productos.html?categoria=motos" class="hover:text-primary transition-colors">Motos</a>
                     </li>
-                    <li><a href="#" class="hover:text-primary transition-colors">Motos</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors">Herramientas STIHL</a></li>
-                    <li class="ml-auto"><a href="#" class="text-primary font-semibold hover:underline">Ofertas del
-                            Día</a></li>
+                    <li><a href="productos.html?categoria=herramientas"
+                            class="hover:text-primary transition-colors">Herramientas STIHL</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="relative bg-gray-50 h-[300px] overflow-hidden">
+    <section id="category-hero" class="relative bg-gray-50 h-[300px] overflow-hidden hidden">
         <div class="absolute inset-0">
-            <img src="assets/hero.png" alt="Electro Hogar Banner" class="w-full h-full object-cover opacity-90">
+            <img id="hero-image" src="../assets/hero.png" alt="Banner" class="w-full h-full object-cover opacity-90">
             <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent"></div>
         </div>
         <div class="container mx-auto px-4 h-full relative flex items-center">
             <div class="max-w-xl space-y-4">
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                    Electro <span class="text-primary">Hogar</span>
+                <h1 id="hero-title" class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                    Catálogo <span class="text-primary">Ceveco</span>
                 </h1>
-                <p class="text-lg text-gray-600">Equipa tu casa con la mejor tecnología y eficiencia.</p>
+                <p id="hero-subtitle" class="text-lg text-gray-600">Encuentra los mejores productos para tu hogar.</p>
             </div>
         </div>
     </section>
@@ -134,17 +136,24 @@
 
                     <!-- Categoría -->
                     <div class="border-b border-gray-100 py-4">
-                        <h4 class="font-semibold text-gray-700 mb-3">Categoría</h4>
+                        <h4 class="font-semibold text-gray-700 mb-3">Categorías</h4>
                         <ul class="space-y-2 text-sm text-gray-600">
-                            <li><label class="flex items-center gap-2 cursor-pointer hover:text-primary"><input
-                                        type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                    Neveras</label></li>
-                            <li><label class="flex items-center gap-2 cursor-pointer hover:text-primary"><input
-                                        type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                    Lavadoras</label></li>
-                            <li><label class="flex items-center gap-2 cursor-pointer hover:text-primary"><input
-                                        type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                    Estufas</label></li>
+                            <li><a href="productos.html?categoria=electro-hogar"
+                                    class="hover:text-primary flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-gray-300"></span> Electro Hogar
+                                </a></li>
+                            <li><a href="productos.html?categoria=muebles"
+                                    class="hover:text-primary flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-gray-300"></span> Muebles
+                                </a></li>
+                            <li><a href="productos.html?categoria=motos"
+                                    class="hover:text-primary flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-gray-300"></span> Motos
+                                </a></li>
+                            <li><a href="productos.html?categoria=herramientas"
+                                    class="hover:text-primary flex items-center gap-2">
+                                    <span class="w-2 h-2 rounded-full bg-gray-300"></span> Herramientas
+                                </a></li>
                         </ul>
                     </div>
 
@@ -152,28 +161,14 @@
                     <div class="border-b border-gray-100 py-4">
                         <h4 class="font-semibold text-gray-700 mb-3">Precio</h4>
                         <div class="flex items-center gap-2 text-sm">
-                            <input type="number" placeholder="Min"
+                            <input type="number" id="min-price" placeholder="Min"
                                 class="w-20 px-2 py-1 border border-gray-200 rounded">
                             <span>-</span>
-                            <input type="number" placeholder="Max"
+                            <input type="number" id="max-price" placeholder="Max"
                                 class="w-20 px-2 py-1 border border-gray-200 rounded">
                         </div>
-                    </div>
-
-                    <!-- Marca -->
-                    <div class="border-b border-gray-100 py-4">
-                        <h4 class="font-semibold text-gray-700 mb-3">Marca</h4>
-                        <ul class="space-y-2 text-sm text-gray-600">
-                            <li><label class="flex items-center gap-2 cursor-pointer hover:text-primary"><input
-                                        type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                    Samsung</label></li>
-                            <li><label class="flex items-center gap-2 cursor-pointer hover:text-primary"><input
-                                        type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                    LG</label></li>
-                            <li><label class="flex items-center gap-2 cursor-pointer hover:text-primary"><input
-                                        type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
-                                    Haceb</label></li>
-                        </ul>
+                        <button onclick="applyFilters()"
+                            class="mt-2 text-xs bg-primary text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors">Aplicar</button>
                     </div>
                 </div>
             </aside>
@@ -181,30 +176,45 @@
             <!-- Product Grid -->
             <div class="flex-1">
                 <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-bold text-gray-900">Electrodomésticos</h2>
-                    <select
+                    <h2 id="catalog-title" class="text-2xl font-bold text-gray-900">Todos los Productos</h2>
+                    <select id="sort-select" onchange="applyFilters()"
                         class="border-none bg-gray-50 text-sm font-medium text-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 cursor-pointer">
-                        <option>Ordenar por: Relevancia</option>
-                        <option>Precio: Menor a Mayor</option>
-                        <option>Precio: Mayor a Menor</option>
+                        <option value="relevancia">Ordenar por: Relevancia</option>
+                        <option value="precio_asc">Precio: Menor a Mayor</option>
+                        <option value="precio_desc">Precio: Mayor a Menor</option>
                     </select>
                 </div>
 
-                <div id="product-grid" class="grid grid-cols-2 md:grid-cols-3 gap-6" data-category="electro-hogar">
+                <!-- Loading State -->
+                <div id="loading-state" class="hidden flex justify-center py-20">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-20">
+                    <div class="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <i data-lucide="search-x" class="w-8 h-8 text-gray-400"></i>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900">No se encontraron productos</h3>
+                    <p class="text-gray-500">Intenta con otros filtros o términos de búsqueda.</p>
+                </div>
+
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Products rendered by JS -->
                 </div>
 
                 <!-- Pagination -->
-                <div class="mt-12 flex justify-center">
+                <div id="pagination" class="mt-12 flex justify-center hidden">
                     <nav class="flex items-center gap-2">
-                        <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"><i
-                                data-lucide="chevron-left" class="w-5 h-5"></i></button>
-                        <button class="w-10 h-10 bg-primary text-white rounded-lg font-medium">1</button>
-                        <button
-                            class="w-10 h-10 border border-gray-200 rounded-lg font-medium hover:bg-gray-50 text-gray-600">2</button>
-                        <span class="text-gray-400">...</span>
-                        <button class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50"><i
-                                data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                        <button id="prev-page" onclick="changePage(-1)"
+                            class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                        </button>
+                        <span id="page-info" class="px-4 font-medium text-gray-600">Página 1</span>
+                        <button id="next-page" onclick="changePage(1)"
+                            class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
                     </nav>
                 </div>
             </div>
@@ -216,18 +226,10 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                 <div class="space-y-4">
-                    <img src="assets/logo.png" alt="Ceveco" class="h-8 grayscale opacity-80">
+                    <img src="../assets/logo.png" alt="Ceveco" class="h-8 grayscale opacity-80">
                     <p class="text-sm text-gray-500 leading-relaxed">
                         Tu aliado experto en electrodomésticos y hogar. Calidad, garantía y respaldo en cada compra.
                     </p>
-                    <div class="flex gap-4">
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i data-lucide="facebook"
-                                class="w-5 h-5"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i
-                                data-lucide="instagram" class="w-5 h-5"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-primary transition-colors"><i data-lucide="twitter"
-                                class="w-5 h-5"></i></a>
-                    </div>
                 </div>
 
                 <div>
@@ -235,8 +237,7 @@
                     <ul class="space-y-2 text-sm text-gray-500">
                         <li><a href="sedes.html" class="hover:text-primary transition-colors">Nuestras Sedes</a></li>
                         <li><a href="#" class="hover:text-primary transition-colors">Políticas de Garantía</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Términos y Condiciones</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Trabaja con nosotros</a></li>
+                        <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
                     </ul>
                 </div>
 
@@ -251,10 +252,6 @@
                             <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
                             <span>+57 (606) 859 1234</span>
                         </li>
-                        <li class="flex items-center gap-3">
-                            <i data-lucide="mail" class="w-5 h-5 text-primary"></i>
-                            <span>contacto@ceveco.com.co</span>
-                        </li>
                     </ul>
                 </div>
 
@@ -267,15 +264,12 @@
                         <div class="w-10 h-6 bg-white border border-gray-200 rounded flex items-center justify-center">
                             <span class="text-[10px] font-bold text-gray-400">VISA</span>
                         </div>
-                        <div class="w-10 h-6 bg-white border border-gray-200 rounded flex items-center justify-center">
-                            <span class="text-[10px] font-bold text-gray-400">MC</span>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="border-t border-gray-200 pt-8 text-center">
-                <p class="text-sm text-gray-400">&copy; 2024 Ceveco S.A.S. Todos los derechos reservados.</p>
+                <p class="text-sm text-gray-400">&copy; 2025 Ceveco S.A.S. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
@@ -308,10 +302,7 @@
                     Continuar Comprando
                 </button>
             </div>
-
-            <div id="cart-items" class="space-y-4">
-                <!-- Items will be dynamically inserted here -->
-            </div>
+            <div id="cart-items" class="space-y-4"></div>
         </div>
 
         <div id="cart-footer" class="hidden border-t border-gray-200 p-6 space-y-4 bg-gray-50">
@@ -319,29 +310,224 @@
                 <span class="font-semibold text-gray-700">Subtotal:</span>
                 <span id="cart-total" class="font-bold text-gray-900">$0</span>
             </div>
-
-            <div class="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                <i data-lucide="truck" class="w-4 h-4"></i>
-                <span>Envío gratis en compras superiores a $500.000</span>
-            </div>
-
-            <div class="space-y-2">
-                <a href="#"
-                    class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 transition-all text-center">
-                    Proceder al Pago
-                </a>
-                <button onclick="closeCart()"
-                    class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:border-primary hover:text-primary transition-all">
-                    Continuar Comprando
-                </button>
-            </div>
+            <button
+                class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 transition-all text-center">
+                Proceder al Pago
+            </button>
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="cart.js"></script>
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/main.js"></script>
+
     <script>
+        // Inicializar iconos Lucide
         lucide.createIcons();
+
+        // Estado global
+        let currentPage = 1;
+        let currentLimit = 12;
+        let totalPages = 1;
+
+        // Función de búsqueda
+        function handleSearch() {
+            const query = document.getElementById('search-input').value;
+            if (query) {
+                window.location.href = `productos.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // Obtener parámetros de URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                categoria: params.get('categoria'),
+                q: params.get('q'),
+                destacado: params.get('destacado')
+            };
+        }
+
+        // Cargar productos
+        async function loadProducts() {
+            const grid = document.getElementById('product-grid');
+            const loading = document.getElementById('loading-state');
+            const empty = document.getElementById('empty-state');
+            const pagination = document.getElementById('pagination');
+
+            // Mostrar loading
+            grid.innerHTML = '';
+            loading.classList.remove('hidden');
+            empty.classList.add('hidden');
+            pagination.classList.add('hidden');
+
+            const params = getUrlParams();
+            const sortValue = document.getElementById('sort-select').value;
+            const minPrice = document.getElementById('min-price').value;
+            const maxPrice = document.getElementById('max-price').value;
+
+            // Preparar filtros
+            const filters = {
+                page: currentPage,
+                limit: currentLimit
+            };
+
+            if (params.categoria) filters.categoria = params.categoria;
+            if (params.q) filters.busqueda = params.q;
+            if (params.destacado) filters.destacado = true;
+            if (minPrice) filters.precioMin = minPrice;
+            if (maxPrice) filters.precioMax = maxPrice;
+
+            // Ordenamiento
+            if (sortValue === 'precio_asc') {
+                filters.orderBy = 'precio_actual';
+                filters.orderDir = 'ASC';
+            } else if (sortValue === 'precio_desc') {
+                filters.orderBy = 'precio_actual';
+                filters.orderDir = 'DESC';
+            }
+
+            try {
+                // Actualizar UI según contexto
+                updatePageHeader(params);
+
+                // Fetch productos
+                const response = await ProductosAPI.getAll(filters);
+
+                loading.classList.add('hidden');
+
+                if (response.success && response.data.length > 0) {
+                    // Renderizar productos
+                    grid.innerHTML = response.data.map(product => createProductCardHTML(product)).join('');
+
+                    // Actualizar paginación
+                    totalPages = response.pagination.totalPages;
+                    updatePagination();
+                    pagination.classList.remove('hidden');
+
+                    // Re-init iconos
+                    lucide.createIcons();
+                } else {
+                    empty.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loading.classList.add('hidden');
+                empty.classList.remove('hidden');
+                empty.querySelector('h3').textContent = 'Error al cargar productos';
+                empty.querySelector('p').textContent = 'Por favor intenta nuevamente más tarde.';
+            }
+        }
+
+        // Actualizar encabezado de página
+        function updatePageHeader(params) {
+            const title = document.getElementById('catalog-title');
+            const heroSection = document.getElementById('category-hero');
+            const heroTitle = document.getElementById('hero-title');
+
+            if (params.q) {
+                title.textContent = `Resultados para "${params.q}"`;
+                document.title = `Búsqueda: ${params.q} - Ceveco`;
+                heroSection.classList.add('hidden');
+            } else if (params.categoria) {
+                const catName = formatCategoryName(params.categoria);
+                title.textContent = catName;
+                document.title = `${catName} - Ceveco`;
+
+                // Mostrar Hero específico
+                heroSection.classList.remove('hidden');
+                heroTitle.innerHTML = `${catName}`;
+            } else if (params.destacado) {
+                title.textContent = 'Productos Destacados';
+                document.title = 'Destacados - Ceveco';
+                heroSection.classList.add('hidden');
+            } else {
+                title.textContent = 'Todos los Productos';
+                document.title = 'Catálogo - Ceveco';
+                heroSection.classList.add('hidden');
+            }
+        }
+
+        function formatCategoryName(slug) {
+            const names = {
+                'electro-hogar': 'Electro Hogar',
+                'muebles': 'Muebles y Organización',
+                'motos': 'Motos',
+                'herramientas': 'Herramientas STIHL'
+            };
+            return names[slug] || 'Productos';
+        }
+
+        // Crear HTML de tarjeta de producto (similar a main.js pero inline para este contexto)
+        function createProductCardHTML(product) {
+            return `
+                <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col relative overflow-hidden">
+                    ${product.badge ? `
+                        <span class="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide z-10">
+                            ${product.badge}
+                        </span>
+                    ` : ''}
+                    
+                    <div class="relative pt-[100%] overflow-hidden bg-gray-50 cursor-pointer" onclick="window.location.href='detalle-producto.html?id=${product.id_producto}'">
+                        <img src="${product.imagen_principal || 'https://via.placeholder.com/400x400'}" 
+                             alt="${product.nombre}" 
+                             class="absolute top-0 left-0 w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    
+                    <div class="p-5 flex-1 flex flex-col">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">${product.marca || ''}</p>
+                        <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors cursor-pointer" onclick="window.location.href='detalle-producto.html?id=${product.id_producto}'">
+                            ${product.nombre}
+                        </h3>
+                        
+                        <div class="mt-auto pt-4 border-t border-gray-50 flex items-end justify-between">
+                            <div>
+                                <span class="text-lg font-bold text-primary block">
+                                    ${Utils.formatPrice(product.precio_actual)}
+                                </span>
+                                ${product.precio_anterior ? `
+                                    <span class="text-sm text-gray-400 line-through">
+                                        ${Utils.formatPrice(product.precio_anterior)}
+                                    </span>
+                                ` : ''}
+                            </div>
+                            <button onclick="addToCart(${product.id_producto}, '${product.nombre}', ${product.precio_actual}, '${product.imagen_principal}')"
+                                class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
+                                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Paginación y Filtros
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                loadProducts();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updatePagination() {
+            document.getElementById('page-info').textContent = `Página ${currentPage} de ${totalPages}`;
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = currentPage === totalPages;
+        }
+
+        function applyFilters() {
+            currentPage = 1;
+            loadProducts();
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', loadProducts);
     </script>
 </body>
 

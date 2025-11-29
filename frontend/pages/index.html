@@ -4,23 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Ceveco - Tu tienda de electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas">
     <title>Ceveco - Renueva tu hogar</title>
-
-    <!-- CSS -->
-    <link rel="stylesheet" href="../css/styles.css">
-
-    <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/logo.png">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0056b3',
+                        dark: '#1F2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        /* Animación de scroll para marcas */
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Mega Menu Hover Logic */
+        .group:hover .mega-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Infinite Scroll Animation */
         @keyframes scroll {
             0% {
                 transform: translateX(0);
@@ -41,241 +75,306 @@
     </style>
 </head>
 
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container navbar-container">
-            <a href="index.html" class="navbar-logo">
-                <img src="../assets/logo.png" alt="Ceveco Logo">
-            </a>
+<body class="bg-white text-gray-800 font-sans antialiased">
 
-            <div class="navbar-menu">
-                <a href="index.html" class="navbar-link active">Inicio</a>
-                <a href="productos.html?categoria=electro-hogar" class="navbar-link">Electro Hogar</a>
-                <a href="productos.html?categoria=muebles" class="navbar-link">Muebles</a>
-                <a href="productos.html?categoria=motos" class="navbar-link">Motos</a>
-                <a href="productos.html?categoria=herramientas" class="navbar-link">Herramientas</a>
-                <a href="sedes.html" class="navbar-link">Sedes</a>
-                <a href="contacto.html" class="navbar-link">Contacto</a>
-            </div>
+    <!-- Sticky Header -->
+    <header
+        class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm transition-all duration-300">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="flex items-center justify-between h-20 gap-8">
+                <!-- Logo -->
+                <a href="index.html" class="flex-shrink-0">
+                    <img src="../assets/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
+                </a>
 
-            <div class="navbar-actions">
-                <div class="cart-icon" onclick="toggleCart()">
-                    🛒
-                    <span class="cart-badge" id="cart-count">0</span>
+                <!-- Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-2xl relative">
+                    <input type="text" id="search-input" placeholder="Buscar neveras, muebles, motos..."
+                        class="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm placeholder-gray-400">
+                    <button onclick="handleSearch()"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-colors">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <!-- Icons -->
+                <div class="flex items-center gap-6 text-gray-600">
+                    <!-- Menú de Categorías -->
+                    <div class="hidden lg:flex items-center gap-6">
+                        <a href="productos.html?categoria=electro-hogar"
+                            class="hover:text-primary transition-colors font-medium">Electro Hogar</a>
+                        <a href="productos.html?categoria=muebles"
+                            class="hover:text-primary transition-colors font-medium">Muebles</a>
+                        <a href="productos.html?categoria=motos"
+                            class="hover:text-primary transition-colors font-medium">Motos</a>
+                        <a href="productos.html?categoria=herramientas"
+                            class="hover:text-primary transition-colors font-medium">Herramientas</a>
+                    </div>
+
+                    <div class="flex items-center gap-4 ml-6 border-l pl-6 border-gray-200">
+                        <button class="hover:text-primary transition-colors">
+                            <i data-lucide="user" class="w-6 h-6"></i>
+                        </button>
+                        <button onclick="toggleCart()" class="relative hover:text-primary transition-colors group">
+                            <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                            <span id="cart-count"
+                                class="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white group-hover:scale-110 transition-transform"
+                                style="display: none;">0</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </nav>
+    </header>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <span class="badge badge-new">Nueva Colección 2025</span>
-            <h1 class="hero-title">
-                Renueva tu hogar con la mejor <span style="color: var(--color-accent);">tecnología</span>
-            </h1>
-            <p class="hero-subtitle">
-                Descubre electrodomésticos eficientes y muebles de diseño para transformar tus espacios.
-            </p>
-            <div class="d-flex gap-3" style="margin-top: 2rem;">
-                <a href="productos.html" class="btn btn-primary btn-lg">
-                    Ver Catálogo Completo
-                </a>
-                <a href="productos.html?destacado=true" class="btn btn-outline btn-lg">
-                    Más Vendidos
-                </a>
+    <section class="relative bg-gray-50 h-[500px] overflow-hidden">
+        <div class="absolute inset-0">
+            <img id="hero-image" src="../assets/hero.png" alt="Hero Banner"
+                class="w-full h-full object-cover opacity-90 transition-opacity duration-1000">
+            <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent"></div>
+        </div>
+        <div class="container mx-auto px-4 h-full relative flex items-center">
+            <div class="max-w-xl space-y-6 animate-fade-in-up">
+                <span
+                    class="inline-block px-3 py-1 bg-blue-100 text-primary text-xs font-bold uppercase tracking-wider rounded-full">
+                    Nueva Colección 2025
+                </span>
+                <h1 class="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+                    Renueva tu hogar con la mejor <span class="text-primary">tecnología</span>
+                </h1>
+                <p class="text-lg text-gray-600">
+                    Descubre electrodomésticos eficientes y muebles de diseño para transformar tus espacios.
+                </p>
+                <div class="flex gap-4 pt-2">
+                    <a href="productos.html"
+                        class="px-8 py-4 bg-primary text-white font-semibold rounded-full shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all transform hover:-translate-y-1">
+                        Ver Ofertas
+                    </a>
+                    <a href="productos.html?destacado=true"
+                        class="px-8 py-4 bg-white text-gray-700 font-semibold rounded-full border border-gray-200 hover:bg-gray-50 transition-all">
+                        Más vendidos
+                    </a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Categories Section -->
-    <main class="container" style="padding: 4rem 1rem;">
-        <div class="text-center mb-5">
-            <h2>Explora Nuestras Categorías</h2>
-            <p class="text-muted">Encuentra todo lo que necesitas para tu hogar</p>
+    <!-- Categories Showcase -->
+    <main class="container mx-auto px-4 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Explora Nuestras Categorías</h2>
+            <p class="text-lg text-gray-600">Encuentra todo lo que necesitas para tu hogar</p>
         </div>
 
-        <div class="product-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <!-- Electro Hogar -->
-            <a href="productos.html?categoria=electro-hogar" class="card" style="text-decoration: none;">
-                <div class="card-body text-center">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">⚡</div>
-                    <h3>Electro Hogar</h3>
-                    <p class="text-muted">Neveras, lavadoras, estufas y más</p>
+            <a href="productos.html?categoria=electro-hogar" class="group">
+                <div
+                    class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                    <div class="h-64 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-8">
+                        <span class="text-6xl">⚡</span>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                            Electro Hogar</h3>
+                        <p class="text-sm text-gray-500">Neveras, lavadoras, estufas y más</p>
+                    </div>
                 </div>
             </a>
 
             <!-- Muebles -->
-            <a href="productos.html?categoria=muebles" class="card" style="text-decoration: none;">
-                <div class="card-body text-center">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">🪑</div>
-                    <h3>Muebles y Organización</h3>
-                    <p class="text-muted">Escritorios, sillas, estanterías</p>
+            <a href="productos.html?categoria=muebles" class="group">
+                <div
+                    class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                    <div class="h-64 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center p-8">
+                        <span class="text-6xl">🪑</span>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                            Muebles</h3>
+                        <p class="text-sm text-gray-500">Escritorios, sillas, estanterías</p>
+                    </div>
                 </div>
             </a>
 
             <!-- Motos -->
-            <a href="productos.html?categoria=motos" class="card" style="text-decoration: none;">
-                <div class="card-body text-center">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">🏍️</div>
-                    <h3>Motos</h3>
-                    <p class="text-muted">Motos urbanas y deportivas</p>
+            <a href="productos.html?categoria=motos" class="group">
+                <div
+                    class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                    <div class="h-64 bg-gradient-to-br from-cyan-50 to-cyan-100 flex items-center justify-center p-8">
+                        <span class="text-6xl">🏍️</span>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                            Motos</h3>
+                        <p class="text-sm text-gray-500">Motos urbanas y deportivas</p>
+                    </div>
                 </div>
             </a>
 
             <!-- Herramientas STIHL -->
-            <a href="productos.html?categoria=herramientas" class="card" style="text-decoration: none;">
-                <div class="card-body text-center">
-                    <div style="font-size: 4rem; margin-bottom: 1rem;">🔧</div>
-                    <h3>Herramientas STIHL</h3>
-                    <p class="text-muted">Motosierras, guadañas y más</p>
+            <a href="productos.html?categoria=herramientas" class="group">
+                <div
+                    class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                    <div
+                        class="h-64 bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center p-8">
+                        <span class="text-6xl">🔧</span>
+                    </div>
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                            Herramientas STIHL</h3>
+                        <p class="text-sm text-gray-500">Motosierras, guadañas y más</p>
+                    </div>
                 </div>
             </a>
         </div>
 
-        <!-- Productos Destacados -->
-        <div class="mt-5 pt-5">
-            <div class="d-flex justify-between align-center mb-4">
-                <h2>Productos Destacados</h2>
-                <a href="productos.html?destacado=true" class="btn btn-ghost">
-                    Ver todos →
-                </a>
+        <!-- Brand Carousel -->
+        <div class="mt-20 mb-12 overflow-hidden bg-white py-8 border-y border-gray-100">
+            <div class="container mx-auto px-4 mb-6 text-center">
+                <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest">Nuestras Marcas Aliadas</h3>
             </div>
-
-            <div id="featured-products" class="product-grid">
-                <!-- Loading spinner -->
-                <div class="d-flex justify-center align-center" style="grid-column: 1 / -1; padding: 3rem;">
-                    <div class="spinner"></div>
+            <div class="relative w-full overflow-hidden">
+                <div class="flex animate-scroll gap-12 items-center w-max">
+                    <span class="text-2xl font-bold text-gray-400">SAMSUNG</span>
+                    <span class="text-2xl font-bold text-gray-400">LG</span>
+                    <span class="text-2xl font-bold text-gray-400">HACEB</span>
+                    <span class="text-2xl font-bold text-gray-400">MABE</span>
+                    <span class="text-2xl font-bold text-gray-400">WHIRLPOOL</span>
+                    <span class="text-2xl font-bold text-gray-400">OSTER</span>
+                    <span class="text-2xl font-bold text-gray-400">SONY</span>
+                    <span class="text-2xl font-bold text-gray-400">RIMAX</span>
+                    <span class="text-2xl font-bold text-gray-400">STIHL</span>
+                    <!-- Duplicate for scroll -->
+                    <span class="text-2xl font-bold text-gray-400">SAMSUNG</span>
+                    <span class="text-2xl font-bold text-gray-400">LG</span>
+                    <span class="text-2xl font-bold text-gray-400">HACEB</span>
+                    <span class="text-2xl font-bold text-gray-400">MABE</span>
+                    <span class="text-2xl font-bold text-gray-400">WHIRLPOOL</span>
                 </div>
             </div>
         </div>
 
-        <!-- Marcas -->
-        <div class="mt-5 pt-5" style="overflow: hidden;">
-            <h3 class="text-center text-muted mb-4">NUESTRAS MARCAS ALIADAS</h3>
-            <div style="overflow: hidden;">
-                <div class="d-flex gap-4 align-center animate-scroll" style="width: max-content;">
-                    <div class="badge badge-primary">Samsung</div>
-                    <div class="badge badge-primary">LG</div>
-                    <div class="badge badge-primary">Haceb</div>
-                    <div class="badge badge-primary">Mabe</div>
-                    <div class="badge badge-primary">Whirlpool</div>
-                    <div class="badge badge-primary">Oster</div>
-                    <div class="badge badge-primary">Sony</div>
-                    <div class="badge badge-primary">Rimax</div>
-                    <div class="badge badge-primary">STIHL</div>
-                    <div class="badge badge-primary">Honda</div>
-                    <div class="badge badge-primary">Yamaha</div>
-                    <!-- Duplicado para scroll infinito -->
-                    <div class="badge badge-primary">Samsung</div>
-                    <div class="badge badge-primary">LG</div>
-                    <div class="badge badge-primary">Haceb</div>
-                    <div class="badge badge-primary">Mabe</div>
-                    <div class="badge badge-primary">Whirlpool</div>
-                    <div class="badge badge-primary">Oster</div>
-                    <div class="badge badge-primary">Sony</div>
-                    <div class="badge badge-primary">Rimax</div>
-                    <div class="badge badge-primary">STIHL</div>
-                    <div class="badge badge-primary">Honda</div>
-                    <div class="badge badge-primary">Yamaha</div>
+        <!-- Featured Products Section -->
+        <div class="mt-20">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Productos Destacados</h2>
+                <a href="productos.html?destacado=true"
+                    class="text-primary font-semibold hover:underline flex items-center gap-2">
+                    Ver todos <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+            </div>
+            <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Loading State -->
+                <div class="col-span-full flex justify-center py-12">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>Ceveco</h3>
-                    <p>Tu tienda de confianza para electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas.
+    <footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+                <!-- Col 1 -->
+                <div class="space-y-4">
+                    <img src="../assets/logo.png" alt="Ceveco" class="h-8 grayscale opacity-80">
+                    <p class="text-sm text-gray-500 leading-relaxed">
+                        Tu aliado experto en electrodomésticos y hogar. Calidad, garantía y respaldo en cada compra.
                     </p>
                 </div>
 
-                <div class="footer-section">
-                    <h3>Enlaces Rápidos</h3>
-                    <div class="footer-links">
-                        <a href="index.html" class="footer-link">Inicio</a>
-                        <a href="productos.html" class="footer-link">Productos</a>
-                        <a href="sedes.html" class="footer-link">Sedes</a>
-                        <a href="contacto.html" class="footer-link">Contacto</a>
-                    </div>
+                <!-- Col 2 -->
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Enlaces Rápidos</h4>
+                    <ul class="space-y-2 text-sm text-gray-500">
+                        <li><a href="sedes.html" class="hover:text-primary transition-colors">Nuestras Sedes</a></li>
+                        <li><a href="#" class="hover:text-primary transition-colors">Políticas de Garantía</a></li>
+                        <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
+                    </ul>
                 </div>
 
-                <div class="footer-section">
-                    <h3>Categorías</h3>
-                    <div class="footer-links">
-                        <a href="productos.html?categoria=electro-hogar" class="footer-link">Electro Hogar</a>
-                        <a href="productos.html?categoria=muebles" class="footer-link">Muebles</a>
-                        <a href="productos.html?categoria=motos" class="footer-link">Motos</a>
-                        <a href="productos.html?categoria=herramientas" class="footer-link">Herramientas STIHL</a>
-                    </div>
+                <!-- Col 3 -->
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Contacto</h4>
+                    <ul class="space-y-3 text-sm text-gray-500">
+                        <li class="flex items-start gap-3">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-0.5"></i>
+                            <span>Carrera 5 # 9-45<br>Riosucio, Caldas</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
+                            <span>+57 (606) 859 1234</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <div class="footer-section">
-                    <h3>Contacto</h3>
-                    <div class="footer-links">
-                        <p>📍 Carrera 5 # 9-45, Riosucio</p>
-                        <p>📞 +57 (606) 859 1234</p>
-                        <p>✉️ contacto@ceveco.com.co</p>
+                <!-- Col 4 -->
+                <div>
+                    <h4 class="font-bold text-gray-900 mb-4">Métodos de Pago</h4>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="w-10 h-6 bg-white border border-gray-200 rounded flex items-center justify-center">
+                            <i data-lucide="credit-card" class="w-4 h-4 text-gray-400"></i>
+                        </div>
+                        <div class="w-10 h-6 bg-white border border-gray-200 rounded flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-gray-400">VISA</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="footer-bottom">
-                <p>&copy; 2025 Ceveco. Todos los derechos reservados.</p>
+            <div class="border-t border-gray-200 pt-8 text-center">
+                <p class="text-sm text-gray-400">&copy; 2025 Ceveco S.A.S. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
     <!-- Cart Overlay -->
-    <div id="cart-overlay" onclick="closeCart()" class="modal-overlay"></div>
+    <div id="cart-overlay" onclick="closeCart()" class="hidden fixed inset-0 bg-black/50 z-40 transition-opacity"></div>
 
     <!-- Cart Sidebar -->
-    <div id="cart-sidebar" class="modal"
-        style="position: fixed; right: 0; top: 0; height: 100vh; max-width: 400px; transform: translateX(100%); transition: transform 0.3s;">
-        <div class="modal-header">
-            <h2 class="modal-title">🛒 Mi Carrito</h2>
-            <button onclick="closeCart()" class="modal-close">✕</button>
+    <div id="cart-sidebar"
+        class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                Mi Carrito
+            </h2>
+            <button onclick="closeCart()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
         </div>
 
-        <div class="modal-body" style="flex: 1; overflow-y: auto;">
-            <div id="empty-cart" class="text-center" style="padding: 3rem 1rem;">
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🛍️</div>
-                <h3>Tu carrito está vacío</h3>
-                <p class="text-muted mb-3">Agrega productos para comenzar tu compra</p>
-                <button onclick="closeCart()" class="btn btn-primary">
+        <div class="flex-1 overflow-y-auto p-6">
+            <div id="empty-cart" class="flex flex-col items-center justify-center h-full text-center">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="shopping-bag" class="w-12 h-12 text-gray-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
+                <p class="text-gray-500 mb-6">Agrega productos para comenzar tu compra</p>
+                <button onclick="closeCart()"
+                    class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
                     Continuar Comprando
                 </button>
             </div>
-
-            <div id="cart-items" class="d-flex flex-column gap-3">
-                <!-- Items del carrito se insertan aquí -->
-            </div>
+            <div id="cart-items" class="space-y-4"></div>
         </div>
 
-        <div id="cart-footer" class="modal-footer" style="display: none; flex-direction: column; gap: 1rem;">
-            <div class="d-flex justify-between align-center">
-                <span class="font-semibold">Subtotal:</span>
-                <span id="cart-total" class="font-bold">$0</span>
+        <div id="cart-footer" class="hidden border-t border-gray-200 p-6 space-y-4 bg-gray-50">
+            <div class="flex items-center justify-between text-lg">
+                <span class="font-semibold text-gray-700">Subtotal:</span>
+                <span id="cart-total" class="font-bold text-gray-900">$0</span>
             </div>
-
-            <div class="badge badge-success" style="width: 100%;">
-                🚚 Envío gratis en compras superiores a $500.000
-            </div>
-
-            <button class="btn btn-primary" style="width: 100%;">
+            <button
+                class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 transition-all text-center">
                 Proceder al Pago
-            </button>
-            <button onclick="closeCart()" class="btn btn-outline" style="width: 100%;">
-                Continuar Comprando
             </button>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Scripts -->
     <script src="../js/config.js"></script>
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
@@ -283,69 +382,71 @@
     <script src="../js/main.js"></script>
 
     <script>
-        // Cargar productos destacados al cargar la página
+        // Inicializar iconos Lucide
+        lucide.createIcons();
+
+        // Función de búsqueda
+        function handleSearch() {
+            const query = document.getElementById('search-input').value;
+            if (query) {
+                window.location.href = `productos.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // Cargar productos destacados con diseño Tailwind
         async function loadFeaturedProducts() {
             const container = document.getElementById('featured-products');
-
             try {
                 const response = await ProductosAPI.getDestacados(8);
 
                 if (response.success && response.data.length > 0) {
                     container.innerHTML = response.data.map(producto => `
-                        <div class="product-card" onclick="window.location.href='detalle-producto.html?id=${producto.id_producto}'">
-                            <div class="product-image-container">
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer" 
+                             onclick="window.location.href='detalle-producto.html?id=${producto.id_producto}'">
+                            <div class="relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
                                 <img src="${producto.imagen_principal || 'https://via.placeholder.com/400x400?text=Sin+Imagen'}" 
                                      alt="${producto.nombre}" 
-                                     class="product-image">
+                                     class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
                                 ${producto.badge ? `
-                                    <div class="product-badge-container">
-                                        <span class="badge badge-sale">${producto.badge}</span>
-                                    </div>
+                                    <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                        ${producto.badge}
+                                    </span>
                                 ` : ''}
                             </div>
-                            <div class="product-info">
-                                <p class="product-category">${producto.categoria}</p>
-                                <h3 class="product-title">${producto.nombre}</h3>
-                                ${producto.calificacion_promedio > 0 ? `
-                                    <div class="product-rating">
-                                        <div class="rating">
-                                            ${Utils.generateStars(producto.calificacion_promedio)}
-                                        </div>
-                                        <span class="text-muted" style="font-size: 0.875rem;">(${producto.total_resenas})</span>
+                            <div class="p-4">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">${producto.categoria}</p>
+                                <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
+                                    ${producto.nombre}
+                                </h3>
+                                <div class="flex items-end justify-between mt-2">
+                                    <div>
+                                        <span class="text-lg font-bold text-primary block">
+                                            ${Utils.formatPrice(producto.precio_actual)}
+                                        </span>
+                                        ${producto.precio_anterior ? `
+                                            <span class="text-sm text-gray-400 line-through">
+                                                ${Utils.formatPrice(producto.precio_anterior)}
+                                            </span>
+                                        ` : ''}
                                     </div>
-                                ` : ''}
-                                <div class="product-price-container">
-                                    <span class="product-price">${Utils.formatPrice(producto.precio_actual)}</span>
-                                    ${producto.precio_anterior ? `
-                                        <span class="product-price-old">${Utils.formatPrice(producto.precio_anterior)}</span>
-                                        <span class="product-discount">-${Utils.calculateDiscount(producto.precio_anterior, producto.precio_actual)}%</span>
-                                    ` : ''}
+                                    <button onclick="event.stopPropagation(); addToCart(${producto.id_producto}, '${producto.nombre}', ${producto.precio_actual}, '${producto.imagen_principal}')"
+                                        class="p-2 bg-gray-100 text-gray-600 rounded-full hover:bg-primary hover:text-white transition-colors">
+                                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                                    </button>
                                 </div>
-                                <button class="btn btn-primary" style="width: 100%;" onclick="event.stopPropagation(); addToCart(${producto.id_producto}, '${producto.nombre}', ${producto.precio_actual}, '${producto.imagen_principal}')">
-                                    Agregar al Carrito
-                                </button>
                             </div>
                         </div>
                     `).join('');
+                    lucide.createIcons(); // Re-inicializar iconos para los nuevos elementos
                 } else {
-                    container.innerHTML = `
-                        <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
-                            <p class="text-muted">No hay productos destacados disponibles en este momento.</p>
-                            <a href="productos.html" class="btn btn-primary mt-3">Ver Todos los Productos</a>
-                        </div>
-                    `;
+                    container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">No hay productos destacados disponibles.</p>`;
                 }
             } catch (error) {
-                console.error('Error al cargar productos destacados:', error);
-                container.innerHTML = `
-                    <div class="text-center" style="grid-column: 1 / -1; padding: 3rem;">
-                        <p class="text-muted">Error al cargar los productos. Por favor, intenta de nuevo más tarde.</p>
-                    </div>
-                `;
+                console.error('Error:', error);
+                container.innerHTML = `<p class="col-span-full text-center text-red-500 py-8">Error al cargar productos.</p>`;
             }
         }
 
-        // Cargar productos cuando la página esté lista
         document.addEventListener('DOMContentLoaded', loadFeaturedProducts);
     </script>
 </body>

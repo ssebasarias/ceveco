@@ -4,10 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estufa Haceb 76 VF INOX - Ceveco</title>
+    <title id="page-title">Cargando producto... - Ceveco</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
     <script>
         tailwind.config = {
             theme: {
@@ -64,13 +65,13 @@
         <div class="container mx-auto px-4 lg:px-8">
             <div class="flex items-center justify-between h-20 gap-8">
                 <a href="index.html" class="flex-shrink-0">
-                    <img src="assets/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
+                    <img src="../assets/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
                 </a>
 
                 <div class="hidden md:flex flex-1 max-w-2xl relative">
-                    <input type="text" placeholder="Buscar neveras, muebles, motos..."
+                    <input type="text" id="search-input" placeholder="Buscar neveras, muebles, motos..."
                         class="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm placeholder-gray-400">
-                    <button
+                    <button onclick="handleSearch()"
                         class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-primary text-white rounded-full hover:bg-blue-700 transition-colors">
                         <i data-lucide="search" class="w-4 h-4"></i>
                     </button>
@@ -98,13 +99,15 @@
 
             <nav class="hidden md:block border-t border-gray-100">
                 <ul class="flex items-center gap-8 py-3 text-sm font-medium text-gray-600">
-                    <li><a href="electro-hogar.html" class="hover:text-primary transition-colors">Electro Hogar</a></li>
-                    <li><a href="muebles.html" class="hover:text-primary transition-colors">Muebles y Organización</a>
+                    <li><a href="productos.html?categoria=electro-hogar"
+                            class="hover:text-primary transition-colors">Electro Hogar</a></li>
+                    <li><a href="productos.html?categoria=muebles" class="hover:text-primary transition-colors">Muebles
+                            y Organización</a>
                     </li>
-                    <li><a href="#" class="hover:text-primary transition-colors">Motos</a></li>
-                    <li><a href="#" class="hover:text-primary transition-colors">Herramientas STIHL</a></li>
-                    <li class="ml-auto"><a href="#" class="text-primary font-semibold hover:underline">Ofertas del
-                            Día</a></li>
+                    <li><a href="productos.html?categoria=motos" class="hover:text-primary transition-colors">Motos</a>
+                    </li>
+                    <li><a href="productos.html?categoria=herramientas"
+                            class="hover:text-primary transition-colors">Herramientas STIHL</a></li>
                 </ul>
             </nav>
         </div>
@@ -116,48 +119,45 @@
             <nav class="flex items-center gap-2 text-sm text-gray-600">
                 <a href="index.html" class="hover:text-primary transition-colors">Inicio</a>
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                <a href="electro-hogar.html" class="hover:text-primary transition-colors">Electro Hogar</a>
+                <a href="#" id="breadcrumb-category" class="hover:text-primary transition-colors">Categoría</a>
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                <span class="text-gray-900 font-medium">Estufa Haceb 76 VF INOX</span>
+                <span id="breadcrumb-product" class="text-gray-900 font-medium">Producto</span>
             </nav>
         </div>
     </div>
 
     <!-- Product Detail -->
     <main class="container mx-auto px-4 py-12">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <!-- Loading State -->
+        <div id="loading-state" class="flex justify-center py-20">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden text-center py-20">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Producto no encontrado</h2>
+            <p class="text-gray-600 mb-8">Lo sentimos, no pudimos encontrar el producto que buscas.</p>
+            <a href="index.html"
+                class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                Volver al Inicio
+            </a>
+        </div>
+
+        <div id="product-content" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 
             <!-- Product Images -->
             <div class="space-y-4">
                 <!-- Main Image -->
                 <div
-                    class="bg-white rounded-2xl border border-gray-200 p-8 aspect-square flex items-center justify-center">
-                    <img id="main-image" src="https://placehold.co/600x600/f5f5f5/0056b3/png?text=Estufa+Haceb+76+VF"
-                        alt="Estufa Haceb" class="max-w-full max-h-full object-contain">
+                    class="bg-white rounded-2xl border border-gray-200 p-8 aspect-square flex items-center justify-center relative overflow-hidden group">
+                    <img id="main-image" src="" alt="Producto"
+                        class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
+                    <div id="product-badge" class="absolute top-4 left-4"></div>
                 </div>
 
                 <!-- Thumbnails -->
-                <div class="grid grid-cols-4 gap-3">
-                    <button onclick="changeImage(0)"
-                        class="thumbnail active border-2 border-primary rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                        <img src="https://placehold.co/150x150/f5f5f5/0056b3/png?text=Vista+1" alt="Vista 1"
-                            class="w-full h-full object-cover">
-                    </button>
-                    <button onclick="changeImage(1)"
-                        class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                        <img src="https://placehold.co/150x150/f5f5f5/0056b3/png?text=Vista+2" alt="Vista 2"
-                            class="w-full h-full object-cover">
-                    </button>
-                    <button onclick="changeImage(2)"
-                        class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                        <img src="https://placehold.co/150x150/f5f5f5/0056b3/png?text=Vista+3" alt="Vista 3"
-                            class="w-full h-full object-cover">
-                    </button>
-                    <button onclick="changeImage(3)"
-                        class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                        <img src="https://placehold.co/150x150/f5f5f5/0056b3/png?text=Detalle" alt="Detalle"
-                            class="w-full h-full object-cover">
-                    </button>
+                <div id="thumbnails-container" class="grid grid-cols-4 gap-3">
+                    <!-- Thumbnails will be injected here -->
                 </div>
             </div>
 
@@ -165,56 +165,38 @@
             <div class="space-y-6">
                 <!-- Brand & Title -->
                 <div>
-                    <span
-                        class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-3">HACEB</span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Estufa Haceb 76 VF INOX</h1>
-                    <p class="text-gray-600">Estufa Orégano Haceb 76 cms inox gas natural</p>
+                    <span id="product-brand"
+                        class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-3">MARCA</span>
+                    <h1 id="product-name" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Nombre del Producto
+                    </h1>
+                    <p id="product-short-desc" class="text-gray-600">Descripción corta del producto</p>
                 </div>
 
                 <!-- Rating & Reviews -->
                 <div class="flex items-center gap-4 pb-4 border-b border-gray-200">
-                    <div class="flex items-center gap-1">
-                        <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
-                        <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
-                        <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
-                        <i data-lucide="star" class="w-5 h-5 fill-yellow-400 text-yellow-400"></i>
-                        <i data-lucide="star" class="w-5 h-5 fill-gray-300 text-gray-300"></i>
+                    <div class="flex items-center gap-1" id="rating-stars">
+                        <!-- Stars injected by JS -->
                     </div>
-                    <span class="text-sm text-gray-600">(24 reseñas)</span>
+                    <span id="reviews-count" class="text-sm text-gray-600">(0 reseñas)</span>
                 </div>
 
                 <!-- Price -->
                 <div class="py-4 border-b border-gray-200">
                     <div class="flex items-baseline gap-3 mb-2">
-                        <span class="text-4xl font-bold text-gray-900">$1.299.000</span>
-                        <span class="text-xl text-gray-400 line-through">$1.499.000</span>
+                        <span id="product-price" class="text-4xl font-bold text-gray-900">$0</span>
+                        <span id="product-old-price" class="text-xl text-gray-400 line-through hidden">$0</span>
                     </div>
                     <div class="flex items-center gap-2 text-green-600">
                         <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        <span class="font-medium">Disponible - Envío gratis</span>
+                        <span id="stock-status" class="font-medium">Disponible - Envío gratis</span>
                     </div>
                 </div>
 
                 <!-- Key Features -->
                 <div class="space-y-3">
                     <h3 class="font-bold text-gray-900">Características principales:</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-start gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
-                            <span class="text-gray-700">6 Quemadores: 2 Rápidos, 3 Semirápidos y 1 Triple corona</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
-                            <span class="text-gray-700">Parrillas en hierro fundido de alta durabilidad</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
-                            <span class="text-gray-700">Horno con gratinador y visor amplio</span>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i data-lucide="check" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
-                            <span class="text-gray-700">Clasificación energética B - Eficiente</span>
-                        </li>
+                    <ul id="product-features" class="space-y-2">
+                        <!-- Features injected by JS -->
                     </ul>
                 </div>
 
@@ -223,16 +205,16 @@
                     <!-- Quantity & Add to Cart -->
                     <div class="flex gap-3">
                         <div class="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden">
-                            <button class="px-4 py-3 hover:bg-gray-50 transition-colors">
+                            <button onclick="updateQuantity(-1)" class="px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <i data-lucide="minus" class="w-5 h-5"></i>
                             </button>
-                            <input type="number" value="1" min="1"
-                                class="w-16 text-center border-x-2 border-gray-200 py-3 focus:outline-none">
-                            <button class="px-4 py-3 hover:bg-gray-50 transition-colors">
+                            <input type="number" id="quantity-input" value="1" min="1"
+                                class="w-16 text-center border-x-2 border-gray-200 py-3 focus:outline-none" readonly>
+                            <button onclick="updateQuantity(1)" class="px-4 py-3 hover:bg-gray-50 transition-colors">
                                 <i data-lucide="plus" class="w-5 h-5"></i>
                             </button>
                         </div>
-                        <button onclick="addToCart(12)"
+                        <button id="add-to-cart-btn"
                             class="flex-1 bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
                             <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                             Agregar al Carrito
@@ -240,8 +222,7 @@
                     </div>
 
                     <!-- WhatsApp Contact -->
-                    <a href="https://wa.me/573001234567?text=Hola,%20estoy%20interesado%20en%20la%20Estufa%20Haceb%2076%20VF%20INOX"
-                        target="_blank"
+                    <a id="whatsapp-btn" href="#" target="_blank"
                         class="w-full bg-green-500 text-white font-bold py-4 px-8 rounded-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2">
                         <i data-lucide="message-circle" class="w-5 h-5"></i>
                         Contactar Asesor por WhatsApp
@@ -280,7 +261,7 @@
         </div>
 
         <!-- Tabs: Description & Specs -->
-        <div class="mb-16 bg-white rounded-xl p-8">
+        <div id="product-details-tabs" class="hidden mb-16 bg-white rounded-xl p-8 shadow-sm border border-gray-100">
             <div class="border-b border-gray-200 mb-8">
                 <nav class="flex gap-8">
                     <button onclick="switchTab('description')" id="tab-description"
@@ -296,82 +277,29 @@
 
             <!-- Description Tab -->
             <div id="content-description" class="tab-content">
-                <div class="prose max-w-none">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Descripción del Producto</h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        La <strong>Estufa Haceb 76 VF INOX</strong> es la solución perfecta para tu cocina moderna. Con
-                        su elegante diseño en acero inoxidable y vidrio templado superior, combina funcionalidad y
-                        estilo de manera excepcional.
-                    </p>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        Equipada con <strong>6 quemadores de alto rendimiento</strong>, incluyendo un quemador triple
-                        corona para cocción rápida, esta estufa te permite preparar múltiples platillos simultáneamente
-                        con total eficiencia.
-                    </p>
-                    <h4 class="text-xl font-bold text-gray-900 mb-3 mt-6">Características Destacadas:</h4>
-                    <ul class="list-disc list-inside space-y-2 text-gray-700">
-                        <li>Parrillas en hierro fundido de alta durabilidad</li>
-                        <li>Sistema de encendido eléctrico en todos los quemadores</li>
-                        <li>Parrillas de hierro fundido esmaltadas de fácil limpieza</li>
-                        <li>Clasificación energética B - Eficiente</li>
-                        <li>Vidrio templado resistente a altas temperaturas</li>
-                    </ul>
+                <div class="prose max-w-none text-gray-700" id="full-description">
+                    <!-- Description injected by JS -->
                 </div>
             </div>
 
             <!-- Specs Tab -->
             <div id="content-specs" class="tab-content hidden">
                 <h3 class="text-2xl font-bold text-gray-900 mb-6">Especificaciones Técnicas</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Marca:</span>
-                            <span class="text-gray-600">Haceb</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Modelo:</span>
-                            <span class="text-gray-600">76 VF INOX</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Ancho:</span>
-                            <span class="text-gray-600">76 cm</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Tipo de Gas:</span>
-                            <span class="text-gray-600">Gas Natural</span>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Quemadores:</span>
-                            <span class="text-gray-600">6</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Material:</span>
-                            <span class="text-gray-600">Acero Inoxidable</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Horno:</span>
-                            <span class="text-gray-600">Sí, con gratinador</span>
-                        </div>
-                        <div class="flex justify-between py-3 border-b border-gray-200">
-                            <span class="font-semibold text-gray-700">Garantía:</span>
-                            <span class="text-gray-600">1 Año</span>
-                        </div>
-                    </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="specs-container">
+                    <!-- Specs injected by JS -->
                 </div>
             </div>
         </div>
 
         <!-- Related Products -->
-        <div>
+        <div id="related-products-section" class="hidden">
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-2xl font-bold text-gray-900">Productos Relacionados</h2>
-                <a href="electro-hogar.html" class="text-primary font-semibold hover:underline flex items-center gap-2">
+                <a href="productos.html" class="text-primary font-semibold hover:underline flex items-center gap-2">
                     Ver todos <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
-            <div id="related-products" class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div id="related-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Related products will be rendered by JS -->
             </div>
         </div>
@@ -382,7 +310,7 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                 <div class="space-y-4">
-                    <img src="assets/logo.png" alt="Ceveco" class="h-8 grayscale opacity-80">
+                    <img src="../assets/logo.png" alt="Ceveco" class="h-8 grayscale opacity-80">
                     <p class="text-sm text-gray-500 leading-relaxed">
                         Tu aliado experto en electrodomésticos y hogar. Calidad, garantía y respaldo en cada compra.
                     </p>
@@ -393,7 +321,7 @@
                     <ul class="space-y-2 text-sm text-gray-500">
                         <li><a href="sedes.html" class="hover:text-primary transition-colors">Nuestras Sedes</a></li>
                         <li><a href="#" class="hover:text-primary transition-colors">Políticas de Garantía</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Términos y Condiciones</a></li>
+                        <li><a href="contacto.html" class="hover:text-primary transition-colors">Contacto</a></li>
                     </ul>
                 </div>
 
@@ -417,12 +345,15 @@
                         <div class="w-10 h-6 bg-white border border-gray-200 rounded flex items-center justify-center">
                             <i data-lucide="credit-card" class="w-4 h-4 text-gray-400"></i>
                         </div>
+                        <div class="w-10 h-6 bg-white border border-gray-200 rounded flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-gray-400">VISA</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="border-t border-gray-200 pt-8 text-center">
-                <p class="text-sm text-gray-400">&copy; 2024 Ceveco S.A.S. Todos los derechos reservados.</p>
+                <p class="text-sm text-gray-400">&copy; 2025 Ceveco S.A.S. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
@@ -455,10 +386,7 @@
                     Continuar Comprando
                 </button>
             </div>
-
-            <div id="cart-items" class="space-y-4">
-                <!-- Items will be dynamically inserted here -->
-            </div>
+            <div id="cart-items" class="space-y-4"></div>
         </div>
 
         <div id="cart-footer" class="hidden border-t border-gray-200 p-6 space-y-4 bg-gray-50">
@@ -466,52 +394,283 @@
                 <span class="font-semibold text-gray-700">Subtotal:</span>
                 <span id="cart-total" class="font-bold text-gray-900">$0</span>
             </div>
-
-            <div class="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                <i data-lucide="truck" class="w-4 h-4"></i>
-                <span>Envío gratis en compras superiores a $500.000</span>
-            </div>
-
-            <div class="space-y-2">
-                <a href="#"
-                    class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 transition-all text-center">
-                    Proceder al Pago
-                </a>
-                <button onclick="closeCart()"
-                    class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:border-primary hover:text-primary transition-all">
-                    Continuar Comprando
-                </button>
-            </div>
+            <button
+                class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 transition-all text-center">
+                Proceder al Pago
+            </button>
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="cart.js"></script>
-    <script>
-        // Image gallery
-        const images = [
-            'https://placehold.co/600x600/f5f5f5/0056b3/png?text=Estufa+Haceb+76+VF',
-            'https://placehold.co/600x600/f5f5f5/0056b3/png?text=Vista+Lateral',
-            'https://placehold.co/600x600/f5f5f5/0056b3/png?text=Vista+Superior',
-            'https://placehold.co/600x600/f5f5f5/0056b3/png?text=Detalle+Horno'
-        ];
+    <!-- Scripts -->
+    <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/cart.js"></script>
+    <script src="../js/main.js"></script>
 
-        function changeImage(index) {
-            document.getElementById('main-image').src = images[index];
+    <script>
+        // Inicializar iconos Lucide
+        lucide.createIcons();
+
+        // Variables globales para el producto actual
+        let currentProduct = null;
+        let currentQuantity = 1;
+        let currentImageIndex = 0;
+
+        // Función de búsqueda
+        function handleSearch() {
+            const query = document.getElementById('search-input').value;
+            if (query) {
+                window.location.href = `productos.html?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        // Obtener ID del producto de la URL
+        function getProductIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+
+        // Cargar detalles del producto
+        async function loadProductDetails() {
+            const productId = getProductIdFromUrl();
+
+            if (!productId) {
+                showError();
+                return;
+            }
+
+            try {
+                const response = await ProductosAPI.getById(productId);
+
+                if (response.success && response.data) {
+                    currentProduct = response.data;
+                    renderProduct(currentProduct);
+                    loadRelatedProducts(currentProduct.id_producto);
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('Error al cargar producto:', error);
+                showError();
+            }
+        }
+
+        // Renderizar información del producto
+        function renderProduct(product) {
+            // Ocultar loading, mostrar contenido
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('product-content').classList.remove('hidden');
+            document.getElementById('product-details-tabs').classList.remove('hidden');
+            document.getElementById('related-products-section').classList.remove('hidden');
+
+            // Título y Meta
+            document.title = `${product.nombre} - Ceveco`;
+            document.getElementById('page-title').textContent = `${product.nombre} - Ceveco`;
+
+            // Breadcrumbs
+            const breadCategory = document.getElementById('breadcrumb-category');
+            breadCategory.textContent = product.categoria;
+            breadCategory.href = `productos.html?categoria=${product.categoria_slug}`;
+            document.getElementById('breadcrumb-product').textContent = product.nombre;
+
+            // Info básica
+            document.getElementById('product-brand').textContent = product.marca;
+            document.getElementById('product-name').textContent = product.nombre;
+            document.getElementById('product-short-desc').textContent = product.descripcion_corta || '';
+
+            // Precios
+            document.getElementById('product-price').textContent = Utils.formatPrice(product.precio_actual);
+            if (product.precio_anterior) {
+                const oldPriceEl = document.getElementById('product-old-price');
+                oldPriceEl.textContent = Utils.formatPrice(product.precio_anterior);
+                oldPriceEl.classList.remove('hidden');
+            }
+
+            // Badge
+            if (product.badge) {
+                const badgeContainer = document.getElementById('product-badge');
+                badgeContainer.innerHTML = `<span class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">${product.badge}</span>`;
+            }
+
+            // Stock
+            const stockStatus = document.getElementById('stock-status');
+            if (product.stock > 0) {
+                stockStatus.textContent = `Disponible (${product.stock} unidades) - Envío gratis`;
+                stockStatus.parentElement.classList.add('text-green-600');
+            } else {
+                stockStatus.textContent = 'Agotado';
+                stockStatus.parentElement.classList.remove('text-green-600');
+                stockStatus.parentElement.classList.add('text-red-600');
+                document.querySelector('.lucide-check-circle').setAttribute('data-lucide', 'x-circle');
+                document.getElementById('add-to-cart-btn').disabled = true;
+                document.getElementById('add-to-cart-btn').classList.add('opacity-50', 'cursor-not-allowed');
+                document.getElementById('add-to-cart-btn').textContent = 'Agotado';
+            }
+
+            // Imágenes
+            const mainImage = document.getElementById('main-image');
+            // Usar imagen principal o placeholder
+            const mainImgUrl = product.imagen_principal || 'https://via.placeholder.com/600x600?text=Sin+Imagen';
+            mainImage.src = mainImgUrl;
+
+            // Renderizar thumbnails
+            const thumbnailsContainer = document.getElementById('thumbnails-container');
+            let images = product.imagenes || [];
+
+            // Si no hay imágenes en el array pero hay imagen principal, crear array
+            if (images.length === 0 && product.imagen_principal) {
+                images = [{ url: product.imagen_principal }];
+            }
+
+            if (images.length > 0) {
+                thumbnailsContainer.innerHTML = images.map((img, index) => `
+                    <button onclick="changeImage('${img.url}', ${index})"
+                        class="thumbnail ${index === 0 ? 'active border-primary' : 'border-gray-200'} border-2 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
+                        <img src="${img.url}" alt="Vista ${index + 1}" class="w-full h-full object-contain p-1">
+                    </button>
+                `).join('');
+            }
+
+            // Descripción larga
+            document.getElementById('full-description').innerHTML = product.descripcion_larga || `<p>${product.descripcion_corta}</p>`;
+
+            // Especificaciones
+            const specsContainer = document.getElementById('specs-container');
+            if (product.especificaciones && product.especificaciones.length > 0) {
+                // Agrupar especificaciones (si tuvieran grupo, aquí asumimos lista plana por ahora o adaptamos)
+                const specsHtml = product.especificaciones.map(spec => `
+                    <div class="flex justify-between py-3 border-b border-gray-200">
+                        <span class="font-semibold text-gray-700">${spec.nombre}:</span>
+                        <span class="text-gray-600">${spec.valor}</span>
+                    </div>
+                `).join('');
+
+                // Dividir en dos columnas si hay muchas
+                const midPoint = Math.ceil(product.especificaciones.length / 2);
+                const col1Specs = product.especificaciones.slice(0, midPoint);
+                const col2Specs = product.especificaciones.slice(midPoint);
+
+                specsContainer.innerHTML = `
+                    <div class="space-y-3">
+                        ${col1Specs.map(spec => `
+                            <div class="flex justify-between py-3 border-b border-gray-200">
+                                <span class="font-semibold text-gray-700">${spec.nombre}:</span>
+                                <span class="text-gray-600">${spec.valor}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="space-y-3">
+                        ${col2Specs.map(spec => `
+                            <div class="flex justify-between py-3 border-b border-gray-200">
+                                <span class="font-semibold text-gray-700">${spec.nombre}:</span>
+                                <span class="text-gray-600">${spec.valor}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                // Si no hay especificaciones, mostrar datos básicos
+                specsContainer.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-semibold text-gray-700">Marca:</span>
+                            <span class="text-gray-600">${product.marca}</span>
+                        </div>
+                        <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-semibold text-gray-700">Categoría:</span>
+                            <span class="text-gray-600">${product.categoria}</span>
+                        </div>
+                         <div class="flex justify-between py-3 border-b border-gray-200">
+                            <span class="font-semibold text-gray-700">SKU:</span>
+                            <span class="text-gray-600">${product.sku}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // WhatsApp Button
+            const whatsappMsg = `Hola, estoy interesado en el producto ${product.nombre} (Ref: ${product.sku})`;
+            document.getElementById('whatsapp-btn').href = `https://wa.me/573001234567?text=${encodeURIComponent(whatsappMsg)}`;
+
+            // Add to Cart Button Logic
+            document.getElementById('add-to-cart-btn').onclick = () => {
+                addToCart(product.id_producto, product.nombre, product.precio_actual, product.imagen_principal, currentQuantity);
+            };
+
+            // Re-init icons
+            lucide.createIcons();
+        }
+
+        // Cargar productos relacionados
+        async function loadRelatedProducts(productId) {
+            try {
+                const response = await ProductosAPI.getRelacionados(productId, 4);
+                const container = document.getElementById('related-products');
+
+                if (response.success && response.data.length > 0) {
+                    container.innerHTML = response.data.map(p => `
+                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer" 
+                             onclick="window.location.href='detalle-producto.html?id=${p.id_producto}'">
+                            <div class="relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
+                                <img src="${p.imagen_principal || 'https://via.placeholder.com/400x400'}" 
+                                     alt="${p.nombre}" 
+                                     class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
+                            </div>
+                            <div class="p-4">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">${p.categoria}</p>
+                                <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
+                                    ${p.nombre}
+                                </h3>
+                                <div class="flex items-end justify-between mt-2">
+                                    <span class="text-lg font-bold text-primary">
+                                        ${Utils.formatPrice(p.precio_actual)}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                    lucide.createIcons();
+                } else {
+                    document.getElementById('related-products-section').classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading related products:', error);
+            }
+        }
+
+        // Helpers
+        function showError() {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('error-state').classList.remove('hidden');
+        }
+
+        function changeImage(url, index) {
+            document.getElementById('main-image').src = url;
+            currentImageIndex = index;
+
             document.querySelectorAll('.thumbnail').forEach((thumb, i) => {
                 if (i === index) {
-                    thumb.classList.add('active');
+                    thumb.classList.add('active', 'border-primary');
                     thumb.classList.remove('border-gray-200');
-                    thumb.classList.add('border-primary');
                 } else {
-                    thumb.classList.remove('active');
+                    thumb.classList.remove('active', 'border-primary');
                     thumb.classList.add('border-gray-200');
-                    thumb.classList.remove('border-primary');
                 }
             });
         }
 
-        // Tab switching
+        function updateQuantity(change) {
+            const input = document.getElementById('quantity-input');
+            let newValue = parseInt(input.value) + change;
+            if (newValue < 1) newValue = 1;
+            // Check max stock if available in currentProduct
+            if (currentProduct && newValue > currentProduct.stock) newValue = currentProduct.stock;
+
+            input.value = newValue;
+            currentQuantity = newValue;
+        }
+
         function switchTab(tabName) {
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.classList.remove('active', 'text-primary', 'border-primary');
@@ -526,17 +685,8 @@
             document.getElementById(`content-${tabName}`).classList.remove('hidden');
         }
 
-        // Load related products
-        document.addEventListener('DOMContentLoaded', () => {
-            const relatedGrid = document.getElementById('related-products');
-            if (relatedGrid && typeof products !== 'undefined') {
-                const relatedProducts = products.filter(p => p.category === 'electro-hogar').slice(0, 4);
-                relatedProducts.forEach(product => {
-                    relatedGrid.appendChild(createProductCard(product));
-                });
-            }
-            lucide.createIcons();
-        });
+        // Init
+        document.addEventListener('DOMContentLoaded', loadProductDetails);
     </script>
 </body>
 
