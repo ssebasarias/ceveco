@@ -62,7 +62,8 @@ CREATE TABLE subcategorias (
     descripcion TEXT,
     activo BOOLEAN DEFAULT TRUE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE CASCADE
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE CASCADE,
+    UNIQUE (id_categoria, slug)
 );
 
 CREATE INDEX idx_subcategorias_categoria ON subcategorias(id_categoria);
@@ -93,16 +94,12 @@ CREATE TABLE productos (
     descripcion_larga TEXT,
     precio_actual NUMERIC(12, 2) NOT NULL,
     precio_anterior NUMERIC(12, 2),
+    precio_promocional NUMERIC(12, 2),
     costo NUMERIC(12, 2),
+    referencia_proveedor VARCHAR(100),
     stock INT DEFAULT 0,
     stock_minimo INT DEFAULT 5,
-    peso NUMERIC(8, 2), -- Peso en kilogramos
-    dimensiones VARCHAR(100), -- Alto x Ancho x Profundo en cm
     garantia_meses INT DEFAULT 12,
-    clasificacion_energetica VARCHAR(10),
-    modelo VARCHAR(100),
-    color VARCHAR(50),
-    material VARCHAR(100),
     badge VARCHAR(50), -- Nuevo, Oferta, Destacado, etc.
     destacado BOOLEAN DEFAULT FALSE,
     activo BOOLEAN DEFAULT TRUE,
@@ -123,6 +120,7 @@ CREATE INDEX idx_productos_precio ON productos(precio_actual);
 CREATE INDEX idx_productos_destacado ON productos(destacado);
 CREATE INDEX idx_productos_activo ON productos(activo);
 CREATE INDEX idx_productos_sku ON productos(sku);
+CREATE INDEX idx_productos_ref_proveedor ON productos(referencia_proveedor) WHERE referencia_proveedor IS NOT NULL;
 
 -- Índice de búsqueda de texto completo
 CREATE INDEX idx_productos_busqueda ON productos USING GIN(to_tsvector('spanish', nombre || ' ' || COALESCE(descripcion_corta, '')));
@@ -143,17 +141,33 @@ CREATE INDEX idx_producto_imagenes_producto ON producto_imagenes(id_producto);
 CREATE INDEX idx_producto_imagenes_principal ON producto_imagenes(es_principal);
 
 -- Tabla de especificaciones técnicas
-CREATE TABLE producto_especificaciones (
-    id_especificacion SERIAL PRIMARY KEY,
-    id_producto INT NOT NULL,
-    nombre_atributo VARCHAR(100) NOT NULL,
-    valor_atributo TEXT NOT NULL,
-    grupo VARCHAR(50), -- General, Técnico, Dimensiones, etc.
-    orden INT DEFAULT 0,
-    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE
+-- Tabla de definición de atributos (Nueva estructura flexible)
+CREATE TABLE atributos (
+    id_atributo SERIAL PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,      -- Ej: "Potencia", "Peso", "Color", "Resolución"
+    unidad VARCHAR(50),                -- Ej: "W", "Kg", "Pulgadas"
+    tipo_dato VARCHAR(50) DEFAULT 'texto',  -- texto, numero, booleano
+    id_categoria INT,  -- opcional: atributo solo para esta categoría
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_producto_especificaciones_producto ON producto_especificaciones(id_producto);
+CREATE INDEX idx_atributos_categoria ON atributos(id_categoria);
+
+-- Tabla de valores de atributos por producto
+CREATE TABLE producto_atributos (
+    id_producto_atributo SERIAL PRIMARY KEY,
+    id_producto INT NOT NULL,
+    id_atributo INT NOT NULL,
+    valor_texto TEXT,
+    valor_numero NUMERIC(12,2),
+    valor_booleano BOOLEAN,
+    FOREIGN KEY (id_producto) REFERENCES productos(id_producto) ON DELETE CASCADE,
+    FOREIGN KEY (id_atributo) REFERENCES atributos(id_atributo) ON DELETE CASCADE,
+    UNIQUE (id_producto, id_atributo)
+);
+
+CREATE INDEX idx_producto_atributos_producto ON producto_atributos(id_producto);
+CREATE INDEX idx_producto_atributos_atributo ON producto_atributos(id_atributo);
 
 -- ============================================
 -- TABLAS DE USUARIOS Y AUTENTICACIÓN
@@ -543,17 +557,59 @@ INSERT INTO categorias (nombre, slug, descripcion, icono, orden) VALUES
 
 -- Insertar subcategorías
 INSERT INTO subcategorias (id_categoria, nombre, slug) VALUES
+-- Electro Hogar (19 subcategorías)
 (1, 'Lavadoras', 'lavadoras'),
 (1, 'Neveras', 'neveras'),
 (1, 'Estufas', 'estufas'),
 (1, 'Televisores', 'televisores'),
+(1, 'Microondas', 'microondas'),
+(1, 'Licuadoras', 'licuadoras'),
+(1, 'Cafeteras', 'cafeteras'),
+(1, 'Aires Acondicionados', 'aires-acondicionados'),
+(1, 'Ventiladores', 'ventiladores'),
+(1, 'Calentadores', 'calentadores'),
+(1, 'Planchas', 'planchas'),
+(1, 'Aspiradoras', 'aspiradoras'),
+(1, 'Secadoras', 'secadoras'),
+(1, 'Hornos', 'hornos'),
+(1, 'Campanas', 'campanas'),
+(1, 'Congeladores', 'congeladores'),
+(1, 'Equipos de Sonido', 'equipos-sonido'),
+(1, 'Barras de Sonido', 'barras-sonido'),
+(1, 'Teatros en Casa', 'teatros-casa'),
+-- Muebles y Organización (14 subcategorías)
 (2, 'Escritorios', 'escritorios'),
 (2, 'Sillas', 'sillas'),
 (2, 'Estanterías', 'estanterias'),
+(2, 'Mesas', 'mesas'),
+(2, 'Camas', 'camas'),
+(2, 'Closets', 'closets'),
+(2, 'Comedores', 'comedores'),
+(2, 'Salas', 'salas'),
+(2, 'Bibliotecas', 'bibliotecas'),
+(2, 'Organizadores', 'organizadores'),
+(2, 'Muebles de Cocina', 'muebles-cocina'),
+(2, 'Muebles de Baño', 'muebles-bano'),
+(2, 'Colchones', 'colchones'),
+(2, 'Bases de Cama', 'bases-cama'),
+-- Motos (8 subcategorías)
 (3, 'Motos Urbanas', 'motos-urbanas'),
 (3, 'Motos Deportivas', 'motos-deportivas'),
+(3, 'Motos de Trabajo', 'motos-trabajo'),
+(3, 'Motos Scooter', 'motos-scooter'),
+(3, 'Motos Enduro', 'motos-enduro'),
+(3, 'Accesorios para Motos', 'accesorios-motos'),
+(3, 'Cascos', 'cascos'),
+(3, 'Repuestos', 'repuestos'),
+-- Herramientas STIHL (8 subcategorías)
 (4, 'Motosierras', 'motosierras'),
-(4, 'Guadañas', 'guadanas');
+(4, 'Guadañas', 'guadanas'),
+(4, 'Sopladores', 'sopladores'),
+(4, 'Cortasetos', 'cortasetos'),
+(4, 'Podadoras', 'podadoras'),
+(4, 'Fumigadoras', 'fumigadoras'),
+(4, 'Accesorios STIHL', 'accesorios-stihl'),
+(4, 'Repuestos STIHL', 'repuestos-stihl');
 
 -- Insertar marcas
 INSERT INTO marcas (nombre) VALUES
@@ -568,7 +624,90 @@ INSERT INTO marcas (nombre) VALUES
 ('Mabe'),
 ('Whirlpool'),
 ('Oster'),
-('Sony');
+('Sony'),
+('TCL'),
+('Samurai'),
+('Comodisimos'),
+('Profilan'),
+('Durespo');
+
+-- Insertar atributos comunes y específicos
+INSERT INTO atributos (nombre, unidad, tipo_dato, id_categoria) VALUES
+-- Generales (NULL en id_categoria para que apliquen a todos)
+('Marca', NULL, 'texto', NULL),
+('Modelo', NULL, 'texto', NULL),
+('Color', NULL, 'texto', NULL),
+('Material', NULL, 'texto', NULL),
+('Peso', 'Kg', 'numero', NULL),
+('Alto', 'cm', 'numero', NULL),
+('Ancho', 'cm', 'numero', NULL),
+('Profundo', 'cm', 'numero', NULL),
+('Garantía', 'Meses', 'numero', NULL),
+
+-- Electro Hogar (id_categoria = 1)
+('Voltaje', 'V', 'texto', 1),
+('Potencia', 'W', 'numero', 1),
+('Eficiencia Energética', NULL, 'texto', 1),
+('Capacidad', 'Litros', 'numero', 1), -- Neveras
+('Capacidad de Carga', 'Kg', 'numero', 1), -- Lavadoras
+('Tipo de Pantalla', NULL, 'texto', 1), -- TV
+('Resolución', 'Pixeles', 'texto', 1), -- TV
+('Tamaño de Pantalla', 'Pulgadas', 'numero', 1), -- TV
+('Smart TV', NULL, 'booleano', 1), -- TV
+('Tecnología de Frío', NULL, 'texto', 1), -- Neveras (No Frost, etc)
+('Puertos HDMI', 'Cantidad', 'numero', 1), -- TV
+('Puertos USB', 'Cantidad', 'numero', 1), -- TV
+('Sistema Operativo', NULL, 'texto', 1), -- TV/Celulares
+('Asistente de Voz', NULL, 'booleano', 1), -- TV
+('Dispensador de Agua', NULL, 'booleano', 1), -- Neveras
+('Fabricador de Hielo', NULL, 'booleano', 1), -- Neveras
+('Tipo de Refrigeración', NULL, 'texto', 1), -- Neveras (Frio directo, No Frost)
+('Tecnología Inverter', NULL, 'booleano', 1), -- Aires/Neveras/Lavadoras
+('Ciclos de Lavado', 'Cantidad', 'numero', 1), -- Lavadoras
+
+-- Muebles (id_categoria = 2)
+('Tipo de Madera', NULL, 'texto', 2),
+('Tipo de Tela', NULL, 'texto', 2),
+('Requiere Armado', NULL, 'booleano', 2),
+('Número de Puestos', NULL, 'numero', 2),
+('Estilo', NULL, 'texto', 2),
+
+-- Motos (id_categoria = 3)
+('Cilindraje', 'cc', 'numero', 3),
+('Tipo de Motor', NULL, 'texto', 3),
+('Potencia Máxima', 'HP', 'texto', 3),
+('Torque Máximo', 'Nm', 'texto', 3),
+('Arranque', NULL, 'texto', 3), -- Eléctrico/Pedal
+('Capacidad Tanque', 'Galones', 'numero', 3),
+('Freno Delantero', NULL, 'texto', 3),
+('Freno Trasero', NULL, 'texto', 3),
+('Transmisión', NULL, 'texto', 3),
+
+-- Herramientas (id_categoria = 4)
+('Potencia Motor', 'HP', 'numero', 4),
+('Longitud de Espada', 'cm', 'numero', 4), -- Motosierras
+('Paso de Cadena', 'Pulgadas', 'texto', 4),
+('Peso sin Combustible', 'Kg', 'numero', 4),
+('Cilindrada', 'cm³', 'numero', 4);
+
+-- Insertar producto de ejemplo con sus atributos
+INSERT INTO productos (
+    sku, referencia_proveedor, nombre, descripcion_larga, id_categoria, id_subcategoria, id_marca, 
+    precio_actual, precio_anterior, precio_promocional, stock, activo
+) VALUES (
+    'CEV-TV-001', '50UA8050', 'TV LG 50" Smart TV 4K', 
+    'TV LED 50" Smart Tv Ultra UHD 4K HDR10 PRO con procesador inteligente y sonido envolvente.',
+    1, 4, 5, 2250000, 2500000, 2050000, 10, TRUE
+);
+
+-- Asignar atributos al producto de ejemplo (Asumiendo ID 1 para el producto y IDs secuenciales para atributos)
+-- Nota: En un script real se buscarían los IDs, aquí usamos valores fijos basados en el orden de inserción
+INSERT INTO producto_atributos (id_producto, id_atributo, valor_texto, valor_numero, valor_booleano) VALUES
+((SELECT id_producto FROM productos WHERE sku = 'CEV-TV-001'), (SELECT id_atributo FROM atributos WHERE nombre = 'Color'), 'Negro', NULL, NULL),
+((SELECT id_producto FROM productos WHERE sku = 'CEV-TV-001'), (SELECT id_atributo FROM atributos WHERE nombre = 'Resolución'), '4K UHD', NULL, NULL),
+((SELECT id_producto FROM productos WHERE sku = 'CEV-TV-001'), (SELECT id_atributo FROM atributos WHERE nombre = 'Tamaño de Pantalla'), NULL, 50, NULL),
+((SELECT id_producto FROM productos WHERE sku = 'CEV-TV-001'), (SELECT id_atributo FROM atributos WHERE nombre = 'Smart TV'), NULL, NULL, TRUE),
+((SELECT id_producto FROM productos WHERE sku = 'CEV-TV-001'), (SELECT id_atributo FROM atributos WHERE nombre = 'Garantía'), NULL, 12, NULL);
 
 -- Insertar configuración inicial
 INSERT INTO configuracion (clave, valor, tipo, descripcion, grupo) VALUES
@@ -594,10 +733,12 @@ CREATE VIEW vista_productos_completa AS
 SELECT 
     p.id_producto,
     p.sku,
+    p.referencia_proveedor,
     p.nombre,
     p.descripcion_corta,
     p.precio_actual,
     p.precio_anterior,
+    p.precio_promocional,
     p.stock,
     p.badge,
     p.destacado,
@@ -796,39 +937,3 @@ CREATE INDEX idx_productos_destacado_activo ON productos(destacado, activo);
 CREATE INDEX idx_pedidos_usuario_fecha ON pedidos(id_usuario, fecha_pedido);
 CREATE INDEX idx_resenas_producto_aprobado ON resenas(id_producto, aprobado);
 
--- ============================================
--- COMENTARIOS FINALES
--- ============================================
-
-/*
-Esta base de datos está diseñada para soportar:
-- Catálogo completo de productos con categorías, marcas e imágenes
-- Sistema de usuarios con roles y direcciones
-- Carrito de compras y lista de favoritos
-- Gestión completa de pedidos y seguimiento
-- Sistema de reseñas y calificaciones
-- Múltiples sedes con inventario independiente
-- Cupones y promociones
-- Newsletter y marketing
-- Configuración flexible del sistema
-- Logs de actividad para auditoría
-
-Características adicionales:
-- Soporte para múltiples imágenes por producto
-- Especificaciones técnicas flexibles
-- Historial de estados de pedidos
-- Inventario por sede
-- Sistema de calificaciones con compra verificada
-- Triggers automáticos para mantener integridad
-- Vistas optimizadas para consultas frecuentes
-- Funciones almacenadas para operaciones comunes
-
-Compatibilidad PostgreSQL 17:
-- Uso de SERIAL/BIGSERIAL en lugar de AUTO_INCREMENT
-- Tipos ENUM personalizados
-- NUMERIC en lugar de DECIMAL
-- Índices GIN para búsqueda de texto completo
-- Funciones y triggers con sintaxis PL/pgSQL
-- JSONB para datos JSON
-- Triggers automáticos para actualización de timestamps
-*/

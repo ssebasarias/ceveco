@@ -18,7 +18,18 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 // ============================================
 
 // Seguridad con Helmet
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co"],
+            connectSrc: ["'self'"],
+        },
+    },
+}));
 
 // CORS - Configuración para permitir peticiones desde el frontend
 // CORS - Configuración para permitir peticiones desde el frontend
@@ -39,6 +50,13 @@ if (process.env.NODE_ENV === 'development') {
 } else {
     app.use(morgan('combined'));
 }
+
+// ============================================
+// ARCHIVOS ESTÁTICOS
+// ============================================
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend/pages')));
 
 // ============================================
 // RUTAS
@@ -109,6 +127,7 @@ const startServer = async () => {
             console.log(`🌐 API disponible en: http://localhost:${PORT}${API_PREFIX}`);
             console.log(`🏥 Health check: http://localhost:${PORT}/health`);
             console.log(`📦 Productos: http://localhost:${PORT}${API_PREFIX}/productos`);
+            console.log(`🏠 Frontend: http://localhost:${PORT}/`);
             console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
             console.log('');
             console.log('💡 Presiona CTRL+C para detener el servidor');
