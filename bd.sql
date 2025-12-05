@@ -173,13 +173,16 @@ CREATE INDEX idx_producto_atributos_atributo ON producto_atributos(id_atributo);
 -- TABLAS DE USUARIOS Y AUTENTICACIÓN
 -- ============================================
 
+-- Tipo enum para método de autenticación principal
+CREATE TYPE auth_method_enum AS ENUM ('local', 'google', 'facebook', 'github', 'apple', 'microsoft');
+
 -- Tabla de usuarios
 CREATE TABLE usuarios (
     id_usuario SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255),                  -- Nullable: usuarios OAuth pueden no tener contraseña local
     nombre VARCHAR(100) NOT NULL,
-    apellido VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100),                       -- Nullable: algunos proveedores solo dan nombre completo
     telefono VARCHAR(20),
     celular VARCHAR(20),
     tipo_documento tipo_documento_enum DEFAULT 'CC',
@@ -190,8 +193,10 @@ CREATE TABLE usuarios (
     rol rol_usuario_enum DEFAULT 'cliente',
     activo BOOLEAN DEFAULT TRUE,
     email_verificado BOOLEAN DEFAULT FALSE,
+    auth_method auth_method_enum DEFAULT 'local', -- Método de autenticación principal
     token_verificacion VARCHAR(255),
     token_recuperacion VARCHAR(255),
+    fecha_recuperacion_expira TIMESTAMP,          -- Expiración del token de recuperación
     fecha_ultimo_acceso TIMESTAMP NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -200,6 +205,58 @@ CREATE TABLE usuarios (
 CREATE INDEX idx_usuarios_email ON usuarios(email);
 CREATE INDEX idx_usuarios_documento ON usuarios(numero_documento);
 CREATE INDEX idx_usuarios_rol ON usuarios(rol);
+
+-- ============================================
+-- TABLAS DE PROVEEDORES DE AUTENTICACIÓN OAUTH
+-- ============================================
+
+-- Tipo enum para proveedores de autenticación
+CREATE TYPE auth_provider_enum AS ENUM ('google', 'facebook', 'github', 'apple', 'microsoft');
+
+-- Tabla de proveedores de autenticación externa (OAuth)
+-- Permite a un usuario tener múltiples proveedores vinculados
+CREATE TABLE auth_providers (
+    id_provider SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    provider auth_provider_enum NOT NULL,       -- 'google', 'facebook', 'github', etc.
+    provider_uid VARCHAR(255) NOT NULL,          -- ID único que da el proveedor (sub de Google)
+    email VARCHAR(255),                          -- Email del proveedor (puede diferir del email principal)
+    nombre VARCHAR(255),                         -- Nombre del perfil del proveedor
+    avatar_url TEXT,                             -- Foto de perfil del proveedor
+    access_token TEXT,                           -- Token de acceso (opcional, para refresh)
+    refresh_token TEXT,                          -- Token de refresh (opcional)
+    token_expiry TIMESTAMP,                      -- Expiración del token
+    raw_data JSONB,                              -- Datos raw del proveedor para referencia
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_ultima_autenticacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    UNIQUE (provider, provider_uid)              -- Un provider_uid es único por proveedor
+);
+
+-- Índices para búsquedas eficientes
+CREATE INDEX idx_auth_providers_usuario ON auth_providers(id_usuario);
+CREATE INDEX idx_auth_providers_provider ON auth_providers(provider);
+CREATE INDEX idx_auth_providers_email ON auth_providers(email);
+CREATE INDEX idx_auth_providers_lookup ON auth_providers(provider, provider_uid);
+
+-- Tabla para tokens de sesión (opcional, para manejo de sesiones más robusto)
+CREATE TABLE user_sessions (
+    id_session SERIAL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    token_hash VARCHAR(255) NOT NULL UNIQUE,     -- Hash del token de sesión
+    ip_address VARCHAR(45),                       -- IPv4 o IPv6
+    user_agent TEXT,                              -- Información del navegador
+    device_info VARCHAR(255),                     -- Información del dispositivo
+    es_activa BOOLEAN DEFAULT TRUE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_expiracion TIMESTAMP NOT NULL,
+    fecha_ultimo_acceso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_user_sessions_usuario ON user_sessions(id_usuario);
+CREATE INDEX idx_user_sessions_token ON user_sessions(token_hash);
+CREATE INDEX idx_user_sessions_activa ON user_sessions(es_activa);
 
 -- Tabla de direcciones de usuarios
 CREATE TABLE direcciones (
@@ -926,6 +983,170 @@ CREATE TRIGGER trigger_after_resena_aprobada
     AFTER UPDATE ON resenas
     FOR EACH ROW
     EXECUTE FUNCTION after_resena_aprobada();
+
+-- ============================================
+-- FUNCIONES PARA AUTENTICACIÓN OAUTH
+-- ============================================
+
+-- Función para buscar o crear usuario OAuth
+-- Esta función maneja el flujo de "Login with Google/Facebook/etc"
+CREATE OR REPLACE FUNCTION find_or_create_oauth_user(
+    p_provider auth_provider_enum,
+    p_provider_uid VARCHAR(255),
+    p_email VARCHAR(255),
+    p_nombre VARCHAR(255),
+    p_apellido VARCHAR(100) DEFAULT NULL,
+    p_avatar_url TEXT DEFAULT NULL,
+    p_raw_data JSONB DEFAULT NULL
+)
+RETURNS TABLE(
+    user_id INT,
+    is_new_user BOOLEAN,
+    provider_id INT
+) AS $$
+DECLARE
+    v_user_id INT;
+    v_provider_id INT;
+    v_is_new BOOLEAN := FALSE;
+    v_existing_user_id INT;
+BEGIN
+    -- 1. Buscar si ya existe este proveedor+uid
+    SELECT ap.id_usuario, ap.id_provider INTO v_user_id, v_provider_id
+    FROM auth_providers ap
+    WHERE ap.provider = p_provider AND ap.provider_uid = p_provider_uid;
+    
+    IF v_user_id IS NOT NULL THEN
+        -- Proveedor ya existe, actualizar último acceso
+        UPDATE auth_providers 
+        SET fecha_ultima_autenticacion = CURRENT_TIMESTAMP,
+            nombre = COALESCE(p_nombre, nombre),
+            avatar_url = COALESCE(p_avatar_url, avatar_url),
+            raw_data = COALESCE(p_raw_data, raw_data)
+        WHERE id_provider = v_provider_id;
+        
+        UPDATE usuarios SET fecha_ultimo_acceso = CURRENT_TIMESTAMP
+        WHERE id_usuario = v_user_id;
+        
+        RETURN QUERY SELECT v_user_id, FALSE, v_provider_id;
+        RETURN;
+    END IF;
+    
+    -- 2. Si no existe el proveedor, buscar usuario por email
+    SELECT id_usuario INTO v_existing_user_id
+    FROM usuarios WHERE email = p_email;
+    
+    IF v_existing_user_id IS NOT NULL THEN
+        -- Usuario existe por email, vincular el nuevo proveedor
+        INSERT INTO auth_providers (id_usuario, provider, provider_uid, email, nombre, avatar_url, raw_data)
+        VALUES (v_existing_user_id, p_provider, p_provider_uid, p_email, p_nombre, p_avatar_url, p_raw_data)
+        RETURNING id_provider INTO v_provider_id;
+        
+        -- Actualizar email_verificado si viene de OAuth
+        UPDATE usuarios 
+        SET email_verificado = TRUE,
+            fecha_ultimo_acceso = CURRENT_TIMESTAMP,
+            avatar_url = COALESCE(usuarios.avatar_url, p_avatar_url)
+        WHERE id_usuario = v_existing_user_id;
+        
+        RETURN QUERY SELECT v_existing_user_id, FALSE, v_provider_id;
+        RETURN;
+    END IF;
+    
+    -- 3. Usuario completamente nuevo
+    INSERT INTO usuarios (email, nombre, apellido, avatar_url, email_verificado, auth_method)
+    VALUES (p_email, p_nombre, p_apellido, p_avatar_url, TRUE, p_provider::auth_method_enum)
+    RETURNING id_usuario INTO v_user_id;
+    
+    -- Crear registro de proveedor
+    INSERT INTO auth_providers (id_usuario, provider, provider_uid, email, nombre, avatar_url, raw_data)
+    VALUES (v_user_id, p_provider, p_provider_uid, p_email, p_nombre, p_avatar_url, p_raw_data)
+    RETURNING id_provider INTO v_provider_id;
+    
+    v_is_new := TRUE;
+    
+    RETURN QUERY SELECT v_user_id, v_is_new, v_provider_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Función para vincular un nuevo proveedor OAuth a un usuario existente
+CREATE OR REPLACE FUNCTION link_oauth_provider(
+    p_user_id INT,
+    p_provider auth_provider_enum,
+    p_provider_uid VARCHAR(255),
+    p_email VARCHAR(255) DEFAULT NULL,
+    p_nombre VARCHAR(255) DEFAULT NULL,
+    p_avatar_url TEXT DEFAULT NULL,
+    p_raw_data JSONB DEFAULT NULL
+)
+RETURNS INT AS $$
+DECLARE
+    v_provider_id INT;
+BEGIN
+    -- Verificar que el usuario existe
+    IF NOT EXISTS (SELECT 1 FROM usuarios WHERE id_usuario = p_user_id) THEN
+        RAISE EXCEPTION 'Usuario no encontrado: %', p_user_id;
+    END IF;
+    
+    -- Verificar que este proveedor+uid no esté vinculado a otro usuario
+    IF EXISTS (
+        SELECT 1 FROM auth_providers 
+        WHERE provider = p_provider AND provider_uid = p_provider_uid AND id_usuario != p_user_id
+    ) THEN
+        RAISE EXCEPTION 'Este proveedor ya está vinculado a otro usuario';
+    END IF;
+    
+    -- Insertar o actualizar el proveedor
+    INSERT INTO auth_providers (id_usuario, provider, provider_uid, email, nombre, avatar_url, raw_data)
+    VALUES (p_user_id, p_provider, p_provider_uid, p_email, p_nombre, p_avatar_url, p_raw_data)
+    ON CONFLICT (provider, provider_uid) 
+    DO UPDATE SET 
+        email = COALESCE(EXCLUDED.email, auth_providers.email),
+        nombre = COALESCE(EXCLUDED.nombre, auth_providers.nombre),
+        avatar_url = COALESCE(EXCLUDED.avatar_url, auth_providers.avatar_url),
+        raw_data = COALESCE(EXCLUDED.raw_data, auth_providers.raw_data),
+        fecha_ultima_autenticacion = CURRENT_TIMESTAMP
+    RETURNING id_provider INTO v_provider_id;
+    
+    RETURN v_provider_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Función para desvincular un proveedor OAuth
+CREATE OR REPLACE FUNCTION unlink_oauth_provider(
+    p_user_id INT,
+    p_provider auth_provider_enum
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+    v_provider_count INT;
+    v_has_password BOOLEAN;
+BEGIN
+    -- Contar cuántos proveedores tiene el usuario
+    SELECT COUNT(*) INTO v_provider_count
+    FROM auth_providers WHERE id_usuario = p_user_id;
+    
+    -- Verificar si tiene contraseña local
+    SELECT (password_hash IS NOT NULL) INTO v_has_password
+    FROM usuarios WHERE id_usuario = p_user_id;
+    
+    -- No permitir desvincular si es el único método de autenticación
+    IF v_provider_count <= 1 AND NOT v_has_password THEN
+        RAISE EXCEPTION 'No puedes desvincular tu único método de autenticación. Primero establece una contraseña.';
+    END IF;
+    
+    -- Eliminar el proveedor
+    DELETE FROM auth_providers 
+    WHERE id_usuario = p_user_id AND provider = p_provider;
+    
+    RETURN FOUND;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para actualizar sesiones
+CREATE TRIGGER trigger_actualizar_user_sessions
+    BEFORE UPDATE ON user_sessions
+    FOR EACH ROW
+    EXECUTE FUNCTION actualizar_fecha_actualizacion();
 
 -- ============================================
 -- ÍNDICES ADICIONALES PARA OPTIMIZACIÓN

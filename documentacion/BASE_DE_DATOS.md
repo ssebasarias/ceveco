@@ -44,6 +44,19 @@ Mejoras Sutiles Aplicadas (Diciembre 2025):
 - Índice para búsquedas por referencia_proveedor
 - Vista actualizada con nuevos campos
 
+Sistema de Autenticación OAuth (Diciembre 2025):
+- Soporte para múltiples proveedores de autenticación (Google, Facebook, GitHub, Apple, Microsoft)
+- Nueva tabla 'auth_providers' para gestionar proveedores OAuth vinculados
+- Nueva tabla 'user_sessions' para manejo robusto de sesiones
+- Campo 'password_hash' ahora es nullable (usuarios OAuth pueden no tener contraseña)
+- Campo 'auth_method' indica el método de autenticación principal del usuario
+- Funciones PL/pgSQL para flujo OAuth:
+  * find_or_create_oauth_user: Busca o crea usuario desde proveedor OAuth
+  * link_oauth_provider: Vincula nuevo proveedor a usuario existente
+  * unlink_oauth_provider: Desvincula proveedor (con validación de seguridad)
+- Un usuario puede tener múltiples proveedores vinculados
+- Si el email de OAuth coincide con un usuario existente, se vincula automáticamente
+
 ============================================
 DOCUMENTACIÓN DEL MODELO EAV (Atributos Flexibles)
 ============================================
