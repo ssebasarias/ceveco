@@ -574,21 +574,21 @@ function updateAuthUI() {
     if (!container) return;
 
     if (user) {
-        // Usuario autenticado - mostrar menú de usuario
+        // Usuario autenticado - mostrar menú de usuario con click toggle
         const avatarHtml = user.avatar_url
             ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-8 h-8 rounded-full object-cover">`
             : `<i data-lucide="user" class="w-6 h-6"></i>`;
 
         container.innerHTML = `
-            <div class="relative group">
-                <button class="flex items-center gap-2 hover:text-primary transition-colors">
+            <div class="relative" id="user-dropdown-container">
+                <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:text-primary transition-colors">
                     ${avatarHtml}
                     <span class="hidden lg:inline font-medium">${user.nombre.split(' ')[0]}</span>
                     <i data-lucide="chevron-down" class="w-4 h-4 hidden lg:inline"></i>
                 </button>
                 
                 <!-- Dropdown Menu -->
-                <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
                     <a href="perfil.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
                         <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>
                         Mi Perfil

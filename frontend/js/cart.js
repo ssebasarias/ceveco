@@ -17,11 +17,34 @@ function saveCart() {
 }
 
 // Add item to cart
-function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
+// Acepta: (productId, nombre, precio, imagen) o (productObject)
+function addToCart(productId, nombre = null, precio = null, imagen = null) {
+    let product;
 
-    const existingItem = cart.find(item => item.id === productId);
+    // Si se pasan los parámetros individuales
+    if (nombre !== null && precio !== null) {
+        product = {
+            id: productId,
+            name: nombre,
+            price: precio,
+            image: imagen || 'https://via.placeholder.com/100x100?text=Producto',
+            brand: 'Ceveco'
+        };
+    } else if (typeof productId === 'object') {
+        // Si se pasa un objeto producto
+        product = {
+            id: productId.id_producto || productId.id,
+            name: productId.nombre || productId.name,
+            price: productId.precio_actual || productId.price,
+            image: productId.imagen_principal || productId.image || 'https://via.placeholder.com/100x100?text=Producto',
+            brand: productId.marca || productId.brand || 'Ceveco'
+        };
+    } else {
+        console.error('addToCart: parámetros inválidos');
+        return;
+    }
+
+    const existingItem = cart.find(item => item.id === product.id);
 
     if (existingItem) {
         existingItem.quantity += 1;

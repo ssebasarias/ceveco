@@ -33,8 +33,6 @@ class ProductoModel {
         p.destacado,
         p.calificacion_promedio,
         p.total_resenas,
-        p.modelo,
-        p.color,
         c.nombre AS categoria,
         c.slug AS categoria_slug,
         sc.nombre AS subcategoria,
@@ -57,6 +55,7 @@ class ProductoModel {
       INNER JOIN marcas m ON p.id_marca = m.id_marca
       WHERE p.activo = TRUE
     `;
+
 
     const params = [];
     let paramIndex = 1;

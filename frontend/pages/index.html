@@ -112,9 +112,12 @@
                     </div>
 
                     <div class="flex items-center gap-4 ml-6 border-l pl-6 border-gray-200">
-                        <button class="hover:text-primary transition-colors">
-                            <i data-lucide="user" class="w-6 h-6"></i>
-                        </button>
+                        <!-- Contenedor del menú de usuario (inyectado por auth.js) -->
+                        <div id="user-menu-container" data-auth-button>
+                            <button class="hover:text-primary transition-colors">
+                                <i data-lucide="user" class="w-6 h-6"></i>
+                            </button>
+                        </div>
                         <button onclick="toggleCart()" class="relative hover:text-primary transition-colors group">
                             <i data-lucide="shopping-cart" class="w-6 h-6"></i>
                             <span id="cart-count"
@@ -379,6 +382,7 @@
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/cart.js"></script>
+    <script src="../js/auth.js"></script>
     <script src="../js/main.js"></script>
 
     <script>
