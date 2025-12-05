@@ -96,8 +96,8 @@ async function loadSharedComponents() {
 
     // 1. Fetch all components in parallel
     const [navbarHtml, footerHtml, cartHtml, cardTemplate] = await Promise.all([
-        fetchText('navbar.html'),
-        fetchText('footer.html'),
+        fetchText('../components/navbar.html'),
+        fetchText('../components/footer.html'),
         fetchText('../components/cart-sidebar.html'),
         getProductCardTemplate() // Preload card template
     ]);
