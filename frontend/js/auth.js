@@ -638,6 +638,16 @@ function updateAuthUI() {
         `;
     }
 
+    // Gestionar visibilidad de Favoritos
+    const favLink = document.getElementById('favorites-link');
+    if (favLink) {
+        if (user) {
+            favLink.classList.remove('hidden');
+        } else {
+            favLink.classList.add('hidden');
+        }
+    }
+
     // Reinicializar iconos de Lucide
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();

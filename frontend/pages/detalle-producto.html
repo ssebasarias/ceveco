@@ -512,27 +512,8 @@
                 const container = document.getElementById('related-products');
 
                 if (response.success && response.data.length > 0) {
-                    container.innerHTML = response.data.map(p => `
-                        <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer" 
-                             onclick="window.location.href='detalle-producto.html?id=${p.id_producto}'">
-                            <div class="relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
-                                <img src="${p.imagen_principal || 'https://via.placeholder.com/400x400'}" 
-                                     alt="${p.nombre}" 
-                                     class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
-                            </div>
-                            <div class="p-4">
-                                <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">${p.categoria}</p>
-                                <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
-                                    ${p.nombre}
-                                </h3>
-                                <div class="flex items-end justify-between mt-2">
-                                    <span class="text-lg font-bold text-primary">
-                                        ${Utils.formatPrice(p.precio_actual)}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    `).join('');
+                    // Usar la función global de renderizado de tarjetas
+                    container.innerHTML = response.data.map(p => renderProductCard(p)).join('');
                     lucide.createIcons();
                 } else {
                     document.getElementById('related-products-section').classList.add('hidden');

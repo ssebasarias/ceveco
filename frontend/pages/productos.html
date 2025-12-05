@@ -299,8 +299,8 @@
                 loading.classList.add('hidden');
 
                 if (response.success && response.data.length > 0) {
-                    // Renderizar productos
-                    grid.innerHTML = response.data.map(product => createProductCardHTML(product)).join('');
+                    // Renderizar productos usando la función global de main.js
+                    grid.innerHTML = response.data.map(product => renderProductCard(product)).join('');
 
                     // Actualizar paginación
                     totalPages = response.pagination.totalPages;
@@ -361,48 +361,6 @@
             return names[slug] || 'Productos';
         }
 
-        // Crear HTML de tarjeta de producto (similar a main.js pero inline para este contexto)
-        function createProductCardHTML(product) {
-            return `
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col relative overflow-hidden">
-                    ${product.badge ? `
-                        <span class="absolute top-3 left-3 bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide z-10">
-                            ${product.badge}
-                        </span>
-                    ` : ''}
-                    
-                    <div class="relative pt-[100%] overflow-hidden bg-gray-50 cursor-pointer" onclick="window.location.href='detalle-producto.html?id=${product.id_producto}'">
-                        <img src="${product.imagen_principal || 'https://via.placeholder.com/400x400'}" 
-                             alt="${product.nombre}" 
-                             class="absolute top-0 left-0 w-full h-full object-contain p-6 group-hover:scale-105 transition-transform duration-500">
-                    </div>
-                    
-                    <div class="p-5 flex-1 flex flex-col">
-                        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">${product.marca || ''}</p>
-                        <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors cursor-pointer" onclick="window.location.href='detalle-producto.html?id=${product.id_producto}'">
-                            ${product.nombre}
-                        </h3>
-                        
-                        <div class="mt-auto pt-4 border-t border-gray-50 flex items-end justify-between">
-                            <div>
-                                <span class="text-lg font-bold text-primary block">
-                                    ${Utils.formatPrice(product.precio_actual)}
-                                </span>
-                                ${product.precio_anterior ? `
-                                    <span class="text-sm text-gray-400 line-through">
-                                        ${Utils.formatPrice(product.precio_anterior)}
-                                    </span>
-                                ` : ''}
-                            </div>
-                            <button onclick="addToCart(${product.id_producto}, '${product.nombre}', ${product.precio_actual}, '${product.imagen_principal}')"
-                                class="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors">
-                                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
 
         // Paginación y Filtros
         function changePage(delta) {
