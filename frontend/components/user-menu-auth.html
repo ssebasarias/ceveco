@@ -1,0 +1,26 @@
+<div class="relative" id="user-dropdown-container">
+    <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:text-primary transition-colors">
+        {{avatar_html}}
+        <span class="hidden lg:inline font-medium">{{user_name}}</span>
+        <i data-lucide="chevron-down" class="w-4 h-4 hidden lg:inline"></i>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div id="user-dropdown"
+        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+        <a href="perfil.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+            <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>
+            Mi Perfil
+        </a>
+        <a href="pedidos.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+            <i data-lucide="package" class="w-4 h-4 inline mr-2"></i>
+            Mis Pedidos
+        </a>
+        <hr class="my-2 border-gray-100">
+        <button onclick="handleLogout()"
+            class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+            <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
+            Cerrar Sesión
+        </button>
+    </div>
+</div>

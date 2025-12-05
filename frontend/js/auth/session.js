@@ -1,0 +1,41 @@
+import { AUTH_CONFIG } from './config.js';
+
+export class SessionManager {
+    constructor() {
+        this.currentUser = null;
+        this.token = localStorage.getItem(AUTH_CONFIG.TOKEN_KEY);
+    }
+
+    saveSession(user, token) {
+        this.currentUser = user;
+        this.token = token;
+
+        const session = {
+            user,
+            token,
+            expiresAt: new Date(Date.now() + AUTH_CONFIG.SESSION_DURATION).toISOString()
+        };
+
+        localStorage.setItem(AUTH_CONFIG.SESSION_KEY, JSON.stringify(session));
+        localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, token);
+    }
+
+    clearSession() {
+        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
+        this.currentUser = null;
+        this.token = null;
+    }
+
+    getToken() {
+        return this.token;
+    }
+
+    getCurrentUser() {
+        return this.currentUser;
+    }
+
+    isAuthenticated() {
+        return this.currentUser !== null && this.token !== null;
+    }
+}

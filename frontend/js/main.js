@@ -3,134 +3,150 @@
  * Shared functionality and UI components
  */
 
+// Cache para templates
+let productCardTemplateCache = null;
+
 /**
- * Renderiza una tarjeta de producto estándar
- * Usa el diseño de index.html para consistencia en toda la app
- * @param {Object} product - Objeto de producto (de API o local)
- * @returns {string} HTML string de la tarjeta
+ * Obtiene el template HTML de la tarjeta de producto
  */
-function renderProductCard(product) {
-    // Helper para precio, usando Utils si existe o fallback local
+async function getProductCardTemplate() {
+    if (productCardTemplateCache) return productCardTemplateCache;
+    try {
+        // Asumiendo que estamos en una página dentro de /pages/
+        const response = await fetch('../components/card-producto.html');
+        if (response.ok) {
+            productCardTemplateCache = await response.text();
+            return productCardTemplateCache;
+        }
+        console.error('Failed to load product card template');
+        return null;
+    } catch (error) {
+        console.error('Error loading template:', error);
+        return null;
+    }
+}
+
+/**
+ * Renderiza una tarjeta de producto estándar usando el template HTML externo
+ * @param {Object} product - Objeto de producto
+ * @returns {Promise<string>} HTML string de la tarjeta
+ */
+async function renderProductCard(product) {
+    const template = await getProductCardTemplate();
+    if (!template) return '';
+
+    // Helper para precio
     const formatPrice = (price) => {
         if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
         return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
     };
 
-    // Normalizar datos (manejar tanto estructura de API como datos legacy si existen)
+    // Normalizar datos
     const id = product.id_producto || product.id;
     const precio = product.precio_actual || product.price;
     const precioAnterior = product.precio_anterior || product.oldPrice;
     const imagen = product.imagen_principal || product.image || 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+    const nombre = product.nombre || 'Producto sin nombre';
+    const categoria = product.categoria || product.marca || '';
 
-    // Escapar comillas para atributos HTML
-    const nombreEscaped = (product.nombre || '').replace(/'/g, "\\'").replace(/"/g, '\\"');
-    const imagenEscaped = (imagen || '').replace(/'/g, "\\'");
+    // Preparar bloques HTML
+    const badgeBlock = product.badge
+        ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">${product.badge}</span>`
+        : '';
 
-    return `
-    <div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer h-full flex flex-col" 
-         data-product-id="${id}">
-        <a href="detalle-producto.html?id=${id}" class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
-            <img src="${imagen}" 
-                 alt="${product.nombre}" 
-                 class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
-            ${product.badge ? `
-                <span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">
-                    ${product.badge}
-                </span>
-            ` : ''}
-        </a>
-        <div class="p-4 flex flex-col flex-1">
-            <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">${product.categoria || product.marca || ''}</p>
-            <a href="detalle-producto.html?id=${id}">
-                <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors" title="${product.nombre}">
-                    ${product.nombre}
-                </h3>
-            </a>
-            <div class="mt-auto">
-                <div class="flex items-end justify-between mb-4">
-                    <div>
-                        <span class="text-lg font-bold text-primary block">
-                            ${formatPrice(precio)}
-                        </span>
-                        ${precioAnterior ? `
-                            <span class="text-sm text-gray-400 line-through">
-                                ${formatPrice(precioAnterior)}
-                            </span>
-                        ` : ''}
-                    </div>
-                </div>
-                <button onclick="event.preventDefault(); event.stopPropagation(); addToCart(${id}, '${nombreEscaped}', ${precio}, '${imagenEscaped}')"
-                    class="w-full p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2 group-btn">
-                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                    <span class="text-sm font-medium">Agregar</span>
-                </button>
-            </div>
-        </div>
-    </div>
-    `;
+    const oldPriceBlock = precioAnterior
+        ? `<span class="text-sm text-gray-400 line-through">${formatPrice(precioAnterior)}</span>`
+        : '';
+
+    // Preparar valores escapados para onclick
+    const nombreEscaped = nombre.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const imagenEscaped = imagen.replace(/'/g, "\\'");
+
+    // Reemplazar placeholders en el template
+    return template
+        .replace(/{{id}}/g, id)
+        .replace(/{{image}}/g, imagen)
+        .replace(/{{name}}/g, nombre)
+        .replace(/{{name_escaped}}/g, nombreEscaped)
+        .replace(/{{category}}/g, categoria)
+        .replace(/{{price}}/g, formatPrice(precio))
+        .replace(/{{price_raw}}/g, precio)
+        .replace(/{{image_escaped}}/g, imagenEscaped)
+        .replace(/{{badge_block}}/g, badgeBlock)
+        .replace(/{{old_price_block}}/g, oldPriceBlock);
 }
 
 /**
- * Load Shared Components (Navbar and Footer)
+ * Load Shared Components (Navbar, Footer, Cart)
  */
 async function loadSharedComponents() {
     const navbarRoot = document.getElementById('navbar-root');
     const footerRoot = document.getElementById('footer-root');
 
-    // Helper to fetch and inject HTML
-    const loadHtml = async (url, rootElement) => {
-        if (!rootElement) return;
+    // Helper to fetch text content
+    const fetchText = async (url) => {
         try {
             const response = await fetch(url);
-            if (response.ok) {
-                const html = await response.text();
-                rootElement.innerHTML = html;
-            } else {
-                console.error(`Failed to load component from ${url}`);
-            }
-        } catch (error) {
-            console.error(`Error loading component from ${url}:`, error);
+            return response.ok ? await response.text() : null;
+        } catch (e) {
+            console.error(`Error loading ${url}:`, e);
+            return null;
         }
     };
 
-    // Load both concurrently
-    await Promise.all([
-        loadHtml('navbar.html', navbarRoot),
-        loadHtml('footer.html', footerRoot)
+    // 1. Fetch all components in parallel
+    const [navbarHtml, footerHtml, cartHtml, cardTemplate] = await Promise.all([
+        fetchText('navbar.html'),
+        fetchText('footer.html'),
+        fetchText('../components/cart-sidebar.html'),
+        getProductCardTemplate() // Preload card template
     ]);
 
-    // Re-initialize components that depend on DOM elements in navbar/footer
-    // 1. Lucide icons - First pass
-    if (window.lucide) {
-        window.lucide.createIcons();
+    // 2. Inject Components
+    if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
+    if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
+
+    // Inject Cart Sidebar if it doesn't exist and we have the HTML
+    if (cartHtml && !document.getElementById('cart-sidebar')) {
+        const div = document.createElement('div');
+        div.innerHTML = cartHtml;
+        // Append children to body to avoid wrapping in an extra div if possible, or just append the wrapper
+        // cartHtml contains two root elements (overlay and sidebar), so appending 'div' content is safer
+        while (div.firstChild) {
+            document.body.appendChild(div.firstChild);
+        }
     }
 
-    // 2. Auth state (User menu)
+    // 3. Initialize Shared Logic
+
+    // Lucide Icons
+    if (window.lucide) window.lucide.createIcons();
+
+    // Authentication UI
     if (typeof setupUserMenu === 'function') {
         setupUserMenu();
-    } else if (window.Auth && typeof window.Auth.init === 'function') {
-        window.Auth.init();
     } else if (typeof updateAuthUI === 'function') {
-        updateAuthUI(); // From auth.js
+        updateAuthUI();
     }
 
-    // 3. Cart count update
+    // Cart Logic Initialization
+    // We call loadCart() again to ensure it binds to the newly injected DOM elements
+    if (typeof loadCart === 'function') {
+        loadCart();
+    }
+    // Also trigger updateCartCount to refresh header badge
     if (typeof updateCartCount === 'function') {
         updateCartCount();
     }
 
-    // 4. Lucide icons - Second pass after auth UI updates
-    if (window.lucide) {
-        window.lucide.createIcons();
-    }
+    // Final icon refresh ensures everything dynamic has icons
+    if (window.lucide) window.lucide.createIcons();
 }
 
 // Initialize loading when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     loadSharedComponents();
 
-    // Global Lucide init fallback
-    if (window.lucide) {
-        window.lucide.createIcons();
-    }
+    // Fallback init
+    if (window.lucide) window.lucide.createIcons();
 });

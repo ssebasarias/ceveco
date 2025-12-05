@@ -230,54 +230,14 @@
 
     <!-- Footer -->
     <div id="footer-root"></div>
-    <div id="cart-overlay" onclick="closeCart()" class="hidden fixed inset-0 bg-black/50 z-40 transition-opacity"></div>
-
-    <!-- Cart Sidebar -->
-    <div id="cart-sidebar"
-        class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-                Mi Carrito
-            </h2>
-            <button onclick="closeCart()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
-
-        <div class="flex-1 overflow-y-auto p-6">
-            <div id="empty-cart" class="flex flex-col items-center justify-center h-full text-center">
-                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <i data-lucide="shopping-bag" class="w-12 h-12 text-gray-400"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
-                <p class="text-gray-500 mb-6">Agrega productos para comenzar tu compra</p>
-                <button onclick="closeCart()"
-                    class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
-                    Continuar Comprando
-                </button>
-            </div>
-            <div id="cart-items" class="space-y-4"></div>
-        </div>
-
-        <div id="cart-footer" class="hidden border-t border-gray-200 p-6 space-y-4 bg-gray-50">
-            <div class="flex items-center justify-between text-lg">
-                <span class="font-semibold text-gray-700">Subtotal:</span>
-                <span id="cart-total" class="font-bold text-gray-900">$0</span>
-            </div>
-            <a href="checkout.html"
-                class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-blue-700 transition-all text-center">
-                Proceder al Pago
-            </a>
-        </div>
-    </div>
+    <!-- Cart Sidebar (Injected by main.js) -->
 
     <!-- Scripts -->
     <script src="../js/config.js"></script>
     <script src="../js/utils.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/cart.js"></script>
-    <script src="../js/auth.js"></script>
+    <script type="module" src="../js/auth/index.js"></script>
     <script src="../js/main.js"></script>
 
     <script>
@@ -299,8 +259,9 @@
                 const response = await ProductosAPI.getDestacados(8);
 
                 if (response.success && response.data.length > 0) {
-                    container.innerHTML = response.data.map(producto => renderProductCard(producto)).join('');
-                    lucide.createIcons(); // Re-inicializar iconos para los nuevos elementos
+                    const cardsHtml = (await Promise.all(response.data.map(producto => renderProductCard(producto)))).join('');
+                    container.innerHTML = cardsHtml;
+                    lucide.createIcons();
                 } else {
                     container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">No hay productos destacados disponibles.</p>`;
                 }

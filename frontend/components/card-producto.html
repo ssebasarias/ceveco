@@ -1,0 +1,33 @@
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer h-full flex flex-col"
+    data-product-id="{{id}}">
+    <a href="detalle-producto.html?id={{id}}" class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
+        <img src="{{image}}" alt="{{name}}"
+            class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
+        {{badge_block}}
+    </a>
+    <div class="p-4 flex flex-col flex-1">
+        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">{{category}}</p>
+        <a href="detalle-producto.html?id={{id}}">
+            <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors"
+                title="{{name}}">
+                {{name}}
+            </h3>
+        </a>
+        <div class="mt-auto">
+            <div class="flex items-end justify-between mb-4">
+                <div>
+                    <span class="text-lg font-bold text-primary block">
+                        {{price}}
+                    </span>
+                    {{old_price_block}}
+                </div>
+            </div>
+            <button
+                onclick="event.preventDefault(); event.stopPropagation(); addToCart({{id}}, '{{name_escaped}}', {{price_raw}}, '{{image_escaped}}')"
+                class="w-full p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2 group-btn">
+                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                <span class="text-sm font-medium">Agregar</span>
+            </button>
+        </div>
+    </div>
+</div>
