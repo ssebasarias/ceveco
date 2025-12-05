@@ -7,6 +7,7 @@ const { testConnection } = require('./src/config/db');
 
 // Importar rutas
 const productosRoutes = require('./src/routes/productos.routes');
+const authRoutes = require('./src/routes/auth.routes');
 
 // Inicializar Express
 const app = express();
@@ -74,6 +75,7 @@ app.get('/health', (req, res) => {
 
 // Rutas de la API
 app.use(`${API_PREFIX}/productos`, productosRoutes);
+app.use(`${API_PREFIX}/auth`, authRoutes);
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {
@@ -127,6 +129,7 @@ const startServer = async () => {
             console.log(`🌐 API disponible en: http://localhost:${PORT}${API_PREFIX}`);
             console.log(`🏥 Health check: http://localhost:${PORT}/health`);
             console.log(`📦 Productos: http://localhost:${PORT}${API_PREFIX}/productos`);
+            console.log(`🔐 Auth: http://localhost:${PORT}${API_PREFIX}/auth`);
             console.log(`🏠 Frontend: http://localhost:${PORT}/`);
             console.log(`🌍 Entorno: ${process.env.NODE_ENV || 'development'}`);
             console.log('');

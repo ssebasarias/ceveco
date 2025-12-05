@@ -1,10 +1,12 @@
 /**
  * Authentication Module
- * Maneja el registro, login y gestión de sesiones de usuario
+ * Maneja el registro, login, OAuth y gestión de sesiones de usuario
+ * Conecta con el backend API
  */
 
 // Configuración de autenticación
 const AUTH_CONFIG = {
+    API_URL: 'http://localhost:3000/api/v1/auth',
     SESSION_KEY: 'ceveco_user_session',
     TOKEN_KEY: 'ceveco_auth_token',
     SESSION_DURATION: 24 * 60 * 60 * 1000, // 24 horas en milisegundos
@@ -15,7 +17,43 @@ const AUTH_CONFIG = {
  */
 class AuthManager {
     constructor() {
-        this.currentUser = this.loadSession();
+        this.currentUser = null;
+        this.token = localStorage.getItem(AUTH_CONFIG.TOKEN_KEY);
+        this.init();
+    }
+
+    /**
+     * Inicializar - verificar token existente
+     */
+    async init() {
+        if (this.token) {
+            try {
+                await this.verifyToken();
+            } catch (error) {
+                console.log('Token inválido, sesión cerrada');
+                this.clearSession();
+            }
+        }
+        updateAuthUI();
+    }
+
+    /**
+     * Verificar token con el backend
+     */
+    async verifyToken() {
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/verify`, {
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Token inválido');
+        }
+
+        const data = await response.json();
+        this.currentUser = data.data.user;
+        return data.data.user;
     }
 
     /**
@@ -23,36 +61,32 @@ class AuthManager {
      */
     async register(userData) {
         try {
-            // En producción, esto haría una llamada al backend
-            // Por ahora, simulamos el registro guardando en localStorage
+            const response = await fetch(`${AUTH_CONFIG.API_URL}/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: userData.email,
+                    password: userData.password,
+                    nombre: userData.nombre,
+                    apellido: userData.apellido || null,
+                    telefono: userData.telefono || null
+                })
+            });
 
-            const user = {
-                id: Date.now(),
-                nombre: userData.nombre,
-                email: userData.email,
-                telefono: userData.telefono,
-                createdAt: new Date().toISOString(),
-            };
+            const data = await response.json();
 
-            // Guardar usuario (en producción esto iría al backend)
-            const users = this.getStoredUsers();
-
-            // Verificar si el email ya existe
-            if (users.find(u => u.email === userData.email)) {
-                throw new Error('Este email ya está registrado');
+            if (!response.ok) {
+                throw new Error(data.message || 'Error en registro');
             }
 
-            // Guardar contraseña hasheada (en producción usar bcrypt en backend)
-            user.passwordHash = this.simpleHash(userData.password);
-            users.push(user);
-            localStorage.setItem('ceveco_users', JSON.stringify(users));
-
-            // Crear sesión automáticamente
-            this.createSession(user);
+            // Guardar sesión
+            this.saveSession(data.data.user, data.data.token);
 
             return {
                 success: true,
-                user: this.sanitizeUser(user),
+                user: data.data.user
             };
         } catch (error) {
             console.error('Error en registro:', error);
@@ -61,29 +95,34 @@ class AuthManager {
     }
 
     /**
-     * Iniciar sesión
+     * Iniciar sesión con email/contraseña
      */
     async login(credentials) {
         try {
-            const users = this.getStoredUsers();
-            const user = users.find(u => u.email === credentials.email);
+            const response = await fetch(`${AUTH_CONFIG.API_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: credentials.email,
+                    password: credentials.password,
+                    remember: credentials.remember || false
+                })
+            });
 
-            if (!user) {
-                throw new Error('Usuario no encontrado');
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Credenciales inválidas');
             }
 
-            // Verificar contraseña
-            const passwordHash = this.simpleHash(credentials.password);
-            if (user.passwordHash !== passwordHash) {
-                throw new Error('Contraseña incorrecta');
-            }
-
-            // Crear sesión
-            this.createSession(user, credentials.remember);
+            // Guardar sesión
+            this.saveSession(data.data.user, data.data.token);
 
             return {
                 success: true,
-                user: this.sanitizeUser(user),
+                user: data.data.user
             };
         } catch (error) {
             console.error('Error en login:', error);
@@ -92,60 +131,169 @@ class AuthManager {
     }
 
     /**
+     * Login con OAuth (Google, Facebook, etc.)
+     * @param {Object} oauthData - Datos del proveedor OAuth
+     */
+    async loginWithOAuth(oauthData) {
+        try {
+            const response = await fetch(`${AUTH_CONFIG.API_URL}/oauth`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(oauthData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Error en autenticación OAuth');
+            }
+
+            // Guardar sesión
+            this.saveSession(data.data.user, data.data.token);
+
+            return {
+                success: true,
+                user: data.data.user,
+                isNewUser: data.data.isNewUser
+            };
+        } catch (error) {
+            console.error('Error en OAuth login:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Login con Google usando Google Identity Services
+     */
+    async loginWithGoogle() {
+        return new Promise((resolve, reject) => {
+            // Verificar que Google Identity Services esté cargado
+            if (typeof google === 'undefined' || !google.accounts) {
+                // Intentar cargar dinámicamente
+                const script = document.createElement('script');
+                script.src = 'https://accounts.google.com/gsi/client';
+                script.onload = () => this.initGoogleLogin(resolve, reject);
+                script.onerror = () => reject(new Error('No se pudo cargar Google Sign-In'));
+                document.head.appendChild(script);
+            } else {
+                this.initGoogleLogin(resolve, reject);
+            }
+        });
+    }
+
+    /**
+     * Inicializar login de Google
+     */
+    initGoogleLogin(resolve, reject) {
+        // Necesitas configurar tu Client ID de Google Cloud Console
+        const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+        if (GOOGLE_CLIENT_ID.includes('TU_GOOGLE')) {
+            console.warn('⚠️ Configura GOOGLE_CLIENT_ID en tu aplicación');
+            reject(new Error('Google Client ID no configurado. Configura GOOGLE_CLIENT_ID en el código.'));
+            return;
+        }
+
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: async (response) => {
+                try {
+                    // Decodificar el JWT de Google para obtener los datos del usuario
+                    const payload = this.decodeJWT(response.credential);
+
+                    // Enviar datos al backend
+                    const result = await this.loginWithOAuth({
+                        provider: 'google',
+                        providerUid: payload.sub,
+                        email: payload.email,
+                        nombre: payload.name,
+                        apellido: payload.family_name || null,
+                        avatarUrl: payload.picture,
+                        rawData: payload
+                    });
+
+                    resolve(result);
+                } catch (error) {
+                    reject(error);
+                }
+            }
+        });
+
+        // Mostrar el popup de Google
+        google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                // Si no se puede mostrar el popup, usar el botón de Google
+                google.accounts.id.renderButton(
+                    document.getElementById('google-signin-button') || document.body,
+                    { theme: 'outline', size: 'large', text: 'signin_with' }
+                );
+            }
+        });
+    }
+
+    /**
+     * Decodificar JWT (solo para obtener payload, no para verificar)
+     */
+    decodeJWT(token) {
+        try {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        } catch (error) {
+            console.error('Error decodificando JWT:', error);
+            return null;
+        }
+    }
+
+    /**
      * Cerrar sesión
      */
     logout() {
-        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
-        localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
-        this.currentUser = null;
+        this.clearSession();
+        // Revocar sesión de Google si está activa
+        if (typeof google !== 'undefined' && google.accounts) {
+            google.accounts.id.disableAutoSelect();
+        }
         window.location.href = 'index.html';
     }
 
     /**
-     * Crear sesión de usuario
+     * Guardar sesión
      */
-    createSession(user, remember = false) {
+    saveSession(user, token) {
+        this.currentUser = user;
+        this.token = token;
+
         const session = {
-            user: this.sanitizeUser(user),
-            token: this.generateToken(),
-            expiresAt: remember
-                ? new Date(Date.now() + 30 * AUTH_CONFIG.SESSION_DURATION).toISOString()
-                : new Date(Date.now() + AUTH_CONFIG.SESSION_DURATION).toISOString(),
+            user,
+            token,
+            expiresAt: new Date(Date.now() + AUTH_CONFIG.SESSION_DURATION).toISOString()
         };
 
         localStorage.setItem(AUTH_CONFIG.SESSION_KEY, JSON.stringify(session));
-        localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, session.token);
-        this.currentUser = session.user;
+        localStorage.setItem(AUTH_CONFIG.TOKEN_KEY, token);
     }
 
     /**
-     * Cargar sesión guardada
+     * Limpiar sesión
      */
-    loadSession() {
-        try {
-            const sessionData = localStorage.getItem(AUTH_CONFIG.SESSION_KEY);
-            if (!sessionData) return null;
-
-            const session = JSON.parse(sessionData);
-
-            // Verificar si la sesión ha expirado
-            if (new Date(session.expiresAt) < new Date()) {
-                this.logout();
-                return null;
-            }
-
-            return session.user;
-        } catch (error) {
-            console.error('Error cargando sesión:', error);
-            return null;
-        }
+    clearSession() {
+        localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
+        localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
+        this.currentUser = null;
+        this.token = null;
     }
 
     /**
      * Verificar si el usuario está autenticado
      */
     isAuthenticated() {
-        return this.currentUser !== null;
+        return this.currentUser !== null && this.token !== null;
     }
 
     /**
@@ -156,76 +304,203 @@ class AuthManager {
     }
 
     /**
-     * Obtener usuarios almacenados (solo para demo)
+     * Obtener token actual
      */
-    getStoredUsers() {
-        try {
-            const users = localStorage.getItem('ceveco_users');
-            return users ? JSON.parse(users) : [];
-        } catch (error) {
-            return [];
+    getToken() {
+        return this.token;
+    }
+
+    /**
+     * Obtener perfil completo del usuario
+     */
+    async getProfile() {
+        if (!this.token) {
+            throw new Error('No autenticado');
         }
-    }
 
-    /**
-     * Sanitizar datos de usuario (remover información sensible)
-     */
-    sanitizeUser(user) {
-        const { passwordHash, ...sanitized } = user;
-        return sanitized;
-    }
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/profile`, {
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+            }
+        });
 
-    /**
-     * Generar token simple (en producción usar JWT)
-     */
-    generateToken() {
-        return 'token_' + Math.random().toString(36).substr(2) + Date.now().toString(36);
-    }
-
-    /**
-     * Hash simple de contraseña (en producción usar bcrypt en backend)
-     */
-    simpleHash(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+        if (!response.ok) {
+            throw new Error('Error al obtener perfil');
         }
-        return hash.toString(36);
+
+        const data = await response.json();
+        return data.data;
     }
 
     /**
      * Actualizar perfil de usuario
      */
     async updateProfile(updates) {
-        try {
-            if (!this.isAuthenticated()) {
-                throw new Error('Usuario no autenticado');
-            }
-
-            const users = this.getStoredUsers();
-            const userIndex = users.findIndex(u => u.id === this.currentUser.id);
-
-            if (userIndex === -1) {
-                throw new Error('Usuario no encontrado');
-            }
-
-            // Actualizar datos
-            users[userIndex] = { ...users[userIndex], ...updates };
-            localStorage.setItem('ceveco_users', JSON.stringify(users));
-
-            // Actualizar sesión
-            this.createSession(users[userIndex]);
-
-            return {
-                success: true,
-                user: this.sanitizeUser(users[userIndex]),
-            };
-        } catch (error) {
-            console.error('Error actualizando perfil:', error);
-            throw error;
+        if (!this.token) {
+            throw new Error('No autenticado');
         }
+
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/profile`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+            },
+            body: JSON.stringify(updates)
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            throw new Error(data.message || 'Error al actualizar perfil');
+        }
+
+        const data = await response.json();
+
+        // Actualizar usuario en sesión local
+        this.currentUser = { ...this.currentUser, ...data.data.user };
+        const session = JSON.parse(localStorage.getItem(AUTH_CONFIG.SESSION_KEY));
+        session.user = this.currentUser;
+        localStorage.setItem(AUTH_CONFIG.SESSION_KEY, JSON.stringify(session));
+
+        return {
+            success: true,
+            user: data.data.user
+        };
+    }
+
+    /**
+     * Cambiar contraseña
+     */
+    async changePassword(currentPassword, newPassword) {
+        if (!this.token) {
+            throw new Error('No autenticado');
+        }
+
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/change-password`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+            },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al cambiar contraseña');
+        }
+
+        return { success: true };
+    }
+
+    /**
+     * Solicitar recuperación de contraseña
+     */
+    async forgotPassword(email) {
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/forgot-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email })
+        });
+
+        const data = await response.json();
+        return data;
+    }
+
+    /**
+     * Restablecer contraseña con token
+     */
+    async resetPassword(token, newPassword) {
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/reset-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token, newPassword })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al restablecer contraseña');
+        }
+
+        return { success: true };
+    }
+
+    /**
+     * Obtener proveedores OAuth vinculados
+     */
+    async getLinkedProviders() {
+        if (!this.token) {
+            throw new Error('No autenticado');
+        }
+
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/providers`, {
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al obtener proveedores');
+        }
+
+        const data = await response.json();
+        return data.data.providers;
+    }
+
+    /**
+     * Vincular nuevo proveedor OAuth
+     */
+    async linkProvider(providerData) {
+        if (!this.token) {
+            throw new Error('No autenticado');
+        }
+
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/providers/link`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.token}`
+            },
+            body: JSON.stringify(providerData)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al vincular proveedor');
+        }
+
+        return { success: true };
+    }
+
+    /**
+     * Desvincular proveedor OAuth
+     */
+    async unlinkProvider(provider) {
+        if (!this.token) {
+            throw new Error('No autenticado');
+        }
+
+        const response = await fetch(`${AUTH_CONFIG.API_URL}/providers/${provider}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${this.token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Error al desvincular proveedor');
+        }
+
+        return { success: true };
     }
 }
 
@@ -246,6 +521,24 @@ async function handleLogin(credentials) {
     return await authManager.login(credentials);
 }
 
+// Manejar login con Google
+async function loginWithGoogle() {
+    try {
+        const result = await authManager.loginWithGoogle();
+        if (result.success) {
+            if (result.isNewUser) {
+                alert('¡Cuenta creada exitosamente con Google!');
+            } else {
+                alert('¡Bienvenido de nuevo!');
+            }
+            window.location.href = 'index.html';
+        }
+    } catch (error) {
+        console.error('Error en login con Google:', error);
+        alert(error.message || 'Error al iniciar sesión con Google');
+    }
+}
+
 // Cerrar sesión
 function handleLogout() {
     if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
@@ -263,21 +556,33 @@ function getCurrentUser() {
     return authManager.getCurrentUser();
 }
 
+// Obtener token de autenticación
+function getAuthToken() {
+    return authManager.getToken();
+}
+
 /**
  * Actualizar UI basado en estado de autenticación
  */
 function updateAuthUI() {
     const user = getCurrentUser();
+    const userMenuContainer = document.getElementById('user-menu-container');
     const userButton = document.querySelector('[data-auth-button]');
 
-    if (!userButton) return;
+    // Buscar el contenedor correcto
+    const container = userMenuContainer || userButton;
+    if (!container) return;
 
     if (user) {
         // Usuario autenticado - mostrar menú de usuario
-        userButton.innerHTML = `
+        const avatarHtml = user.avatar_url
+            ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-8 h-8 rounded-full object-cover">`
+            : `<i data-lucide="user" class="w-6 h-6"></i>`;
+
+        container.innerHTML = `
             <div class="relative group">
                 <button class="flex items-center gap-2 hover:text-primary transition-colors">
-                    <i data-lucide="user" class="w-6 h-6"></i>
+                    ${avatarHtml}
                     <span class="hidden lg:inline font-medium">${user.nombre.split(' ')[0]}</span>
                     <i data-lucide="chevron-down" class="w-4 h-4 hidden lg:inline"></i>
                 </button>
@@ -301,11 +606,35 @@ function updateAuthUI() {
             </div>
         `;
     } else {
-        // Usuario no autenticado - mostrar botón de login
-        userButton.innerHTML = `
-            <a href="login.html" class="hover:text-primary transition-colors" title="Iniciar Sesión">
-                <i data-lucide="user" class="w-6 h-6"></i>
-            </a>
+        // Usuario no autenticado - mostrar opciones de login
+        container.innerHTML = `
+            <div class="relative" id="user-dropdown-container">
+                <button onclick="toggleUserMenu()" class="flex items-center gap-1 hover:text-primary transition-colors">
+                    <i data-lucide="user" class="w-6 h-6"></i>
+                </button>
+                
+                <!-- Dropdown Menu para no autenticados -->
+                <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-3 z-50">
+                    <a href="login.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i data-lucide="log-in" class="w-4 h-4 inline mr-2"></i>
+                        Iniciar Sesión
+                    </a>
+                    <a href="registro.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i data-lucide="user-plus" class="w-4 h-4 inline mr-2"></i>
+                        Registrarse
+                    </a>
+                    <hr class="my-2 border-gray-100">
+                    <button onclick="loginWithGoogle()" class="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        Continuar con Google
+                    </button>
+                </div>
+            </div>
         `;
     }
 
@@ -315,9 +644,31 @@ function updateAuthUI() {
     }
 }
 
+/**
+ * Toggle del menú de usuario (para usuarios no autenticados)
+ */
+function toggleUserMenu() {
+    const dropdown = document.getElementById('user-dropdown');
+    if (dropdown) {
+        dropdown.classList.toggle('hidden');
+    }
+}
+
+// Cerrar menú al hacer click fuera
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('user-dropdown-container');
+    const dropdown = document.getElementById('user-dropdown');
+
+    if (container && dropdown && !container.contains(e.target)) {
+        dropdown.classList.add('hidden');
+    }
+});
+
 // Ejecutar al cargar la página
 if (typeof document !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', updateAuthUI);
+    document.addEventListener('DOMContentLoaded', () => {
+        // updateAuthUI se llama automáticamente en el constructor de AuthManager
+    });
 }
 
 // Exportar para uso en otros módulos
@@ -326,9 +677,11 @@ if (typeof module !== 'undefined' && module.exports) {
         authManager,
         handleRegistro,
         handleLogin,
+        loginWithGoogle,
         handleLogout,
         isUserAuthenticated,
         getCurrentUser,
+        getAuthToken,
         updateAuthUI,
     };
 }
