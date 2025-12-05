@@ -9,8 +9,27 @@
     <meta name="keywords" content="electrodomésticos, muebles, motos, herramientas, STIHL, Riosucio, Caldas">
     <title>Contacto - Ceveco</title>
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="../css/styles.css">
+    <!-- Tailwind & Lucide -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0056b3',
+                        dark: '#1F2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Custom CSS (Optional, removing legacy styles.css if possible to avoid conflict, or keeping if needed) -->
+    <!-- <link rel="stylesheet" href="../css/styles.css"> -->
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/logo.png">
@@ -18,27 +37,8 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container navbar-container">
-            <a href="index.html" class="navbar-logo">
-                <img src="../assets/logo.png" alt="Ceveco Logo">
-            </a>
-
-            <div class="navbar-menu">
-                <a href="index.html" class="navbar-link">Inicio</a>
-                <a href="productos.html" class="navbar-link">Productos</a>
-                <a href="sedes.html" class="navbar-link">Sedes</a>
-                <a href="contacto.html" class="navbar-link active">Contacto</a>
-            </div>
-
-            <div class="navbar-actions">
-                <div class="cart-icon" onclick="toggleCart()">
-                    🛒
-                    <span class="cart-badge" id="cart-count">0</span>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Navbar -->
+    <div id="navbar-root"></div>
 
     <!-- Main Content -->
     <main class="container" style="padding: 3rem 1rem;">
@@ -142,50 +142,8 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-section">
-                    <h3>Ceveco</h3>
-                    <p>Tu tienda de confianza para electrodomésticos, muebles, motos y herramientas en Riosucio, Caldas.
-                    </p>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Enlaces Rápidos</h3>
-                    <div class="footer-links">
-                        <a href="index.html" class="footer-link">Inicio</a>
-                        <a href="productos.html" class="footer-link">Productos</a>
-                        <a href="sedes.html" class="footer-link">Sedes</a>
-                        <a href="contacto.html" class="footer-link">Contacto</a>
-                    </div>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Categorías</h3>
-                    <div class="footer-links">
-                        <a href="productos.html?categoria=electro-hogar" class="footer-link">Electro Hogar</a>
-                        <a href="productos.html?categoria=muebles" class="footer-link">Muebles</a>
-                        <a href="productos.html?categoria=motos" class="footer-link">Motos</a>
-                        <a href="productos.html?categoria=herramientas" class="footer-link">Herramientas STIHL</a>
-                    </div>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Contacto</h3>
-                    <div class="footer-links">
-                        <p>📍 Carrera 5 # 9-45, Riosucio</p>
-                        <p>📞 +57 (606) 859 1234</p>
-                        <p>✉️ contacto@ceveco.com.co</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025 Ceveco. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer -->
+    <div id="footer-root"></div>
 
     <!-- JavaScript -->
     <script src="../js/config.js"></script>

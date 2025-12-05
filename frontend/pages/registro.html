@@ -75,24 +75,8 @@
 <body class="bg-gradient-to-br from-blue-50 via-white to-blue-50 min-h-screen font-sans antialiased">
 
     <!-- Sticky Header -->
-    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
-        <div class="container mx-auto px-4 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <a href="index.html" class="flex-shrink-0">
-                    <img src="../assets/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
-                </a>
-
-                <!-- Navigation -->
-                <nav class="hidden md:flex items-center gap-6">
-                    <a href="index.html"
-                        class="text-gray-600 hover:text-primary transition-colors font-medium">Inicio</a>
-                    <a href="productos.html"
-                        class="text-gray-600 hover:text-primary transition-colors font-medium">Productos</a>
-                </nav>
-            </div>
-        </div>
-    </header>
+    <!-- Sticky Header -->
+    <div id="navbar-root"></div>
 
     <!-- Main Content -->
     <main class="container mx-auto px-4 py-12 flex items-center justify-center min-h-[calc(100vh-80px)]">
@@ -260,9 +244,16 @@
         </div>
     </main>
 
+    <!-- Footer -->
+    <div id="footer-root"></div>
+
     <!-- Scripts -->
     <script src="../js/config.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/cart.js"></script>
     <script src="../js/auth.js"></script>
+    <script src="../js/main.js"></script>
     <script>
         // Inicializar iconos Lucide
         lucide.createIcons();

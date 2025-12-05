@@ -171,13 +171,13 @@ function createProductCard(product) {
 
     card.innerHTML = `
         ${badgeHtml}
-        <a href="producto-detalle.html?id=${product.id}" class="relative h-64 p-6 bg-white flex items-center justify-center overflow-hidden">
+        <a href="detalle-producto.html?id=${product.id}" class="relative h-64 p-6 bg-white flex items-center justify-center overflow-hidden">
             <img src="${product.image}" alt="${product.name}" class="max-h-full max-w-full object-contain transform group-hover:scale-105 transition-transform duration-500">
         </a>
         
         <div class="p-5 flex-1 flex flex-col">
             <div class="mb-1 text-xs font-medium text-gray-400 uppercase tracking-wider">${product.brand}</div>
-            <a href="producto-detalle.html?id=${product.id}">
+            <a href="detalle-producto.html?id=${product.id}">
                 <h3 class="text-sm font-medium text-gray-900 mb-3 line-clamp-2 min-h-[40px] hover:text-primary transition-colors" title="${product.name}">
                     ${product.name}
                 </h3>
@@ -197,3 +197,71 @@ function createProductCard(product) {
 
     return card;
 }
+
+/**
+ * Load Shared Components (Navbar and Footer)
+ */
+async function loadSharedComponents() {
+    const navbarRoot = document.getElementById('navbar-root');
+    const footerRoot = document.getElementById('footer-root');
+
+    // Helper to fetch and inject HTML
+    const loadHtml = async (url, rootElement) => {
+        if (!rootElement) return;
+        try {
+            const response = await fetch(url);
+            if (response.ok) {
+                const html = await response.text();
+                rootElement.innerHTML = html;
+            } else {
+                console.error(`Failed to load component from ${url}`);
+            }
+        } catch (error) {
+            console.error(`Error loading component from ${url}:`, error);
+        }
+    };
+
+    // Load both concurrently
+    await Promise.all([
+        loadHtml('navbar.html', navbarRoot),
+        loadHtml('footer.html', footerRoot)
+    ]);
+
+    // Re-initialize components that depend on DOM elements in navbar/footer
+    // 1. Lucide icons
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+
+    // 2. Auth state (User menu) - Assuming 'auth.js' functions are global or attached to 'window' if modules
+    // If setupUserMenu is defined in auth.js and auth.js is loaded
+    if (typeof setupUserMenu === 'function') {
+        setupUserMenu();
+    } else if (window.Auth && typeof window.Auth.init === 'function') {
+        window.Auth.init(); // Adjust based on actual auth.js implementation
+    }
+
+    // We also need to check if there is a 'checkAuthState' function or similar
+    // Based on previous contexts, there might be a global check
+
+    // 3. Cart count update
+    if (typeof updateCartCount === 'function') {
+        updateCartCount();
+    } else if (window.cart && typeof window.cart.updateCount === 'function') {
+        window.cart.updateCount();
+    }
+    // Try to trigger cart update if it's based on local storage
+    const cartCountEl = document.getElementById('cart-count');
+    if (cartCountEl) {
+        // Manual trigger if needed, or rely on cart.js
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        cartCountEl.textContent = totalItems;
+        cartCountEl.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+}
+
+// Initialize loading when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    loadSharedComponents();
+});

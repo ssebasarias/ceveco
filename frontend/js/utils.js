@@ -181,4 +181,6 @@ const Utils = {
 // Hacer Utils disponible globalmente
 if (typeof window !== 'undefined') {
     window.Utils = Utils;
+    // Alias global para compatibilidad con cart.js
+    window.formatPrice = Utils.formatPrice;
 }

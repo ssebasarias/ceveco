@@ -89,6 +89,11 @@ function toggleCart() {
     const cartSidebar = document.getElementById('cart-sidebar');
     const overlay = document.getElementById('cart-overlay');
 
+    if (!cartSidebar || !overlay) {
+        console.warn('Cart elements not found');
+        return;
+    }
+
     if (cartSidebar.classList.contains('translate-x-full')) {
         cartSidebar.classList.remove('translate-x-full');
         overlay.classList.remove('hidden');
@@ -104,6 +109,8 @@ function toggleCart() {
 function closeCart() {
     const cartSidebar = document.getElementById('cart-sidebar');
     const overlay = document.getElementById('cart-overlay');
+
+    if (!cartSidebar || !overlay) return;
 
     cartSidebar.classList.add('translate-x-full');
     overlay.classList.add('hidden');

@@ -664,11 +664,16 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// Ejecutar al cargar la página
+// Ejecutar al cargar la página - asegurar que updateAuthUI se llame cuando el DOM esté listo
 if (typeof document !== 'undefined') {
-    document.addEventListener('DOMContentLoaded', () => {
-        // updateAuthUI se llama automáticamente en el constructor de AuthManager
-    });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            updateAuthUI();
+        });
+    } else {
+        // DOM ya está listo
+        updateAuthUI();
+    }
 }
 
 // Exportar para uso en otros módulos
