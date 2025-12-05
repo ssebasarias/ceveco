@@ -22,11 +22,12 @@
                     {{old_price_block}}
                 </div>
             </div>
-            <button
-                onclick="event.preventDefault(); event.stopPropagation(); addToCart({{id}}, '{{name_escaped}}', {{price_raw}}, '{{image_escaped}}')"
-                class="w-full p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2 group-btn">
-                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                <span class="text-sm font-medium">Agregar</span>
+            <button type="button"
+                class="w-full p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-primary hover:text-white transition-colors flex items-center justify-center gap-2 group-btn js-add-to-cart"
+                data-id="{{id}}" data-name="{{name_attr}}" data-price="{{price_raw}}" data-image="{{image_attr}}"
+                data-brand="{{category_attr}}">
+                <i data-lucide="shopping-cart" class="w-5 h-5 pointer-events-none"></i>
+                <span class="text-sm font-medium pointer-events-none">Agregar</span>
             </button>
         </div>
     </div>

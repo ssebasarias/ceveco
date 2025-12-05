@@ -6,19 +6,28 @@
 // Cache para templates
 let productCardTemplateCache = null;
 
+// Helper global para precio
+function formatPrice(price) {
+    if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        maximumFractionDigits: 0
+    }).format(price);
+}
+
 /**
  * Obtiene el template HTML de la tarjeta de producto
  */
 async function getProductCardTemplate() {
     if (productCardTemplateCache) return productCardTemplateCache;
     try {
-        // Asumiendo que estamos en una página dentro de /pages/
         const response = await fetch('../components/card-producto.html');
         if (response.ok) {
             productCardTemplateCache = await response.text();
             return productCardTemplateCache;
         }
-        console.error('Failed to load product card template');
+        console.error('Failed to load product card template: ' + response.status);
         return null;
     } catch (error) {
         console.error('Error loading template:', error);
@@ -35,17 +44,18 @@ async function renderProductCard(product) {
     const template = await getProductCardTemplate();
     if (!template) return '';
 
-    // Helper para precio
-    const formatPrice = (price) => {
-        if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
-        return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(price);
-    };
+    // Normalizar datos (Ensure fallbacks are safe)
+    const id = product.id_producto || product.id || '';
+    const precio = product.precio_actual || product.price || 0;
+    const precioAnterior = product.precio_anterior || product.oldPrice || 0;
 
-    // Normalizar datos
-    const id = product.id_producto || product.id;
-    const precio = product.precio_actual || product.price;
-    const precioAnterior = product.precio_anterior || product.oldPrice;
-    const imagen = product.imagen_principal || product.image || 'https://via.placeholder.com/400x400?text=Sin+Imagen';
+    // Fallback image (SVG Data URI to avoid external dependency)
+    const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f3f4f6' width='400' height='400'/%3E%3Ctext fill='%239ca3af' font-family='sans-serif' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ESin Imagen%3C/text%3E%3C/svg%3E";
+
+    // Obtener imagen
+    let imagenUrl = product.imagen_principal || product.image;
+    if (!imagenUrl || imagenUrl.includes('via.placeholder.com')) imagenUrl = fallbackImage;
+
     const nombre = product.nombre || 'Producto sin nombre';
     const categoria = product.categoria || product.marca || '';
 
@@ -54,21 +64,38 @@ async function renderProductCard(product) {
         ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">${product.badge}</span>`
         : '';
 
-    const oldPriceBlock = precioAnterior
+    const oldPriceBlock = precioAnterior && precioAnterior > precio
         ? `<span class="text-sm text-gray-400 line-through">${formatPrice(precioAnterior)}</span>`
         : '';
 
-    // Preparar valores escapados para onclick
-    const nombreEscaped = nombre.replace(/'/g, "\\'").replace(/"/g, '\\"');
-    const imagenEscaped = imagen.replace(/'/g, "\\'");
+    // Ensure strings for manipulation
+    const safeNombre = String(nombre);
+    const safeImagen = String(imagenUrl);
+    const safeCategoria = String(categoria);
+
+    // Escape Helpers
+    const escapeJs = (str) => str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+    // Attribute ready values
+    const nombreAttr = escapeHtml(safeNombre);
+    const imageAttr = escapeHtml(safeImagen);
+    const categoryAttr = escapeHtml(safeCategoria);
+
+    // Legacy escaped values (function calls)
+    const nombreEscaped = escapeJs(safeNombre);
+    const imagenEscaped = escapeJs(safeImagen);
 
     // Reemplazar placeholders en el template
     return template
         .replace(/{{id}}/g, id)
-        .replace(/{{image}}/g, imagen)
-        .replace(/{{name}}/g, nombre)
+        .replace(/{{image}}/g, safeImagen)
+        .replace(/{{image_attr}}/g, imageAttr)
+        .replace(/{{name}}/g, safeNombre)
         .replace(/{{name_escaped}}/g, nombreEscaped)
-        .replace(/{{category}}/g, categoria)
+        .replace(/{{name_attr}}/g, nombreAttr)
+        .replace(/{{category}}/g, safeCategoria)
+        .replace(/{{category_attr}}/g, categoryAttr)
         .replace(/{{price}}/g, formatPrice(precio))
         .replace(/{{price_raw}}/g, precio)
         .replace(/{{image_escaped}}/g, imagenEscaped)
@@ -80,6 +107,14 @@ async function renderProductCard(product) {
  * Load Shared Components (Navbar, Footer, Cart)
  */
 async function loadSharedComponents() {
+    // Check protocol
+    if (window.location.protocol === 'file:') {
+        console.error('CRITICAL: Running via file:// protocol. Dynamic imports will fail.');
+        alert('Por favor ejecuta este proyecto usando un servidor local (ej: npm run dev) para ver todas las funcionalidades.');
+        return;
+    }
+
+    console.log('Loading shared components...');
     const navbarRoot = document.getElementById('navbar-root');
     const footerRoot = document.getElementById('footer-root');
 
@@ -90,63 +125,69 @@ async function loadSharedComponents() {
             return response.ok ? await response.text() : null;
         } catch (e) {
             console.error(`Error loading ${url}:`, e);
+            document.body.innerHTML += `<div style="color:red; padding:20px;">Error loading resources. Check console.</div>`;
             return null;
         }
     };
 
-    // 1. Fetch all components in parallel
-    const [navbarHtml, footerHtml, cartHtml, cardTemplate] = await Promise.all([
-        fetchText('../components/navbar.html'),
-        fetchText('../components/footer.html'),
-        fetchText('../components/cart-sidebar.html'),
-        getProductCardTemplate() // Preload card template
-    ]);
+    try {
+        // 1. Fetch all components in parallel
+        const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
+            fetchText('../components/navbar.html'),
+            fetchText('../components/footer.html'),
+            fetchText('../components/cart-sidebar.html'),
+            getProductCardTemplate() // Preload card template
+        ]);
 
-    // 2. Inject Components
-    if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
-    if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
-
-    // Inject Cart Sidebar if it doesn't exist and we have the HTML
-    if (cartHtml && !document.getElementById('cart-sidebar')) {
-        const div = document.createElement('div');
-        div.innerHTML = cartHtml;
-        // Append children to body to avoid wrapping in an extra div if possible, or just append the wrapper
-        // cartHtml contains two root elements (overlay and sidebar), so appending 'div' content is safer
-        while (div.firstChild) {
-            document.body.appendChild(div.firstChild);
+        // 2. Inject Components
+        if (navbarRoot) {
+            if (navbarHtml) navbarRoot.innerHTML = navbarHtml;
+            else console.error('Navbar HTML not loaded');
         }
+
+        if (footerRoot) {
+            if (footerHtml) footerRoot.innerHTML = footerHtml;
+            else console.error('Footer HTML not loaded');
+        }
+
+        // Inject Cart Sidebar if it doesn't exist and we have the HTML
+        if (cartHtml && !document.getElementById('cart-sidebar')) {
+            const div = document.createElement('div');
+            div.innerHTML = cartHtml;
+            while (div.firstChild) {
+                document.body.appendChild(div.firstChild);
+            }
+        }
+
+        // 3. Initialize Shared Logic
+
+        // Lucide Icons
+        if (window.lucide) window.lucide.createIcons();
+
+        // Authentication UI
+        if (typeof setupUserMenu === 'function') {
+            setupUserMenu();
+        } else if (typeof updateAuthUI === 'function') {
+            updateAuthUI();
+        }
+
+        // Cart Logic Initialization
+        if (typeof loadCart === 'function') {
+            loadCart();
+        }
+        if (typeof updateCartCount === 'function') {
+            updateCartCount();
+        }
+
+        // Final icon refresh ensures everything dynamic has icons
+        if (window.lucide) window.lucide.createIcons();
+
+    } catch (error) {
+        console.error('CRITICAL: Error initializing application', error);
     }
-
-    // 3. Initialize Shared Logic
-
-    // Lucide Icons
-    if (window.lucide) window.lucide.createIcons();
-
-    // Authentication UI
-    if (typeof setupUserMenu === 'function') {
-        setupUserMenu();
-    } else if (typeof updateAuthUI === 'function') {
-        updateAuthUI();
-    }
-
-    // Cart Logic Initialization
-    // We call loadCart() again to ensure it binds to the newly injected DOM elements
-    if (typeof loadCart === 'function') {
-        loadCart();
-    }
-    // Also trigger updateCartCount to refresh header badge
-    if (typeof updateCartCount === 'function') {
-        updateCartCount();
-    }
-
-    // Final icon refresh ensures everything dynamic has icons
-    if (window.lucide) window.lucide.createIcons();
 }
 
 // Initialize loading when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     loadSharedComponents();
-
-    // Fallback init
-    if (window.lucide) window.lucide.createIcons();
 });

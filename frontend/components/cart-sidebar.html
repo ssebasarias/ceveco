@@ -1,5 +1,5 @@
 <!-- Cart Overlay -->
-<div id="cart-overlay" onclick="closeCart()" class="hidden fixed inset-0 bg-black/50 z-40 transition-opacity"></div>
+<div id="cart-overlay" class="hidden fixed inset-0 bg-black/50 z-40 transition-opacity js-toggle-cart"></div>
 
 <!-- Cart Sidebar -->
 <div id="cart-sidebar"
@@ -9,8 +9,8 @@
             <i data-lucide="shopping-cart" class="w-6 h-6"></i>
             Mi Carrito
         </h2>
-        <button onclick="closeCart()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <i data-lucide="x" class="w-6 h-6"></i>
+        <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors js-toggle-cart">
+            <i data-lucide="x" class="w-6 h-6 pointer-events-none"></i>
         </button>
     </div>
 
@@ -21,8 +21,8 @@
             </div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
             <p class="text-gray-500 mb-6">Agrega productos para comenzar tu compra</p>
-            <button onclick="closeCart()"
-                class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+            <button
+                class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors js-toggle-cart">
                 Continuar Comprando
             </button>
         </div>

@@ -44,13 +44,14 @@ function addToCart(productId, nombre = null, precio = null, imagen = null) {
         return;
     }
 
-    const existingItem = cart.find(item => item.id === product.id);
+    const existingItem = cart.find(item => String(item.id) === String(product.id));
 
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
         cart.push({
             ...product,
+            id: String(product.id), // Ensure ID is string
             quantity: 1
         });
     }
@@ -61,13 +62,13 @@ function addToCart(productId, nombre = null, precio = null, imagen = null) {
 
 // Remove item from cart
 function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+    cart = cart.filter(item => String(item.id) !== String(productId));
     saveCart();
 }
 
 // Update item quantity
 function updateQuantity(productId, quantity) {
-    const item = cart.find(item => item.id === productId);
+    const item = cart.find(item => String(item.id) === String(productId));
     if (item) {
         item.quantity = Math.max(1, quantity);
         saveCart();
@@ -152,16 +153,16 @@ function updateCartUI() {
                 <p class="text-xs text-gray-500 mb-2">${item.brand}</p>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-50">
-                            <i data-lucide="minus" class="w-3 h-3"></i>
+                        <button class="w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-50 js-update-quantity" data-id="${item.id}" data-qty="${item.quantity - 1}">
+                            <i data-lucide="minus" class="w-3 h-3 pointer-events-none"></i>
                         </button>
                         <span class="text-sm font-medium w-8 text-center">${item.quantity}</span>
-                        <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-50">
-                            <i data-lucide="plus" class="w-3 h-3"></i>
+                        <button class="w-6 h-6 flex items-center justify-center bg-white border border-gray-200 rounded hover:bg-gray-50 js-update-quantity" data-id="${item.id}" data-qty="${item.quantity + 1}">
+                            <i data-lucide="plus" class="w-3 h-3 pointer-events-none"></i>
                         </button>
                     </div>
-                    <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    <button class="text-red-500 hover:text-red-700 js-remove-from-cart" data-id="${item.id}">
+                        <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
                     </button>
                 </div>
                 <p class="text-sm font-bold text-primary mt-2">${formatPrice(item.price * item.quantity)}</p>
@@ -201,7 +202,51 @@ function showCartNotification(productName) {
     }, 2000);
 }
 
+// Initialize cart events
+function setupCartEventListeners() {
+    document.addEventListener('click', (e) => {
+        // Toggle Cart
+        const toggleBtn = e.target.closest('.js-toggle-cart');
+        if (toggleBtn) {
+            e.preventDefault();
+            toggleCart();
+            return;
+        }
+
+        // Add to Cart
+        const addBtn = e.target.closest('.js-add-to-cart');
+        if (addBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const dataset = addBtn.dataset;
+            addToCart({
+                id: dataset.id,
+                name: dataset.name,
+                price: parseFloat(dataset.price),
+                image: dataset.image,
+                brand: dataset.brand
+            });
+            return;
+        }
+
+        // Remove from Cart
+        const removeBtn = e.target.closest('.js-remove-from-cart');
+        if (removeBtn) {
+            removeFromCart(removeBtn.dataset.id);
+            return;
+        }
+
+        // Update Quantity
+        const qtyBtn = e.target.closest('.js-update-quantity');
+        if (qtyBtn) {
+            updateQuantity(qtyBtn.dataset.id, parseInt(qtyBtn.dataset.qty));
+            return;
+        }
+    });
+}
+
 // Initialize cart on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();
+    setupCartEventListeners();
 });
