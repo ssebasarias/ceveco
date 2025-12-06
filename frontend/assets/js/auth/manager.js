@@ -173,10 +173,21 @@ export class AuthManager {
 
     logout() {
         this.sessionManager.clearSession();
+
         if (typeof google !== 'undefined' && google.accounts) {
             google.accounts.id.disableAutoSelect();
         }
-        window.location.href = 'index.html';
+
+        // Smart Redirect
+        const isPagesDir = window.location.pathname.includes('/pages/');
+        const loginPath = isPagesDir ? 'login.html' : 'pages/login.html';
+
+        console.log('Redirecting to:', loginPath);
+        window.location.href = loginPath;
+    }
+
+    logoutUser() {
+        this.logout();
     }
 
     // Proxy methods

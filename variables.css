@@ -1,0 +1,103 @@
+:root {
+    /* =========================================================
+       🎨 COLORES DE MARCA (Brand Colors)
+       Usalos en botones, navbar, links importantes, CTAs.
+       ========================================================= */
+
+    /* 🔴 Rojo principal — Call to action (comprar, agregar, oferta) */
+    --ceveco-red: #FE2418;
+
+    /* 🟦 Azul CEVECO — para navbar, links, énfasis corporativo */
+    --ceveco-blue: #00458E;
+
+    /* 🔵 Azul oscuro CEVECO — perfecto para footer, títulos y fondos premium */
+    --ceveco-blue-dark: #091C49;
+
+
+
+    /* =========================================================
+       ⚪ NEUTRALES — Fondos, textos, bordes, cards (UI/UX base)
+       Estos son el 70% del diseño. Mantienen la página limpia.
+       ========================================================= */
+
+    /* Blanco puro — cards, fondos importantes */
+    --neutral-0: #FFFFFF;
+
+    /* Blanco grisáceo — fondo suave del sitio (recomendado para body) */
+    --neutral-50: #F8FAFC;
+
+    /* Gris muy claro — fondos de secciones, inputs, hover sutil */
+    --neutral-100: #F1F5F9;
+
+    /* Gris claro — bordes, líneas divisorias, contornos */
+    --neutral-300: #CBD5E1;
+
+    /* Gris medio — texto secundario, iconos apagados */
+    --neutral-500: #64748B;
+
+    /* Gris oscuro — texto principal, headings */
+    --neutral-700: #334155;
+
+    /* Negro grisáceo — títulos grandes y elementos de alto contraste */
+    --neutral-900: #0F172A;
+
+
+
+    /* =========================================================
+       🌟 ACCENTS (Opcionales)
+       Usalos para validar formularios, alertas o promociones.
+       ========================================================= */
+
+    /* Verde de éxito — mensajes positivos, confirmaciones */
+    --accent-success: #10B981;
+
+    /* Amarillo promoción — destacar ofertas o avisos */
+    --accent-warning: #FACC15;
+
+
+
+    /* =========================================================
+       🎯 BOTONES Y ESTADOS — combinaciones listas para usar
+       ========================================================= */
+
+    /* Botón rojo principal (Agregar al carrito, Comprar ya) */
+    --btn-primary-bg: var(--ceveco-red);
+    --btn-primary-text: var(--neutral-0);
+    --btn-primary-hover: #DC1E14;
+    /* rojo un poco más oscuro */
+
+    /* Botón secundario azul (ver productos, info) */
+    --btn-secondary-bg: var(--ceveco-blue);
+    --btn-secondary-text: var(--neutral-0);
+    --btn-secondary-hover: #00356C;
+
+    /* Botón ghost (bordes) */
+    --btn-ghost-border: var(--neutral-300);
+    --btn-ghost-text: var(--neutral-700);
+    --btn-ghost-hover: var(--neutral-100);
+
+
+
+    /* =========================================================
+       🧱 COMPOSICIÓN GENERAL DE LA PÁGINA — colores globales
+       ========================================================= */
+
+    /* Fondo general */
+    --background-body: var(--neutral-50);
+
+    /* Fondo de cards y contenedores */
+    --background-card: var(--neutral-0);
+
+    /* Texto */
+    --text-main: var(--neutral-900);
+    --text-secondary: var(--neutral-500);
+
+    /* Líneas y bordes */
+    --border-color: var(--neutral-300);
+
+    /* Fondo del footer (super elegante y corporativo) */
+    --footer-bg: var(--ceveco-blue-dark);
+
+    /* Fondo del navbar */
+    --navbar-bg: var(--ceveco-blue);
+}

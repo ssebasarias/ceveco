@@ -26,10 +26,8 @@ window.updateAuthUI = async () => {
 
 window.handleLogout = () => {
     console.log('handleLogout llamado');
-    if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-        console.log('Confirmado, cerrando sesión...');
-        authManager.logout();
-    }
+    // Direct logout without confirmation for better UX response
+    authManager.logout();
 };
 
 // Google Login Wrapper with UI Logic

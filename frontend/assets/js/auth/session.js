@@ -21,8 +21,14 @@ export class SessionManager {
     }
 
     clearSession() {
+        // Clear LocalStorage
         localStorage.removeItem(AUTH_CONFIG.SESSION_KEY);
         localStorage.removeItem(AUTH_CONFIG.TOKEN_KEY);
+        localStorage.removeItem('cevecoCart'); // Clear cart as requested in prompt analysis
+
+        // Clear SessionStorage (User specific data)
+        sessionStorage.clear();
+
         this.currentUser = null;
         this.token = null;
     }

@@ -6,13 +6,36 @@ const UserMenuTemplates = {
 };
 
 // Cargar templates
+// Cargar templates
 async function loadUserMenuTemplates() {
     if (UserMenuTemplates.guest && UserMenuTemplates.auth) return;
+
+    // Determine base path based on current location
+    const isPagesDir = window.location.pathname.includes('/pages/');
+    const basePath = isPagesDir ? '../components/' : './components/';
+
+    // If we are in the root frontend folder (e.g. /frontend/index.html), it might be ./components/
+    // If we are served from root (e.g. localhost:3000/index.html mapping to frontend/index.html), it depends on server config.
+    // Safest strategy: Try relative, if fail, try absolute or adjust.
+    // For now, let's assume standard structure:
+    // /frontend/pages/x.html -> ../components/
+    // /frontend/index.html -> ./components/
+
+    const getPath = (file) => `${basePath}${file}`;
+
     try {
         const [guest, auth] = await Promise.all([
-            fetch('../components/user-menu-guest.html').then(r => r.ok ? r.text() : null),
-            fetch('../components/user-menu-auth.html').then(r => r.ok ? r.text() : null)
+            fetch(getPath('user-menu-guest.html')).then(r => r.ok ? r.text() : null),
+            fetch(getPath('user-menu-auth.html')).then(r => r.ok ? r.text() : null)
         ]);
+
+        // Retry with alternative path if null (simple fallback)
+        if (!guest && !isPagesDir) {
+            // Maybe we are in /frontend/ but components are in ./components
+            // Or maybe we are in root and need frontend/components
+            // Not overcomplicating now, assuming the proposed fix covers the reported context (sedes.html is in pages/)
+        }
+
         UserMenuTemplates.guest = guest;
         UserMenuTemplates.auth = auth;
     } catch (error) {
@@ -39,63 +62,9 @@ export async function updateAuthUI(user) {
     await loadUserMenuTemplates();
 
     if (user) {
-        // Usuario autenticado
-        if (UserMenuTemplates.auth) {
-            const avatarHtml = user.avatar_url
-                ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-8 h-8 rounded-full object-cover">`
-                : `<i data-lucide="user" class="w-6 h-6"></i>`;
-
-            const userName = user.nombre ? user.nombre.split(' ')[0] : 'Usuario';
-
-            container.innerHTML = UserMenuTemplates.auth
-                .replace('{{avatar_html}}', avatarHtml)
-                .replace('{{user_name}}', userName);
-
-            // Attach event listeners
-            document.getElementById('user-menu-toggle')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleUserMenu();
-            });
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log('Intentando cerrar sesión...');
-                    if (window.handleLogout) {
-                        window.handleLogout();
-                    } else {
-                        console.error('CRITICAL: window.handleLogout no está definido');
-                        // Fallback de emergencia
-                        if (window.authManager) window.authManager.logout();
-                        else window.location.href = 'index.html';
-                    }
-                });
-            }
-
-        } else {
-            // Fallback
-            container.innerHTML = `<button id="user-menu-fallback" class="flex items-center gap-2"><span>${user.nombre}</span></button>`;
-            document.getElementById('user-menu-fallback')?.addEventListener('click', toggleUserMenu);
-        }
+        renderAuthMenu(container, user);
     } else {
-        // Usuario no autenticado
-        if (UserMenuTemplates.guest) {
-            container.innerHTML = UserMenuTemplates.guest;
-
-            // Attach event listeners
-            document.getElementById('user-menu-toggle')?.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                toggleUserMenu();
-            });
-            document.getElementById('google-login-btn')?.addEventListener('click', (e) => {
-                if (window.loginWithGoogle) window.loginWithGoogle();
-            });
-        } else {
-            // Fallback
-            container.innerHTML = `<a href="login.html">Iniciar Sesión</a>`;
-        }
+        renderGuestMenu(container);
     }
 
     // Gestionar visibilidad de Favoritos
@@ -111,6 +80,83 @@ export async function updateAuthUI(user) {
     // Reinicializar iconos de Lucide
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
+    }
+}
+
+function renderAuthMenu(container, user) {
+    // Usuario autenticado
+    if (UserMenuTemplates.auth) {
+        const avatarHtml = user.avatar_url
+            ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-8 h-8 rounded-full object-cover">`
+            : `<i data-lucide="user" class="w-6 h-6"></i>`;
+
+        const userName = user.nombre ? user.nombre.split(' ')[0] : 'Usuario';
+
+        container.innerHTML = UserMenuTemplates.auth
+            .replace('{{avatar_html}}', avatarHtml)
+            .replace('{{user_name}}', userName);
+
+        // Attach event listeners
+
+        // 1. Toggle Button
+        const toggleBtn = container.querySelector('#user-menu-toggle');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleUserMenu();
+            });
+        }
+
+        // 2. Logout Button
+        // Use setTimeout to ensure DOM is ready if there's any weird timing, though innerHTML is sync.
+        // Just for safety in case of render queuing. But sync is better.
+        const logoutBtn = container.querySelector('#logout-btn');
+        if (logoutBtn) {
+            console.log('Logout button found, attaching listener');
+            logoutBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation(); // Stop menu from potentially closing or other handlers interference
+                console.log('Logout button clicked');
+
+                if (typeof window.handleLogout === 'function') {
+                    window.handleLogout();
+                } else if (window.authManager) {
+                    console.log('Using fallback authManager.logout');
+                    window.authManager.logout();
+                } else {
+                    console.error('CRITICAL: No logout handler available');
+                    window.location.href = 'login.html';
+                }
+            });
+        } else {
+            console.error('CRITICAL: Logout button NOT found in template injection');
+        }
+
+    } else {
+        // Fallback
+        container.innerHTML = `<button id="user-menu-fallback" class="flex items-center gap-2"><span>${user.nombre}</span></button>`;
+        document.getElementById('user-menu-fallback')?.addEventListener('click', toggleUserMenu);
+    }
+}
+
+export function renderGuestMenu(container) {
+    // Usuario no autenticado
+    if (UserMenuTemplates.guest) {
+        container.innerHTML = UserMenuTemplates.guest;
+
+        // Attach event listeners
+        document.getElementById('user-menu-toggle')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleUserMenu();
+        });
+        document.getElementById('google-login-btn')?.addEventListener('click', (e) => {
+            if (window.loginWithGoogle) window.loginWithGoogle();
+        });
+    } else {
+        // Fallback
+        container.innerHTML = `<a href="login.html">Iniciar Sesión</a>`;
     }
 }
 

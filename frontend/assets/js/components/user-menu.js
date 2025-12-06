@@ -70,13 +70,30 @@
                             Mis Pedidos
                         </a>
                         <hr class="my-2 border-gray-100">
-                        <button onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        <button id="logout-btn" onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
                             <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
                             Cerrar Sesión
                         </button>
                     </div>
                 </div>
             `;
+
+            // Add Event Listener
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (window.handleLogout) {
+                        window.handleLogout();
+                    } else if (window.authManager) {
+                        window.authManager.logout();
+                    } else {
+                        // Fallback fallback
+                        window.location.href = 'login.html';
+                    }
+                });
+            }
+
         } else {
             // Usuario no autenticado - mostrar botón de login
             authButton.innerHTML = `

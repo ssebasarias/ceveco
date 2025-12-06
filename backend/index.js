@@ -28,7 +28,7 @@ app.use(helmet({
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co"],
             connectSrc: ["'self'"],
-            frameSrc: ["'self'", "https://checkout.wompi.co"],
+            frameSrc: ["'self'", "https://checkout.wompi.co", "https://www.google.com"],
         },
     },
 }));
