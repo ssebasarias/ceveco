@@ -8,12 +8,19 @@
 </style>
 <header class="w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm transition-all duration-300">
     <div class="container mx-auto px-4 lg:px-8">
-        <div class="flex items-center justify-between h-20 gap-8">
+        <div class="flex items-center justify-between h-20 gap-4 md:gap-8">
+            <!-- Mobile Menu Toggle -->
+            <!-- Mobile Menu Toggle -->
+            <button id="mobile-menu-toggle" onclick="toggleMobileMenu()"
+                class="lg:hidden p-2 -ml-2 text-gray-600 hover:text-primary transition-colors">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+
             <a href="index.html" class="flex-shrink-0">
-                <img src="../assets/img/logo.png" alt="Ceveco" class="h-14 w-auto object-contain">
+                <img src="../assets/img/logo.png" alt="Ceveco" class="h-10 md:h-14 w-auto object-contain">
             </a>
 
-            <div class="hidden md:flex flex-1 max-w-2xl relative">
+            <div class="hidden lg:flex flex-1 max-w-2xl relative">
                 <input type="text" id="search-input" placeholder="Buscar neveras, muebles, motos..."
                     class="w-full pl-5 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm placeholder-gray-400">
                 <button onclick="handleSearch()"
@@ -56,7 +63,7 @@
             </div>
         </div>
 
-        <nav class="hidden md:block border-t border-gray-50">
+        <nav class="hidden lg:block border-t border-gray-50">
             <ul class="flex items-center gap-8 py-3 text-sm font-medium text-gray-600">
                 <li><a href="productos.html?categoria=electro-hogar"
                         class="hover:text-primary transition-colors">Electro Hogar</a></li>
@@ -71,4 +78,98 @@
             </ul>
         </nav>
     </div>
+    </div>
+
+    <!-- Mobile Menu Drawer & Backdrop -->
+    <!-- High z-index to ensure it covers everything -->
+    <div id="mobile-menu-backdrop"
+        class="fixed inset-0 bg-black/50 z-[9998] hidden backdrop-blur-sm transition-opacity opacity-0"
+        onclick="toggleMobileMenu()"></div>
+
+    <aside id="mobile-menu-drawer"
+        class="fixed top-0 left-0 h-full w-[280px] bg-white z-[9999] transform -translate-x-full transition-transform duration-300 shadow-2xl overflow-y-auto">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+            <img src="../assets/img/logo.png" alt="Ceveco" class="h-8 w-auto">
+            <button id="mobile-menu-close" onclick="toggleMobileMenu()"
+                class="p-2 text-gray-500 hover:text-red-500 transition-colors bg-gray-50 rounded-full">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="p-5 space-y-6">
+            <!-- Mobile User Auth (Managed by UI.js) -->
+            <div id="mobile-user-section">
+                <!-- Default Guest State -->
+                <div class="flex flex-col gap-3 mb-6 pb-6 border-b border-gray-100">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                            <i data-lucide="user" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Bienvenido</p>
+                            <p class="text-xs text-gray-500">Ingresa para ver tus compras</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <a href="login.html"
+                            class="py-2.5 px-4 bg-primary text-white text-sm font-semibold rounded-lg text-center hover:bg-primary-dark transition-colors">Iniciar
+                            sesión</a>
+                        <a href="registro.html"
+                            class="py-2.5 px-4 bg-gray-100 text-gray-700 text-sm font-semibold rounded-lg text-center hover:bg-gray-200 transition-colors">Registrarse</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Search -->
+            <div class="relative">
+                <input type="text" id="mobile-search-input" placeholder="Buscar productos..."
+                    class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
+                    onkeypress="if(event.key === 'Enter') { window.location.href='productos.html?q='+this.value; }">
+                <button
+                    onclick="window.location.href='productos.html?q='+document.getElementById('mobile-search-input').value"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-primary text-white rounded-lg shadow-sm">
+                    <i data-lucide="search" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="space-y-1">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 px-2">Categorías</h3>
+                <a href="productos.html?categoria=electro-hogar"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors">Electro
+                    Hogar</a>
+                <a href="productos.html?categoria=muebles"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors">Muebles
+                    y Organización</a>
+                <a href="productos.html?categoria=motos"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors">Motos</a>
+                <a href="productos.html?categoria=herramientas"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors">Herramientas
+                    STIHL</a>
+                <a href="productos.html?destacado=true"
+                    class="block px-3 py-2.5 text-primary font-semibold hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Ofertas del Día
+                </a>
+            </nav>
+
+            <div class="border-t border-gray-100 pt-4 space-y-1">
+                <a href="favoritos.html"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors flex items-center gap-3">
+                    <i data-lucide="heart" class="w-5 h-5 text-gray-400"></i> Mis Favoritos
+                </a>
+                <a href="productos.html?destacado=true"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors flex items-center gap-3">
+                    <i data-lucide="star" class="w-5 h-5 text-yellow-500"></i> Más vendidos
+                </a>
+                <a href="contacto.html"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors flex items-center gap-3">
+                    <i data-lucide="phone" class="w-5 h-5 text-primary"></i> Contáctanos
+                </a>
+                <a href="sedes.html"
+                    class="block px-3 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-primary rounded-lg font-medium transition-colors flex items-center gap-3">
+                    <i data-lucide="map-pin" class="w-5 h-5 text-green-600"></i> Nuestras sedes
+                </a>
+            </div>
+        </div>
+    </aside>
 </header>

@@ -141,8 +141,20 @@ async function loadSharedComponents() {
 
         // 2. Inject Components
         if (navbarRoot) {
-            if (navbarHtml) navbarRoot.innerHTML = navbarHtml;
-            else console.error('Navbar HTML not loaded');
+            if (navbarHtml) {
+                navbarRoot.innerHTML = navbarHtml;
+
+                // --- FIX: Teleport Mobile Menu to Body ---
+                // This prevents stacking context issues (e.g. valid z-index but stuck inside header/nav)
+                const backdrop = document.getElementById('mobile-menu-backdrop');
+                const drawer = document.getElementById('mobile-menu-drawer');
+
+                if (backdrop) document.body.appendChild(backdrop);
+                if (drawer) document.body.appendChild(drawer);
+
+            } else {
+                console.error('Navbar HTML not loaded');
+            }
         }
 
         if (footerRoot) {
@@ -179,6 +191,28 @@ async function loadSharedComponents() {
             updateCartCount();
         }
 
+        // --- Explicitly Attach Mobile Menu Listener ---
+        const mobileToggleBtn = document.getElementById('mobile-menu-toggle');
+        if (mobileToggleBtn) {
+            mobileToggleBtn.onclick = function (e) {
+                e.preventDefault();
+                window.toggleMobileMenu();
+            };
+            console.log('Mobile menu (ID: mobile-menu-toggle) listener attached via JS');
+        } else {
+            console.warn('Mobile menu toggle button (ID: mobile-menu-toggle) NOT found in navbar');
+        }
+
+        // --- Explicitly Attach Mobile Menu CLOSE Listener ---
+        const mobileCloseBtn = document.getElementById('mobile-menu-close');
+        if (mobileCloseBtn) {
+            mobileCloseBtn.onclick = function (e) {
+                e.preventDefault();
+                window.toggleMobileMenu();
+            };
+            console.log('Mobile menu CLOSE button listener attached');
+        }
+
         // Final icon refresh ensures everything dynamic has icons
         if (window.lucide) window.lucide.createIcons();
 
@@ -190,6 +224,51 @@ async function loadSharedComponents() {
 // Expose global functions
 window.formatPrice = formatPrice;
 window.renderProductCard = renderProductCard;
+
+/**
+ * Toggle Mobile Menu Drawer
+ */
+/**
+ * Toggle Mobile Menu Drawer
+ */
+window.toggleMobileMenu = function () {
+    console.log('Mobile Menu Toggle Clicked');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const drawer = document.getElementById('mobile-menu-drawer');
+
+    if (backdrop && drawer) {
+        if (backdrop.classList.contains('hidden')) {
+            console.log('Opening Menu');
+            // Open
+            backdrop.classList.remove('hidden');
+            // Force reflow
+            void backdrop.offsetWidth;
+            setTimeout(() => {
+                backdrop.classList.remove('opacity-0');
+                drawer.classList.remove('-translate-x-full');
+            }, 10);
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        } else {
+            console.log('Closing Menu');
+            // Close
+            backdrop.classList.add('opacity-0');
+            drawer.classList.add('-translate-x-full');
+            document.body.style.overflow = ''; // Restore scrolling
+
+            setTimeout(() => {
+                backdrop.classList.add('hidden');
+            }, 300);
+        }
+    } else {
+        console.error('Mobile menu elements not found in DOM');
+        // Fallback: If elements are missing, maybe dynamic load failed or ID mismatch.
+        // Try to find by class if needed, or querySelector.
+        const drawerFallback = document.querySelector('aside.fixed.top-0.left-0');
+        if (drawerFallback) console.warn('Found drawer by class but ID mismatch?');
+    }
+    // Re-init icons to be safe
+    if (window.lucide) window.lucide.createIcons();
+};
 
 /**
  * Handle search from navbar - GLOBAL FUNCTION

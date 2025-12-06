@@ -81,6 +81,73 @@ export async function updateAuthUI(user) {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+
+    // Update Mobile Menu
+    updateMobileAuthUI(user);
+}
+
+function updateMobileAuthUI(user) {
+    const mobileContainer = document.getElementById('mobile-user-section');
+    if (!mobileContainer) return;
+
+    if (user) {
+        // Authenticated Mobile View
+        const avatarHtml = user.avatar_url
+            ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-full h-full object-cover">`
+            : `<i data-lucide="user" class="w-6 h-6"></i>`;
+
+        const userName = user.nombre ? user.nombre.split(' ')[0] : 'Usuario';
+        const userEmail = user.email || '';
+
+        mobileContainer.innerHTML = `
+            <div class="flex flex-col gap-3 mb-6 pb-6 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary overflow-hidden border border-primary/20">
+                        ${avatarHtml}
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-900">Hola, ${userName}</p>
+                        <p class="text-xs text-gray-500 truncate max-w-[180px]">${userEmail}</p>
+                    </div>
+                </div>
+                <button id="mobile-logout-btn" class="w-full py-2.5 px-4 border border-gray-200 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-50 transition-colors flex items-center justify-center gap-2 group">
+                    <i data-lucide="log-out" class="w-4 h-4 group-hover:text-red-700"></i> Cerrar Sesión
+                </button>
+            </div>
+        `;
+
+        // Attach Logout Listener
+        const btn = mobileContainer.querySelector('#mobile-logout-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                if (window.handleLogout) window.handleLogout();
+                else if (window.authManager) window.authManager.logout();
+            });
+        }
+    } else {
+        // Guest Mobile View (Restore)
+        mobileContainer.innerHTML = `
+            <div class="flex flex-col gap-3 mb-6 pb-6 border-b border-gray-100">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                        <i data-lucide="user" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-900">Bienvenido</p>
+                        <p class="text-xs text-gray-500">Ingresa para ver tus compras</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <a href="login.html" class="py-2.5 px-4 bg-primary text-white text-sm font-semibold rounded-lg text-center hover:bg-primary-dark transition-colors">Iniciar sesión</a>
+                    <a href="registro.html" class="py-2.5 px-4 bg-gray-100 text-gray-700 text-sm font-semibold rounded-lg text-center hover:bg-gray-200 transition-colors">Registrarse</a>
+                </div>
+            </div>
+        `;
+    }
+    // Re-init icons for mobile section
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 function renderAuthMenu(container, user) {

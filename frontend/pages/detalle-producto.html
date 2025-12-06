@@ -161,36 +161,40 @@
                 <!-- Actions -->
                 <div class="space-y-3 pt-4">
                     <!-- Quantity & Add to Cart -->
-                    <div class="flex gap-3">
-                        <div class="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden">
-                            <button onclick="updateQuantity(-1)" class="px-4 py-3 hover:bg-gray-50 transition-colors">
-                                <i data-lucide="minus" class="w-5 h-5"></i>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div
+                            class="flex items-center justify-center border-2 border-gray-200 rounded-lg overflow-hidden w-full sm:w-auto">
+                            <button onclick="updateQuantity(-1)"
+                                class="px-3 py-2 md:px-4 md:py-3 hover:bg-gray-50 transition-colors">
+                                <i data-lucide="minus" class="w-4 h-4 md:w-5 md:h-5"></i>
                             </button>
                             <input type="number" id="quantity-input" value="1" min="1"
-                                class="w-16 text-center border-x-2 border-gray-200 py-3 focus:outline-none" readonly>
-                            <button onclick="updateQuantity(1)" class="px-4 py-3 hover:bg-gray-50 transition-colors">
-                                <i data-lucide="plus" class="w-5 h-5"></i>
+                                class="w-16 text-center border-x-2 border-gray-200 py-2 md:py-3 focus:outline-none bg-white text-sm md:text-base"
+                                readonly>
+                            <button onclick="updateQuantity(1)"
+                                class="px-3 py-2 md:px-4 md:py-3 hover:bg-gray-50 transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4 md:w-5 md:h-5"></i>
                             </button>
                         </div>
                         <button id="add-to-cart-btn"
-                            class="flex-1 bg-primary text-white font-bold py-4 px-8 rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105 flex items-center justify-center gap-2">
-                            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                            class="flex-1 bg-primary text-white font-bold py-3 px-6 rounded-lg hover:bg-primary-dark transition-all transform hover:scale-105 flex items-center justify-center gap-2 text-sm md:text-base shadow-sm">
+                            <i data-lucide="shopping-cart" class="w-4 h-4 md:w-5 md:h-5"></i>
                             Agregar al Carrito
                         </button>
                     </div>
 
                     <!-- WhatsApp Contact -->
                     <a id="whatsapp-btn" href="#" target="_blank"
-                        class="w-full bg-green-500 text-white font-bold py-4 px-8 rounded-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2">
-                        <i data-lucide="message-circle" class="w-5 h-5"></i>
+                        class="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2 text-sm md:text-base shadow-sm">
+                        <i data-lucide="message-circle" class="w-4 h-4 md:w-5 md:h-5"></i>
                         Contactar Asesor por WhatsApp
                     </a>
 
                     <!-- Wishlist -->
                     <button id="detail-fav-btn"
-                        class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-4 px-8 rounded-lg hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all flex items-center justify-center gap-2 btn-favorite"
+                        class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all flex items-center justify-center gap-2 btn-favorite text-sm md:text-base"
                         onclick="handleToggleFavorite(this, currentProduct.id_producto, event)">
-                        <i data-lucide="heart" class="w-5 h-5 transition-colors"></i>
+                        <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5 transition-colors"></i>
                         <span id="fav-text">Agregar a Favoritos</span>
                     </button>
                 </div>
@@ -258,7 +262,7 @@
                     Ver todos <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
-            <div id="related-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div id="related-products" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                 <!-- Related products will be rendered by JS -->
             </div>
         </div>
