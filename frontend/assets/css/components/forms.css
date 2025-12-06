@@ -1,0 +1,200 @@
+/**
+ * COMPONENT - Forms
+ * Estilos para todos los formularios
+ */
+
+/* ===================================
+   FORM GROUP
+   =================================== */
+.form-group {
+    margin-bottom: var(--spacing-6);
+}
+
+.form-label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-gray-700);
+    margin-bottom: var(--spacing-2);
+}
+
+.form-label-required::after {
+    content: '*';
+    color: var(--color-error);
+    margin-left: var(--spacing-1);
+}
+
+/* ===================================
+   INPUTS
+   =================================== */
+.form-input,
+.form-textarea,
+.form-select {
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-primary);
+    color: var(--color-gray-900);
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-input);
+    transition: var(--transition-all);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.form-input:disabled,
+.form-textarea:disabled,
+.form-select:disabled {
+    background-color: var(--color-gray-100);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--color-gray-400);
+}
+
+/* ===================================
+   TEXTAREA
+   =================================== */
+.form-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ===================================
+   SELECT
+   =================================== */
+.form-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-4) center;
+    padding-right: var(--spacing-10);
+    appearance: none;
+}
+
+/* ===================================
+   CHECKBOX & RADIO
+   =================================== */
+.form-checkbox,
+.form-radio {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.form-check-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* ===================================
+   INPUT WITH ICON
+   =================================== */
+.form-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.form-input-icon {
+    position: absolute;
+    left: var(--spacing-4);
+    color: var(--color-gray-400);
+    pointer-events: none;
+}
+
+.form-input-group .form-input {
+    padding-left: var(--spacing-12);
+}
+
+/* ===================================
+   VALIDATION STATES
+   =================================== */
+.form-input.is-valid,
+.form-textarea.is-valid,
+.form-select.is-valid {
+    border-color: var(--color-success);
+}
+
+.form-input.is-valid:focus,
+.form-textarea.is-valid:focus,
+.form-select.is-valid:focus {
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-input.is-invalid,
+.form-textarea.is-invalid,
+.form-select.is-invalid {
+    border-color: var(--color-error);
+}
+
+.form-input.is-invalid:focus,
+.form-textarea.is-invalid:focus,
+.form-select.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* ===================================
+   HELP TEXT
+   =================================== */
+.form-help {
+    display: block;
+    margin-top: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+}
+
+.form-error {
+    display: block;
+    margin-top: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-error);
+}
+
+.form-success {
+    display: block;
+    margin-top: var(--spacing-2);
+    font-size: var(--font-size-sm);
+    color: var(--color-success);
+}
+
+/* ===================================
+   SEARCH INPUT
+   =================================== */
+.form-search {
+    position: relative;
+}
+
+.form-search-input {
+    padding-left: var(--spacing-12);
+    padding-right: var(--spacing-12);
+}
+
+.form-search-icon {
+    position: absolute;
+    left: var(--spacing-4);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-400);
+}
+
+.form-search-button {
+    position: absolute;
+    right: var(--spacing-2);
+    top: 50%;
+    transform: translateY(-50%);
+}

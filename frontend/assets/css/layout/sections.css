@@ -1,0 +1,104 @@
+/**
+ * LAYOUT - Sections
+ * Secciones comunes de página
+ */
+
+/* ===================================
+   SECTION BASE
+   =================================== */
+.section {
+    padding: var(--section-padding-y, 4rem) 0;
+}
+
+.section-sm {
+    padding: var(--section-padding-y-sm, 2rem) 0;
+}
+
+.section-lg {
+    padding: calc(var(--section-padding-y, 4rem) * 1.5) 0;
+}
+
+/* ===================================
+   HERO SECTION
+   =================================== */
+.hero {
+    position: relative;
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), transparent);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+/* ===================================
+   SECTION HEADER
+   =================================== */
+.section-header {
+    text-align: center;
+    margin-bottom: var(--spacing-12);
+}
+
+.section-title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
+    margin-bottom: var(--spacing-4);
+}
+
+.section-subtitle {
+    font-size: var(--font-size-lg);
+    color: var(--color-gray-600);
+}
+
+/* ===================================
+   FLEX LAYOUTS
+   =================================== */
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-2 {
+    gap: var(--spacing-2);
+}
+
+.gap-4 {
+    gap: var(--spacing-4);
+}
+
+.gap-6 {
+    gap: var(--spacing-6);
+}
+
+.gap-8 {
+    gap: var(--spacing-8);
+}

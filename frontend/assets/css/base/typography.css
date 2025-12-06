@@ -1,0 +1,151 @@
+/**
+ * BASE - Tipografía
+ * Estilos tipográficos base aplicados globalmente
+ */
+
+/* ===================================
+   HEADINGS
+   =================================== */
+h1 {
+    font-size: var(--font-size-5xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-gray-900);
+}
+
+h2 {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+    color: var(--color-gray-900);
+}
+
+h3 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-gray-900);
+}
+
+h4 {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-snug);
+    color: var(--color-gray-800);
+}
+
+h5 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+    color: var(--color-gray-800);
+}
+
+h6 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-normal);
+    color: var(--color-gray-700);
+}
+
+/* ===================================
+   PARAGRAPH
+   =================================== */
+p {
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-gray-700);
+}
+
+/* ===================================
+   LINKS
+   =================================== */
+a {
+    color: var(--color-secondary);
+    transition: var(--transition-colors);
+}
+
+a:hover {
+    color: var(--color-primary);
+}
+
+a:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+/* ===================================
+   STRONG & EMPHASIS
+   =================================== */
+strong,
+b {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-gray-900);
+}
+
+em,
+i {
+    font-style: italic;
+}
+
+/* ===================================
+   SMALL TEXT
+   =================================== */
+small {
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+}
+
+/* ===================================
+   CODE
+   =================================== */
+code,
+kbd,
+pre {
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-sm);
+}
+
+code {
+    padding: 0.125rem 0.25rem;
+    background-color: var(--color-gray-100);
+    border-radius: var(--radius-sm);
+    color: var(--color-gray-900);
+}
+
+/* ===================================
+   BLOCKQUOTE
+   =================================== */
+blockquote {
+    margin: 0;
+    padding-left: var(--spacing-4);
+    border-left: 4px solid var(--color-primary);
+    font-style: italic;
+    color: var(--color-gray-600);
+}
+
+/* ===================================
+   HR
+   =================================== */
+hr {
+    border: none;
+    border-top: 1px solid var(--color-gray-200);
+    margin: var(--spacing-8) 0;
+}
+
+/* ===================================
+   RESPONSIVE TYPOGRAPHY
+   =================================== */
+@media (max-width: 768px) {
+    h1 {
+        font-size: var(--font-size-4xl);
+    }
+
+    h2 {
+        font-size: var(--font-size-3xl);
+    }
+
+    h3 {
+        font-size: var(--font-size-2xl);
+    }
+}

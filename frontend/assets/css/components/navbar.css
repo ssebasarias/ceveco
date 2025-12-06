@@ -1,0 +1,110 @@
+/**
+ * COMPONENT - Navbar
+ * Estilos para el navegador principal
+ * Incluye mega menu
+ */
+
+/* ===================================
+   MEGA MENU
+   =================================== */
+.mega-menu {
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: var(--transition-base);
+}
+
+.group:hover .mega-menu {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* ===================================
+   NAVBAR CONTAINER
+   =================================== */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background-color: var(--color-white);
+    border-bottom: 1px solid var(--color-gray-200);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-content {
+    max-width: var(--container-max-width, 1280px);
+    margin: 0 auto;
+    padding: var(--spacing-4);
+}
+
+/* ===================================
+   NAVBAR LINKS
+   =================================== */
+.navbar-link {
+    color: var(--color-gray-700);
+    font-weight: var(--font-weight-medium);
+    transition: var(--transition-colors);
+}
+
+.navbar-link:hover {
+    color: var(--color-primary);
+}
+
+.navbar-link.active {
+    color: var(--color-primary);
+}
+
+/* ===================================
+   SEARCH BAR
+   =================================== */
+.navbar-search {
+    flex: 1;
+    max-width: 600px;
+}
+
+.navbar-search-input {
+    width: 100%;
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-lg);
+    transition: var(--transition-all);
+}
+
+.navbar-search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* ===================================
+   NAVBAR ICONS
+   =================================== */
+.navbar-icon {
+    position: relative;
+    padding: var(--spacing-2);
+    color: var(--color-gray-600);
+    transition: var(--transition-colors);
+}
+
+.navbar-icon:hover {
+    color: var(--color-primary);
+}
+
+.navbar-icon-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-center;
+}

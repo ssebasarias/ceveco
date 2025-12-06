@@ -1,0 +1,129 @@
+/**
+ * UTILITIES - Animaciones
+ * Keyframes y clases de animación
+ * Extraído de index.html y otros archivos
+ */
+
+/* ===================================
+   INFINITE SCROLL
+   Para carruseles de marcas/productos
+   =================================== */
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-scroll {
+    animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover {
+    animation-play-state: paused;
+}
+
+/* ===================================
+   FADE IN
+   Entrada suave de elementos
+   =================================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.25s ease-out;
+}
+
+.animate-fade-in-up {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* ===================================
+   PULSE
+   Para elementos que necesitan atención
+   =================================== */
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===================================
+   SPINNER
+   Para loading states
+   =================================== */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* ===================================
+   SCALE ON HOVER
+   Para elementos interactivos
+   =================================== */
+.hover-scale {
+    transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.05);
+}
+
+/* ===================================
+   SLIDE IN
+   Para modales y sidebars
+   =================================== */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+}

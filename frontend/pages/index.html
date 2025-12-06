@@ -12,8 +12,8 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
-    <!-- Sistema de colores -->
-    <link rel="stylesheet" href="../assets/css/global.css">
+    <!-- ✨ Sistema CSS Centralizado Profesional ✨ -->
+    <link rel="stylesheet" href="../assets/css/main.css">
 
     <script>
         tailwind.config = {
@@ -47,76 +47,7 @@
             }
         }
     </script>
-    <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        /* Mega Menu Hover Logic */
-        .group:hover .mega-menu {
-            display: block;
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        /* Infinite Scroll Animation */
-        @keyframes scroll {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .animate-scroll {
-            animation: scroll 30s linear infinite;
-        }
-
-        .animate-scroll:hover {
-            animation-play-state: paused;
-        }
-
-        /* Hide scrollbar but keep functionality */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Product card in carousel - fixed width */
-        #featured-products>div {
-            min-width: 280px;
-            max-width: 280px;
-            scroll-snap-align: start;
-        }
-
-        @media (min-width: 640px) {
-            #featured-products>div {
-                min-width: 320px;
-                max-width: 320px;
-            }
-        }
-    </style>
+    <!-- ✅ CSS eliminado - Ahora está centralizado en main.css (base/, components/, utilities/) -->
 </head>
 
 <body class="bg-white text-gray-800 font-sans antialiased">

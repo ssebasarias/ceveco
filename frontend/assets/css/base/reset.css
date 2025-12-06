@@ -1,0 +1,155 @@
+/**
+ * BASE - Reset CSS
+ * Reset moderno y minimalista
+ */
+
+/* ===================================
+   BOX SIZING
+   =================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* ===================================
+   DOCUMENT
+   =================================== */
+html {
+    line-height: 1.15;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-normal);
+    line-height: var(--line-height-normal);
+    color: var(--color-gray-900);
+    background-color: var(--color-gray-50);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===================================
+   HEADINGS
+   =================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-tight);
+}
+
+/* ===================================
+   PARAGRAPHS
+   =================================== */
+p {
+    margin: 0;
+}
+
+/* ===================================
+   LISTS
+   =================================== */
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* ===================================
+   LINKS
+   =================================== */
+a {
+    color: inherit;
+    text-decoration: none;
+    background-color: transparent;
+}
+
+/* ===================================
+   BUTTONS
+   =================================== */
+button {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    cursor: pointer;
+}
+
+button:focus {
+    outline: none;
+}
+
+/* ===================================
+   FORMS
+   =================================== */
+input,
+textarea,
+select {
+    margin: 0;
+    padding: 0;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+}
+
+/* ===================================
+   IMAGES
+   =================================== */
+img,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===================================
+   TABLES
+   =================================== */
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* ===================================
+   SMOOTH SCROLL
+   =================================== */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

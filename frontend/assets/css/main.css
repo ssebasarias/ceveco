@@ -1,0 +1,53 @@
+/**
+ * MAIN CSS - Punto de entrada único
+ * Importa todos los estilos en el orden correcto
+ * 
+ * Orden de importación:
+ * 1. Tokens (variables)
+ * 2. Base (reset, tipografía)
+ * 3. Layout (grid, contenedores)
+ * 4. Components (botones, cards, etc.)
+ * 5. Utilities (helpers, animaciones)
+ */
+
+/* ========================================
+   1. TOKENS - Variables de diseño
+   ======================================== */
+@import './tokens/colors.css';
+@import './tokens/typography.css';
+@import './tokens/spacing.css';
+@import './tokens/radius.css';
+@import './tokens/shadows.css';
+@import './tokens/transitions.css';
+
+/* ========================================
+   2. BASE - Reset y estilos fundamentales
+   ======================================== */
+@import './base/reset.css';
+@import './base/typography.css';
+@import './base/scrollbar.css';
+
+/* ========================================
+   3. LAYOUT - Estructuras de página
+   ======================================== */
+@import './layout/container.css';
+@import './layout/grid.css';
+@import './layout/sections.css';
+
+/* ========================================
+   4. COMPONENTS - Componentes reutilizables
+   ======================================== */
+@import './components/buttons.css';
+@import './components/cards.css';
+@import './components/navbar.css';
+@import './components/footer.css';
+@import './components/forms.css';
+@import './components/badges.css';
+@import './components/modals.css';
+
+/* ========================================
+   5. UTILITIES - Clases de utilidad
+   ======================================== */
+@import './utilities/animations.css';
+@import './utilities/helpers.css';
+@import './utilities/responsive.css';

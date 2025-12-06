@@ -1,0 +1,139 @@
+/**
+ * UTILITIES - Helpers
+ * Clases de utilidad generales
+ * Extraído de index.html y otros archivos
+ */
+
+/* ===================================
+   HIDE SCROLLBAR
+   Oculta scrollbar pero mantiene funcionalidad
+   =================================== */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ===================================
+   SMOOTH SCROLL
+   =================================== */
+.scroll-smooth {
+    scroll-behavior: smooth;
+}
+
+/* ===================================
+   SCROLL SNAP
+   Para carruseles
+   =================================== */
+.snap-x {
+    scroll-snap-type: x mandatory;
+}
+
+.snap-y {
+    scroll-snap-type: y mandatory;
+}
+
+.snap-start {
+    scroll-snap-align: start;
+}
+
+.snap-center {
+    scroll-snap-align: center;
+}
+
+.snap-end {
+    scroll-snap-align: end;
+}
+
+/* ===================================
+   TRUNCATE TEXT
+   =================================== */
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ===================================
+   VISIBILITY
+   =================================== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ===================================
+   POINTER EVENTS
+   =================================== */
+.pointer-events-none {
+    pointer-events: none;
+}
+
+.pointer-events-auto {
+    pointer-events: auto;
+}
+
+/* ===================================
+   USER SELECT
+   =================================== */
+.select-none {
+    user-select: none;
+}
+
+.select-text {
+    user-select: text;
+}
+
+.select-all {
+    user-select: all;
+}
+
+/* ===================================
+   ASPECT RATIO
+   =================================== */
+.aspect-square {
+    aspect-ratio: 1 / 1;
+}
+
+.aspect-video {
+    aspect-ratio: 16 / 9;
+}
+
+/* ===================================
+   OBJECT FIT
+   =================================== */
+.object-cover {
+    object-fit: cover;
+}
+
+.object-contain {
+    object-fit: contain;
+}
+
+.object-fill {
+    object-fit: fill;
+}

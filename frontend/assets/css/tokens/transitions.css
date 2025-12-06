@@ -1,0 +1,81 @@
+/**
+ * DESIGN TOKENS - Transiciones y Animaciones
+ * Duraciones y timing functions consistentes
+ */
+
+:root {
+    /* ===================================
+     DURATIONS
+     =================================== */
+    --duration-75: 75ms;
+    --duration-100: 100ms;
+    --duration-150: 150ms;
+    --duration-200: 200ms;
+    --duration-300: 300ms;
+    --duration-500: 500ms;
+    --duration-700: 700ms;
+    --duration-1000: 1000ms;
+
+    /* ===================================
+     SEMANTIC DURATIONS
+     =================================== */
+    --duration-fast: var(--duration-150);
+    --duration-base: var(--duration-300);
+    --duration-slow: var(--duration-500);
+    --duration-slower: var(--duration-700);
+
+    /* ===================================
+     TIMING FUNCTIONS (Easing)
+     =================================== */
+    --ease-linear: linear;
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Custom easings */
+    --ease-spring: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+    /* ===================================
+     COMPLETE TRANSITIONS
+     Transiciones completas listas para usar
+     =================================== */
+    --transition-fast: all var(--duration-fast) var(--ease-out);
+    --transition-base: all var(--duration-base) var(--ease-in-out);
+    --transition-slow: all var(--duration-slow) var(--ease-in-out);
+
+    /* Specific property transitions */
+    --transition-colors: color var(--duration-base) var(--ease-in-out),
+        background-color var(--duration-base) var(--ease-in-out),
+        border-color var(--duration-base) var(--ease-in-out);
+
+    --transition-opacity: opacity var(--duration-base) var(--ease-in-out);
+
+    --transition-transform: transform var(--duration-base) var(--ease-out);
+
+    --transition-shadow: box-shadow var(--duration-base) var(--ease-in-out);
+
+    --transition-all: all var(--duration-base) var(--ease-in-out);
+
+    /* ===================================
+     Z-INDEX SCALE
+     Para layers consistentes
+     =================================== */
+    --z-0: 0;
+    --z-10: 10;
+    --z-20: 20;
+    --z-30: 30;
+    --z-40: 40;
+    --z-50: 50;
+    --z-auto: auto;
+
+    /* Semantic z-index */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+}

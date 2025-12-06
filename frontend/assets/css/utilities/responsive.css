@@ -1,0 +1,179 @@
+/**
+ * UTILITIES - Responsive
+ * Utilidades responsive y media queries
+ */
+
+/* ===================================
+   DISPLAY UTILITIES
+   =================================== */
+.hidden {
+    display: none !important;
+}
+
+.block {
+    display: block !important;
+}
+
+.inline-block {
+    display: inline-block !important;
+}
+
+.flex {
+    display: flex !important;
+}
+
+.inline-flex {
+    display: inline-flex !important;
+}
+
+.grid {
+    display: grid !important;
+}
+
+/* ===================================
+   RESPONSIVE DISPLAY
+   =================================== */
+/* Mobile First */
+@media (min-width: 640px) {
+    .sm\:hidden {
+        display: none !important;
+    }
+
+    .sm\:block {
+        display: block !important;
+    }
+
+    .sm\:flex {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .md\:hidden {
+        display: none !important;
+    }
+
+    .md\:block {
+        display: block !important;
+    }
+
+    .md\:flex {
+        display: flex !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .lg\:hidden {
+        display: none !important;
+    }
+
+    .lg\:block {
+        display: block !important;
+    }
+
+    .lg\:flex {
+        display: flex !important;
+    }
+}
+
+/* ===================================
+   TEXT ALIGN
+   =================================== */
+.text-left {
+    text-align: left;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+@media (min-width: 768px) {
+    .md\:text-left {
+        text-align: left;
+    }
+
+    .md\:text-center {
+        text-align: center;
+    }
+
+    .md\:text-right {
+        text-align: right;
+    }
+}
+
+/* ===================================
+   WIDTHS
+   =================================== */
+.w-full {
+    width: 100%;
+}
+
+.w-auto {
+    width: auto;
+}
+
+.w-screen {
+    width: 100vw;
+}
+
+.h-full {
+    height: 100%;
+}
+
+.h-auto {
+    height: auto;
+}
+
+.h-screen {
+    height: 100vh;
+}
+
+/* ===================================
+   MAX WIDTHS
+   =================================== */
+.max-w-sm {
+    max-width: 640px;
+}
+
+.max-w-md {
+    max-width: 768px;
+}
+
+.max-w-lg {
+    max-width: 1024px;
+}
+
+.max-w-xl {
+    max-width: 1280px;
+}
+
+.max-w-full {
+    max-width: 100%;
+}
+
+/* ===================================
+   MOBILE SPECIFIC
+   =================================== */
+@media (max-width: 767px) {
+    .mobile-only {
+        display: block !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none !important;
+    }
+
+    .desktop-only {
+        display: block !important;
+    }
+}
