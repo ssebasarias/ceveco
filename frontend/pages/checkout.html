@@ -431,6 +431,10 @@
     <script src="../assets/js/utils/utils.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
+    <script type="module">
+        import { OrdersAPI } from '../assets/js/api/orders.api.js';
+        window.OrdersAPI = OrdersAPI;
+    </script>
     <script src="../assets/js/app.js"></script>
     <script>
         lucide.createIcons();
@@ -439,6 +443,15 @@
 
         // Load cart items on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Check authentication
+            const token = localStorage.getItem('ceveco_auth_token');
+            if (!token) {
+                // Save current location to return after login (optional logic for login page)
+                sessionStorage.setItem('redirect_after_login', window.location.href);
+                window.location.href = 'login.html';
+                return;
+            }
+
             loadCheckoutItems();
         });
 
@@ -572,50 +585,104 @@
             const savedCart = localStorage.getItem('cevecoCart');
             const cart = JSON.parse(savedCart || '[]');
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const totalInCents = Math.round(total * 100); // Wompi expects cents
+            const totalInCents = Math.round(total * 100);
 
+            // Capture all values explicitly
             const email = document.getElementById('email').value;
             const phone = document.getElementById('phone').value;
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
+            const address = document.getElementById('address').value;
+            const department = document.getElementById('department').value;
+            const city = document.getElementById('city').value;
+            const zip = document.getElementById('zip').value;
 
             // Generate a unique reference
             const reference = 'CEVECO-' + Date.now();
 
-            // Initialize Wompi Checkout Widget
-            var checkout = new WidgetCheckout({
-                currency: 'COP',
-                amountInCents: totalInCents,
-                reference: reference,
-                publicKey: 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf', // Test Public Key - Replace with production key
-                redirectUrl: window.location.origin + '/frontend/pages/index.html', // Redirect after payment
-                customerData: {
-                    email: email,
-                    fullName: `${firstName} ${lastName}`,
-                    phoneNumber: phone,
-                    phoneNumberPrefix: '+57'
+            // Try-Catch block for Wompi
+            try {
+                if (typeof WidgetCheckout === 'undefined') {
+                    throw new Error('Wompi Widget not loaded');
                 }
-            });
 
-            checkout.open(function (result) {
-                var transaction = result.transaction;
-                console.log('Transaction result:', transaction);
+                var checkout = new WidgetCheckout({
+                    currency: 'COP',
+                    amountInCents: totalInCents,
+                    reference: reference,
+                    publicKey: 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf',
+                    redirectUrl: window.location.origin + '/frontend/pages/index.html',
+                    customerData: {
+                        email: email,
+                        fullName: `${firstName} ${lastName}`,
+                        phoneNumber: phone,
+                        phoneNumberPrefix: '+57'
+                    }
+                });
 
-                if (transaction.status === 'APPROVED') {
-                    // Clear cart
-                    localStorage.removeItem('cevecoCart');
+                checkout.open(async function (result) {
+                    var transaction = result.transaction;
+                    if (transaction.status === 'APPROVED') {
+                        await createOrderBackend(cart, {
+                            firstName, lastName, address, department, city, zip, email, phone
+                        }, total);
+                    }
+                });
 
-                    // Show success message
-                    alert('¡Pago aprobado! Gracias por tu compra. Recibirás un correo con los detalles de tu pedido.');
+            } catch (e) {
+                console.error('Wompi Error:', e);
+                alert('El sistema de pagos no está disponible. Usando modo simulación.');
+                simulateOrder();
+            }
+        }
 
-                    // Redirect to home
-                    window.location.href = 'index.html';
-                } else if (transaction.status === 'DECLINED') {
-                    alert('El pago fue rechazado. Por favor intenta con otro método de pago.');
-                } else if (transaction.status === 'PENDING') {
-                    alert('Tu pago está pendiente de confirmación. Te notificaremos cuando sea procesado.');
-                }
-            });
+        async function simulateOrder() {
+            const savedCart = localStorage.getItem('cevecoCart');
+            const cart = JSON.parse(savedCart || '[]');
+            if (cart.length === 0) return;
+
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+            // Capture values again just in case
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const address = document.getElementById('address').value;
+            const department = document.getElementById('department').value;
+            const city = document.getElementById('city').value;
+            const zip = document.getElementById('zip').value;
+
+            await createOrderBackend(cart, {
+                firstName, lastName, address, department, city, zip, email, phone
+            }, total);
+        }
+
+        async function createOrderBackend(cart, shippingData, total) {
+            try {
+                const orderData = {
+                    items: cart,
+                    shippingAddress: shippingData,
+                    contact: {
+                        email: shippingData.email,
+                        phone: shippingData.phone
+                    },
+                    totals: {
+                        subtotal: total,
+                        total: total,
+                        shipping: 0
+                    }
+                };
+
+                await window.OrdersAPI.create(orderData);
+                localStorage.removeItem('cevecoCart');
+                alert('¡Pedido Creado Exitosamente (Simulación)!');
+                window.location.href = 'pedidos.html';
+
+            } catch (error) {
+                console.error('Error creando pedido:', error);
+                alert('Error al guardar el pedido: ' + error.message);
+            }
         }
 
         // Allow Enter key to submit forms

@@ -239,7 +239,13 @@
                 const result = await handleLogin(formData);
                 if (result.success) {
                     alert('¡Bienvenido de nuevo!');
-                    window.location.href = 'index.html';
+                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
+                    if (redirectUrl) {
+                        sessionStorage.removeItem('redirect_after_login');
+                        window.location.href = redirectUrl;
+                    } else {
+                        window.location.href = 'index.html';
+                    }
                 }
             } catch (error) {
                 console.error('Error en login:', error);

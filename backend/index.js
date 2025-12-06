@@ -80,6 +80,7 @@ app.use(`${API_PREFIX}/productos`, productosRoutes);
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
+app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {
