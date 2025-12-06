@@ -58,7 +58,6 @@
 <body class="bg-white text-gray-800 font-sans antialiased">
 
     <!-- Sticky Header -->
-    <!-- Sticky Header -->
     <div id="navbar-root"></div>
 
     <!-- Hero Section -->
@@ -106,8 +105,10 @@
             <a href="productos.html?categoria=electro-hogar" class="group">
                 <div
                     class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                    <div class="h-64 bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-8">
-                        <span class="text-6xl">⚡</span>
+                    <div class="h-64 bg-gray-100 flex items-center justify-center overflow-hidden relative">
+                        <img src="../assets/img/cat_electro.png" alt="Electro Hogar"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                     </div>
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
@@ -121,8 +122,10 @@
             <a href="productos.html?categoria=muebles" class="group">
                 <div
                     class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                    <div class="h-64 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center p-8">
-                        <span class="text-6xl">🪑</span>
+                    <div class="h-64 bg-gray-100 flex items-center justify-center overflow-hidden relative">
+                        <img src="../assets/img/cat_muebles.png" alt="Muebles"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                     </div>
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
@@ -136,8 +139,10 @@
             <a href="productos.html?categoria=motos" class="group">
                 <div
                     class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                    <div class="h-64 bg-gradient-to-br from-cyan-50 to-cyan-100 flex items-center justify-center p-8">
-                        <span class="text-6xl">🏍️</span>
+                    <div class="h-64 bg-gray-100 flex items-center justify-center overflow-hidden relative">
+                        <img src="../assets/img/cat_motos.png" alt="Motos"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                     </div>
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
@@ -151,9 +156,10 @@
             <a href="productos.html?categoria=herramientas" class="group">
                 <div
                     class="bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
-                    <div
-                        class="h-64 bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center p-8">
-                        <span class="text-6xl">🔧</span>
+                    <div class="h-64 bg-gray-100 flex items-center justify-center overflow-hidden relative">
+                        <img src="../assets/img/cat_herramientas.png" alt="Herramientas"
+                            class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
                     </div>
                     <div class="p-6 text-center">
                         <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
@@ -313,6 +319,37 @@
             loadFeaturedProducts();
             initCarouselNavigation();
             loadBrands();
+
+            // Hero Carousel Logic
+            const heroImages = [
+                '../assets/img/hero.png',
+                '../assets/img/hero_muebles.png',
+                '../assets/img/hero_electro.png',
+                '../assets/img/hero_motos.png'
+            ];
+            let currentHeroIndex = 0;
+            const heroImageEl = document.getElementById('hero-image');
+
+            if (heroImageEl) {
+                setInterval(() => {
+                    // Fade out
+                    heroImageEl.style.opacity = '0';
+
+                    setTimeout(() => {
+                        currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
+                        heroImageEl.src = heroImages[currentHeroIndex];
+
+                        // Fade in after load
+                        heroImageEl.onload = () => {
+                            heroImageEl.style.opacity = '0.9';
+                        };
+                        // Fallback if cached
+                        if (heroImageEl.complete) {
+                            heroImageEl.style.opacity = '0.9';
+                        }
+                    }, 1000); // Matches transition-opacity duration-1000
+                }, 5000);
+            }
         });
     </script>
 </body>
