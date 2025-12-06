@@ -40,7 +40,7 @@
     <!-- Hero Section -->
     <section id="category-hero" class="relative bg-gray-50 h-[200px] overflow-hidden hidden">
         <div class="absolute inset-0">
-            <img id="hero-image" src="../assets/img/banner-hero/hero_main.png" alt="Banner"
+            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Banner"
                 class="w-full h-full object-cover opacity-90">
             <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent"></div>
         </div>
@@ -318,15 +318,15 @@
                 // Update Hero Image dynamically
                 const heroImg = document.getElementById('hero-image');
                 if (params.categoria === 'electro-hogar') {
-                    heroImg.src = '../assets/img/banner-category/hero_electro.png';
+                    heroImg.src = '../assets/img/banner-category/hero_electro.jpg';
                 } else if (params.categoria === 'muebles') {
-                    heroImg.src = '../assets/img/banner-category/hero_muebles.png';
+                    heroImg.src = '../assets/img/banner-category/hero_muebles.jpg';
                 } else if (params.categoria === 'motos') {
-                    heroImg.src = '../assets/img/banner-category/hero_motos.png';
+                    heroImg.src = '../assets/img/banner-category/hero_motos.jpg';
                 } else if (params.categoria === 'herramientas') {
-                    heroImg.src = '../assets/img/banner-category/hero_herramientas.png';
+                    heroImg.src = '../assets/img/banner-category/hero_herramientas.jpg';
                 } else {
-                    heroImg.src = '../assets/img/banner-hero/hero_main.png';
+                    heroImg.src = '../assets/img/banner-hero/hero_main.jpg';
                 }
             } else if (params.destacado) {
                 title.textContent = 'Productos Destacados';
