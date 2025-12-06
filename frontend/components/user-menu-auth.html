@@ -1,5 +1,5 @@
 <div class="relative" id="user-dropdown-container">
-    <button onclick="toggleUserMenu()" class="flex items-center gap-2 hover:text-primary transition-colors">
+    <button id="user-menu-toggle" class="flex items-center gap-2 hover:text-primary transition-colors">
         {{avatar_html}}
         <span class="hidden lg:inline font-medium">{{user_name}}</span>
         <i data-lucide="chevron-down" class="w-4 h-4 hidden lg:inline"></i>
@@ -17,8 +17,7 @@
             Mis Pedidos
         </a>
         <hr class="my-2 border-gray-100">
-        <button onclick="handleLogout()"
-            class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
+        <button id="logout-btn" class="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 transition-colors">
             <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
             Cerrar Sesión
         </button>
