@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - Ceveco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#0056b3', dark: '#1F2937' },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans flex flex-col">
+
+    <div id="navbar-root"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold mb-6">Mis Pedidos</h1>
+        <div class="bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="package" class="w-10 h-10 text-gray-400"></i>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 mb-2">No tienes pedidos recientes</h2>
+            <p class="text-gray-500 mb-6">Tus compras aparecerán aquí.</p>
+            <a href="productos.html"
+                class="inline-block bg-primary text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition">
+                Ir a comprar
+            </a>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/utils/utils.js"></script>
+    <script src="../assets/js/api/productos.api.js"></script>
+    <script src="../assets/js/components/cart-sidebar.js"></script>
+    <script type="module" src="../assets/js/auth/index.js"></script>
+    <script src="../assets/js/app.js"></script>
+</body>
+
+</html>

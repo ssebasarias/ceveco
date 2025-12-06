@@ -87,7 +87,7 @@ function renderAuthMenu(container, user) {
     // Usuario autenticado
     if (UserMenuTemplates.auth) {
         const avatarHtml = user.avatar_url
-            ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-8 h-8 rounded-full object-cover">`
+            ? `<img src="${user.avatar_url}" alt="${user.nombre}" class="w-6 h-6 rounded-full object-cover">`
             : `<i data-lucide="user" class="w-6 h-6"></i>`;
 
         const userName = user.nombre ? user.nombre.split(' ')[0] : 'Usuario';

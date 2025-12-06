@@ -244,8 +244,6 @@
                     response = await ProductosAPI.getAll(filters);
                 }
 
-                loading.classList.add('hidden');
-
                 if (response.success && response.data.length > 0) {
                     // Renderizar productos usando la función global de main.js
                     const cardsHtml = (await Promise.all(response.data.map(product => renderProductCard(product)))).join('');
@@ -273,10 +271,11 @@
 
             } catch (error) {
                 console.error('Error loading products:', error);
-                loading.classList.add('hidden');
                 empty.classList.remove('hidden');
                 empty.querySelector('h3').textContent = 'Error al cargar productos';
                 empty.querySelector('p').textContent = 'Por favor intenta nuevamente más tarde.';
+            } finally {
+                loading.classList.add('hidden');
             }
         }
 

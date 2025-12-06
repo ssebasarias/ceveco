@@ -1,8 +1,7 @@
 <div class="relative" id="user-dropdown-container">
-    <button id="user-menu-toggle" class="flex items-center gap-2 hover:text-primary transition-colors">
+    <button id="user-menu-toggle" class="flex flex-col items-center gap-1 hover:text-primary transition-colors group">
         {{avatar_html}}
-        <span class="hidden lg:inline font-medium">{{user_name}}</span>
-        <i data-lucide="chevron-down" class="w-4 h-4 hidden lg:inline"></i>
+        <span class="text-[10px] font-medium hidden lg:block max-w-[80px] truncate text-center">{{user_name}}</span>
     </button>
 
     <!-- Dropdown Menu -->

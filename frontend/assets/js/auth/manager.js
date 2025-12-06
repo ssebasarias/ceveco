@@ -122,10 +122,25 @@ export class AuthManager {
 
     initGoogleLogin(resolve, reject) {
         // Obtener Client ID de la configuración global
-        const GOOGLE_CLIENT_ID = window.CONFIG?.OAUTH?.GOOGLE_CLIENT_ID || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
-        if (GOOGLE_CLIENT_ID.includes('TU_GOOGLE')) {
-            console.warn('⚠️ Configura GOOGLE_CLIENT_ID en tu aplicación');
-            reject(new Error('Google Client ID no configurado.'));
+        const GOOGLE_CLIENT_ID = window.CONFIG?.OAUTH?.GOOGLE_CLIENT_ID;
+
+        // Check if Client ID is configured
+        if (!GOOGLE_CLIENT_ID || GOOGLE_CLIENT_ID.includes('TU_GOOGLE') || GOOGLE_CLIENT_ID.includes('YOUR_GOOGLE')) {
+            console.warn('⚠️ Google Client ID no configurado. Usando Mock Login para desarrollo.');
+
+            // Simular login exitoso para pruebas
+            const mockUser = {
+                provider: 'google',
+                providerUid: `mock_google_${Date.now()}`,
+                email: `usuario_demo_${Math.floor(Math.random() * 1000)}@gmail.com`,
+                nombre: 'Usuario',
+                apellido: 'Demo',
+                avatarUrl: null
+            };
+
+            this.loginWithOAuth(mockUser)
+                .then(resolve)
+                .catch(reject);
             return;
         }
 
