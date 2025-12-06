@@ -12,12 +12,32 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Sistema de colores -->
+    <link rel="stylesheet" href="../assets/css/global.css">
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0056b3',
+                        primary: {
+                            DEFAULT: '#FF6B35',
+                            dark: '#E55A2B',
+                            light: '#FF8C5F'
+                        },
+                        secondary: {
+                            DEFAULT: '#004E89',
+                            dark: '#003D6B',
+                            light: '#1A6BA8'
+                        },
+                        accent: {
+                            DEFAULT: '#FFD23F',
+                            dark: '#E6BD38'
+                        },
+                        success: '#10B981',
+                        warning: '#F59E0B',
+                        error: '#EF4444',
+                        info: '#3B82F6',
                         dark: '#1F2937',
                     },
                     fontFamily: {
