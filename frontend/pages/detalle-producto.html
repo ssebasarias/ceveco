@@ -180,10 +180,11 @@
                     </a>
 
                     <!-- Wishlist -->
-                    <button
-                        class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-4 px-8 rounded-lg hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2">
-                        <i data-lucide="heart" class="w-5 h-5"></i>
-                        Agregar a Favoritos
+                    <button id="detail-fav-btn"
+                        class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-4 px-8 rounded-lg hover:border-primary hover:text-primary transition-all flex items-center justify-center gap-2 btn-favorite"
+                        onclick="handleToggleFavorite(this, currentProduct.id_producto, event)">
+                        <i data-lucide="heart" class="w-5 h-5 transition-colors"></i>
+                        <span id="fav-text">Agregar a Favoritos</span>
                     </button>
                 </div>
 
@@ -268,6 +269,7 @@
     <script src="../assets/js/api/productos.api.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
     <script src="../assets/js/app.js"></script>
 
     <script>
@@ -460,8 +462,17 @@
                 addToCart(product.id_producto, product.nombre, product.precio_actual, product.imagen_principal, currentQuantity);
             };
 
+            // Favorite Button Setup
+            const favBtn = document.getElementById('detail-fav-btn');
+            favBtn.setAttribute('data-id', product.id_producto);
+
             // Re-init icons
             lucide.createIcons();
+
+            // Update Favorites State
+            if (typeof window.updateFavoritesUI === 'function') {
+                window.updateFavoritesUI();
+            }
         }
 
         // Cargar productos relacionados
@@ -475,6 +486,10 @@
                     const cardsHtml = (await Promise.all(response.data.map(p => renderProductCard(p)))).join('');
                     container.innerHTML = cardsHtml;
                     lucide.createIcons();
+                    // Update Favorites for related products
+                    if (typeof window.updateFavoritesUI === 'function') {
+                        window.updateFavoritesUI();
+                    }
                 } else {
                     document.getElementById('related-products-section').classList.add('hidden');
                 }

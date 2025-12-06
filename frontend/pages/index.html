@@ -238,6 +238,7 @@
     <script src="../assets/js/api/productos.api.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
     <script src="../assets/js/app.js"></script>
 
     <script>
@@ -264,6 +265,12 @@
                     lucide.createIcons();
                 } else {
                     container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">No hay productos destacados disponibles.</p>`;
+                }
+
+                // Update Favorites State
+                if (typeof window.updateFavoritesUI === 'function') {
+                    // Small delay to ensure initFavorites has run if it's the first load
+                    setTimeout(window.updateFavoritesUI, 100);
                 }
             } catch (error) {
                 console.error('Error:', error);

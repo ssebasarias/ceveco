@@ -75,8 +75,10 @@ app.get('/health', (req, res) => {
 });
 
 // Rutas de la API
+// Rutas de la API
 app.use(`${API_PREFIX}/productos`, productosRoutes);
 app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {

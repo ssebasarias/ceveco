@@ -181,6 +181,7 @@
     <script src="../assets/js/utils/utils.js"></script>
     <script src="../assets/js/api/productos.api.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script src="../assets/js/app.js"></script>
 
@@ -273,6 +274,11 @@
                     lucide.createIcons();
                 } else {
                     empty.classList.remove('hidden');
+                }
+
+                // Update Favorites State
+                if (typeof window.updateFavoritesUI === 'function') {
+                    window.updateFavoritesUI();
                 }
 
             } catch (error) {

@@ -4,6 +4,22 @@ export class SessionManager {
     constructor() {
         this.currentUser = null;
         this.token = localStorage.getItem(AUTH_CONFIG.TOKEN_KEY);
+        this.restoreUser();
+    }
+
+    restoreUser() {
+        const storedSession = localStorage.getItem(AUTH_CONFIG.SESSION_KEY);
+        if (storedSession) {
+            try {
+                const session = JSON.parse(storedSession);
+                if (session.user) {
+                    this.currentUser = session.user;
+                }
+            } catch (e) {
+                console.error('Error recovering session:', e);
+                // Don't clear here, let verifyToken handle validity
+            }
+        }
     }
 
     saveSession(user, token) {

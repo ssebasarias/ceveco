@@ -1,5 +1,12 @@
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group cursor-pointer h-full flex flex-col"
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group h-full flex flex-col relative"
     data-product-id="{{id}}">
+    <!-- Botón Favorito (Moved out of <a>) -->
+    <button type="button"
+        class="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-sm hover:shadow-md hover:bg-white transition-all z-20 btn-favorite transform transition-transform duration-200"
+        data-id="{{id}}" onclick="handleToggleFavorite(this, '{{id}}', event)">
+        <i data-lucide="heart" class="w-4 h-4 text-gray-400 transition-colors"></i>
+    </button>
+
     <a href="detalle-producto.html?id={{id}}" class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
         <img src="{{image}}" alt="{{name}}"
             class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">

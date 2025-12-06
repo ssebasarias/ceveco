@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Favoritos - Ceveco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0056b3',
+                        dark: '#1F2937',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- Sticky Header -->
+    <div id="navbar-root"></div>
+
+    <!-- Main Content -->
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="flex items-center gap-3 mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Mis Favoritos</h1>
+            <span id="fav-count" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">0
+                productos</span>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="flex justify-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="heart" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Aún no tienes favoritos</h2>
+            <p class="text-gray-500 mb-6">Guarda los productos que te gustan para encontrarlos más tarde.</p>
+            <a href="productos.html"
+                class="inline-block px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                Explorar Productos
+            </a>
+        </div>
+
+        <!-- Grid de Favoritos -->
+        <div id="favorites-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Cards will be injected here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <div id="footer-root"></div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/utils/utils.js"></script>
+    <script type="module" src="../assets/js/auth/index.js"></script>
+    <script type="module" src="../assets/js/api/favoritos.api.js"></script>
+    <script src="../assets/js/components/cart-sidebar.js"></script>
+    <script src="../assets/js/app.js"></script>
+
+    <script type="module">
+        import { FavoritosAPI } from '../assets/js/api/favoritos.api.js';
+
+        async function loadFavorites() {
+            const container = document.getElementById('favorites-grid');
+            const loading = document.getElementById('loading-state');
+            const empty = document.getElementById('empty-state');
+            const counter = document.getElementById('fav-count');
+
+            try {
+                // Verificar auth
+                if (!window.isUserAuthenticated || !window.isUserAuthenticated()) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const response = await FavoritosAPI.getList();
+
+                loading.classList.add('hidden');
+
+                if (response.success && response.data.length > 0) {
+                    container.classList.remove('hidden');
+                    empty.classList.add('hidden');
+
+                    // Update counter
+                    counter.textContent = `${response.data.length} producto${response.data.length !== 1 ? 's' : ''}`;
+
+                    // Render cards
+                    // Note: We need to ensure logic for "active heart" is handled.
+                    // Since this is the favorites page, all hearts should be red and clicking them should probably remove them.
+
+                    const cardsHtml = (await Promise.all(response.data.map(async (p) => {
+                        // Manually injecting a property so the card renderer knows it's favorited
+                        // Or we rely on the global favorite check which runs after.
+                        return await renderProductCard(p);
+                    }))).join('');
+
+                    container.innerHTML = cardsHtml;
+                    lucide.createIcons();
+                } else {
+                    container.classList.add('hidden');
+                    empty.classList.remove('hidden');
+                    counter.textContent = '0 productos';
+                }
+
+            } catch (error) {
+                console.error('Error al cargar favoritos:', error);
+                loading.classList.add('hidden');
+                // Mostrar error genérico o empty
+                empty.classList.remove('hidden'); // Fallback to empty for now
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadFavorites();
+            // Import and init logic to ensure global state matches
+            import('../assets/js/favorites/index.js').then(module => {
+                setTimeout(() => {
+                    if (window.updateFavoritesUI) window.updateFavoritesUI();
+                }, 100);
+            });
+        });
+    </script>
+</body>
+
+</html>
