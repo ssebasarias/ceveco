@@ -248,12 +248,44 @@ function setupCartEventListeners() {
             updateQuantity(qtyBtn.dataset.id, parseInt(qtyBtn.dataset.qty));
             return;
         }
+
+        // Proceed to Checkout
+        const checkoutBtn = e.target.closest('.js-proceed-to-checkout');
+        if (checkoutBtn) {
+            e.preventDefault();
+            proceedToCheckout();
+            return;
+        }
     });
 }
 
 // Buy Now functionality
+// Buy Now functionality (Direct Checkout)
 function buyNow(id, name, price, image) {
-    addToCart(id, name, price, image);
+    const product = {
+        id: id,
+        name: name,
+        price: price,
+        image: image,
+        quantity: 1,
+        brand: 'Ceveco'
+    };
+
+    // Save single item to session storage for direct checkout
+    sessionStorage.setItem('ceveco_direct_buy', JSON.stringify([product]));
+
+    // Determine correct path to checkout
+    const currentPath = window.location.pathname;
+    const isInPagesDir = currentPath.includes('/pages/');
+    const targetPath = isInPagesDir ? 'checkout.html' : 'pages/checkout.html';
+
+    window.location.href = targetPath;
+}
+
+// Proceed to Checkout (From Cart)
+function proceedToCheckout() {
+    // Clear direct buy flag to ensure we use the full cart
+    sessionStorage.removeItem('ceveco_direct_buy');
 
     // Determine correct path to checkout
     const currentPath = window.location.pathname;
@@ -266,6 +298,7 @@ function buyNow(id, name, price, image) {
 // Expose functions globally to ensure inline onclicks work
 window.addToCart = addToCart;
 window.buyNow = buyNow;
+window.proceedToCheckout = proceedToCheckout;
 window.loadCart = loadCart;
 
 // Initialize cart on page load

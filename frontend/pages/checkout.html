@@ -448,28 +448,42 @@
 
         // Load cart items on page load
         document.addEventListener('DOMContentLoaded', () => {
-            // Check authentication
-            const token = localStorage.getItem('ceveco_auth_token');
-            if (!token) {
-                // Save current location to return after login (optional logic for login page)
-                sessionStorage.setItem('redirect_after_login', window.location.href);
-                window.location.href = 'login.html';
-                return;
-            }
-
             loadCheckoutItems();
+
+            // Restore form data if returning from login
+            const savedFormData = sessionStorage.getItem('checkout_form_data');
+            if (savedFormData) {
+                try {
+                    const data = JSON.parse(savedFormData);
+                    const fields = ['email', 'phone', 'firstName', 'lastName', 'address', 'department', 'city', 'zip', 'notes'];
+                    fields.forEach(field => {
+                        const el = document.getElementById(field);
+                        if (el && data[field]) el.value = data[field];
+                    });
+                    // Clean up after restoring
+                    sessionStorage.removeItem('checkout_form_data');
+                } catch (e) {
+                    console.error('Error restoring form data:', e);
+                }
+            }
         });
 
         function loadCheckoutItems() {
             const container = document.getElementById('checkout-items');
-            const savedCart = localStorage.getItem('cevecoCart');
 
-            if (!savedCart) {
-                window.location.href = 'index.html';
-                return;
+            // Prioritize Direct Buy item
+            const directBuy = sessionStorage.getItem('ceveco_direct_buy');
+            let cart = [];
+
+            if (directBuy) {
+                cart = JSON.parse(directBuy);
+            } else {
+                const savedCart = localStorage.getItem('cevecoCart');
+                if (savedCart) {
+                    cart = JSON.parse(savedCart);
+                }
             }
 
-            const cart = JSON.parse(savedCart);
             if (cart.length === 0) {
                 window.location.href = 'index.html';
                 return;
@@ -587,8 +601,34 @@
         }
 
         function initiatePayment() {
+            // Check authentication first
+            const token = localStorage.getItem('ceveco_auth_token');
+            if (!token) {
+                alert('Para completar tu compra, por favor inicia sesión o regístrate.');
+
+                // Save form data
+                const formData = {
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value,
+                    address: document.getElementById('address').value,
+                    department: document.getElementById('department').value,
+                    city: document.getElementById('city').value,
+                    zip: document.getElementById('zip').value,
+                    notes: document.getElementById('notes').value
+                };
+                sessionStorage.setItem('checkout_form_data', JSON.stringify(formData));
+                sessionStorage.setItem('redirect_after_login', window.location.href);
+
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const directBuy = sessionStorage.getItem('ceveco_direct_buy');
             const savedCart = localStorage.getItem('cevecoCart');
-            const cart = JSON.parse(savedCart || '[]');
+            const cart = directBuy ? JSON.parse(directBuy) : JSON.parse(savedCart || '[]');
+
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const totalInCents = Math.round(total * 100);
 
@@ -642,8 +682,10 @@
         }
 
         async function simulateOrder() {
+            const directBuy = sessionStorage.getItem('ceveco_direct_buy');
             const savedCart = localStorage.getItem('cevecoCart');
-            const cart = JSON.parse(savedCart || '[]');
+            const cart = directBuy ? JSON.parse(directBuy) : JSON.parse(savedCart || '[]');
+
             if (cart.length === 0) return;
 
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -680,7 +722,14 @@
                 };
 
                 await window.OrdersAPI.create(orderData);
-                localStorage.removeItem('cevecoCart');
+
+                // Clear the correct storage
+                if (sessionStorage.getItem('ceveco_direct_buy')) {
+                    sessionStorage.removeItem('ceveco_direct_buy');
+                } else {
+                    localStorage.removeItem('cevecoCart');
+                }
+
                 alert('¡Pedido Creado Exitosamente (Simulación)!');
                 window.location.href = 'pedidos.html';
 
