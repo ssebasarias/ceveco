@@ -1,41 +1,63 @@
-<div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group h-full flex flex-col relative"
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group h-full flex flex-col relative cursor-pointer js-product-card"
     data-product-id="{{id}}">
-    <!-- Botón Favorito (Moved out of <a>) -->
+
+    <!-- Botón Favorito (Absolute, top right) -->
     <button type="button"
-        class="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-sm hover:shadow-md hover:bg-white transition-all z-20 btn-favorite transform transition-transform duration-200"
-        data-id="{{id}}" onclick="handleToggleFavorite(this, '{{id}}', event)">
-        <i data-lucide="heart" class="w-4 h-4 text-gray-400 transition-colors"></i>
+        class="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-sm hover:shadow-md hover:bg-white transition-all z-20 btn-favorite transform transition-transform duration-200 js-toggle-favorite"
+        data-id="{{id}}">
+        <i data-lucide="heart" class="w-4 h-4 text-gray-400 transition-colors pointer-events-none"></i>
     </button>
 
-    <a href="detalle-producto.html?id={{id}}" class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
+    <!-- Image Area (Square, linked via parent click) -->
+    <div class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl pointer-events-none">
         <img src="{{image}}" alt="{{name}}"
             class="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500">
         {{badge_block}}
-    </a>
-    <div class="p-4 flex flex-col flex-1">
-        <p class="text-xs text-gray-500 uppercase tracking-wider mb-1">{{category}}</p>
-        <a href="detalle-producto.html?id={{id}}">
-            <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors"
-                title="{{name}}">
-                {{name}}
-            </h3>
-        </a>
-        <div class="mt-auto">
-            <div class="flex items-end justify-between mb-4">
-                <div>
-                    <span class="text-lg font-bold text-primary block">
-                        {{price}}
-                    </span>
+    </div>
+
+    <!-- Content Area -->
+    <div class="p-4 flex flex-col flex-1 pointer-events-none">
+        <!-- Category -->
+        <div class="mb-1">
+            <p class="text-xs text-gray-500 uppercase tracking-wider line-clamp-1">{{category}}</p>
+        </div>
+
+        <!-- Title (Fixed height for uniformity) -->
+        <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 h-[2.5rem] overflow-hidden group-hover:text-primary transition-colors leading-tight"
+            title="{{name}}">
+            {{name}}
+        </h3>
+
+        <!-- Bottom Section: Price & Buttons -->
+        <div class="mt-auto pointer-events-auto">
+            <!-- Price Block (Fixed height for uniformity) -->
+            <div class="flex flex-col justify-end mb-4 h-12">
+                <span class="text-lg font-bold text-primary block leading-none">
+                    {{price}}
+                </span>
+                <div class="h-5 flex items-center"> <!-- Reserved space for old price -->
                     {{old_price_block}}
                 </div>
             </div>
-            <button type="button"
-                class="w-full p-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 group-btn js-add-to-cart"
-                data-id="{{id}}" data-name="{{name_attr}}" data-price="{{price_raw}}" data-image="{{image_attr}}"
-                data-brand="{{category_attr}}">
-                <i data-lucide="shopping-cart" class="w-5 h-5 pointer-events-none"></i>
-                <span class="text-sm font-medium pointer-events-none">Agregar</span>
-            </button>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-2">
+                <!-- Add to Cart (Circular) -->
+                <button type="button"
+                    class="w-10 h-10 rounded-full bg-gray-100 text-gray-700 hover:bg-primary hover:text-white transition-colors flex items-center justify-center shadow-sm group-btn js-add-to-cart shrink-0"
+                    title="Agregar al carrito" data-id="{{id}}" data-name="{{name_attr}}" data-price="{{price_raw}}"
+                    data-image="{{image_attr}}" data-brand="{{category_attr}}">
+                    <i data-lucide="shopping-cart" class="w-5 h-5 pointer-events-none"></i>
+                </button>
+
+                <!-- Buy Now (Pill) -->
+                <button type="button"
+                    class="flex-1 h-10 px-4 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 shadow-md transform active:scale-95 js-buy-now"
+                    data-id="{{id}}" data-name="{{name_attr}}" data-price="{{price_raw}}" data-image="{{image_attr}}"
+                    data-brand="{{category_attr}}">
+                    <span class="text-sm font-bold pointer-events-none">Comprar</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>

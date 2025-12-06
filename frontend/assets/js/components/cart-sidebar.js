@@ -251,6 +251,23 @@ function setupCartEventListeners() {
     });
 }
 
+// Buy Now functionality
+function buyNow(id, name, price, image) {
+    addToCart(id, name, price, image);
+
+    // Determine correct path to checkout
+    const currentPath = window.location.pathname;
+    const isInPagesDir = currentPath.includes('/pages/');
+    const targetPath = isInPagesDir ? 'checkout.html' : 'pages/checkout.html';
+
+    window.location.href = targetPath;
+}
+
+// Expose functions globally to ensure inline onclicks work
+window.addToCart = addToCart;
+window.buyNow = buyNow;
+window.loadCart = loadCart;
+
 // Initialize cart on page load
 document.addEventListener('DOMContentLoaded', () => {
     loadCart();

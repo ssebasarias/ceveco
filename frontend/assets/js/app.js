@@ -273,12 +273,11 @@ window.toggleMobileMenu = function () {
 /**
  * Handle search from navbar - GLOBAL FUNCTION
  */
+// Header Search Logic
 window.handleSearch = function () {
     const input = document.getElementById('search-input');
-    console.log('handleSearch called, input:', input);
     if (input && input.value.trim()) {
         const query = input.value.trim();
-        console.log('Searching for:', query);
         // Determine correct path
         const currentPath = window.location.pathname;
         const isInPagesDir = currentPath.includes('/pages/');
@@ -288,9 +287,57 @@ window.handleSearch = function () {
     }
 };
 
+/**
+ * Navigate to product details
+ * Handles path resolution from root or pages directory
+ */
+window.goToProduct = function (id) {
+    if (!id) return;
+    const currentPath = window.location.pathname;
+    const isInPagesDir = currentPath.includes('/pages/');
+    const targetPath = isInPagesDir ? `detalle-producto.html?id=${id}` : `pages/detalle-producto.html?id=${id}`;
+    window.location.href = targetPath;
+};
+
+// Initialize Global Listeners
+function setupGlobalListeners() {
+    document.addEventListener('click', (e) => {
+        // 1. Buy Now Button
+        const buyBtn = e.target.closest('.js-buy-now');
+        if (buyBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const d = buyBtn.dataset;
+            // Ensure data-price exists and is valid
+            const price = d.price ? parseFloat(d.price) : 0;
+
+            if (window.buyNow) {
+                window.buyNow(d.id, d.name, price, d.image);
+            } else {
+                console.error('buyNow function not available');
+            }
+            return;
+        }
+
+        // 2. Product Card Navigation
+        // Only if we didn't click a button/link inside
+        const card = e.target.closest('.js-product-card');
+        // Extra safety check: Ensure we didn't click on "add to cart" or "fav" which might have missed their own listeners 
+        // (though they should use stopPropagation, it's safer to check here)
+        if (card && !e.target.closest('button') && !e.target.closest('a')) {
+            const id = card.dataset.productId;
+            if (window.goToProduct) {
+                window.goToProduct(id);
+            }
+        }
+    });
+}
+
 // Initialize loading when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
+    setupGlobalListeners();
     await loadSharedComponents();
+
 
     // Initialize search AFTER components are loaded
     setTimeout(() => {
