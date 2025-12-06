@@ -1,4 +1,5 @@
-import { API_URL } from '../config.js';
+// Use global CONFIG
+const API_URL = CONFIG.API_BASE_URL;
 
 export class OrdersAPI {
     static async create(orderData) {

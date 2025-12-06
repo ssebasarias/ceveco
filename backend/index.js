@@ -23,12 +23,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co", "https://*.devtunnels.ms"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co"],
-            connectSrc: ["'self'"],
-            frameSrc: ["'self'", "https://checkout.wompi.co", "https://www.google.com"],
+            connectSrc: ["'self'", "https://*.devtunnels.ms"],
+            frameSrc: ["'self'", "https://checkout.wompi.co", "https://www.google.com", "https://*.devtunnels.ms"],
         },
     },
 }));

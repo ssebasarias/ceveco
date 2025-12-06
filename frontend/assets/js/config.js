@@ -4,7 +4,7 @@
 
 const CONFIG = {
     // URL base de la API
-    API_BASE_URL: 'http://localhost:3000/api/v1',
+    API_BASE_URL: '/api/v1',
 
     // Endpoints de la API
     API_ENDPOINTS: {

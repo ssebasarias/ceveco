@@ -58,7 +58,7 @@
             <h2 class="text-xl font-bold text-gray-900 mb-2">Aún no tienes favoritos</h2>
             <p class="text-gray-500 mb-6">Guarda los productos que te gustan para encontrarlos más tarde.</p>
             <a href="productos.html"
-                class="inline-block px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                class="inline-block px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">
                 Explorar Productos
             </a>
         </div>
@@ -98,8 +98,6 @@
 
                 const response = await FavoritosAPI.getList();
 
-                loading.classList.add('hidden');
-
                 if (response.success && response.data.length > 0) {
                     container.classList.remove('hidden');
                     empty.classList.add('hidden');
@@ -108,12 +106,7 @@
                     counter.textContent = `${response.data.length} producto${response.data.length !== 1 ? 's' : ''}`;
 
                     // Render cards
-                    // Note: We need to ensure logic for "active heart" is handled.
-                    // Since this is the favorites page, all hearts should be red and clicking them should probably remove them.
-
                     const cardsHtml = (await Promise.all(response.data.map(async (p) => {
-                        // Manually injecting a property so the card renderer knows it's favorited
-                        // Or we rely on the global favorite check which runs after.
                         return await renderProductCard(p);
                     }))).join('');
 
@@ -127,11 +120,16 @@
 
             } catch (error) {
                 console.error('Error al cargar favoritos:', error);
-                loading.classList.add('hidden');
                 // Mostrar error genérico o empty
-                empty.classList.remove('hidden'); // Fallback to empty for now
+                empty.classList.remove('hidden');
+            } finally {
+                if (loading) {
+                    loading.classList.remove('flex');
+                    loading.classList.add('hidden');
+                }
             }
         }
+
 
         document.addEventListener('DOMContentLoaded', async () => {
             await loadFavorites();
@@ -141,6 +139,21 @@
                     if (window.updateFavoritesUI) window.updateFavoritesUI();
                 }, 100);
             });
+        });
+
+        // Solución para navegar Atrás/Adelante y recargar datos (BFCache)
+        window.addEventListener('pageshow', async (event) => {
+            // Si la página se restaura desde la caché (bfcache)
+            if (event.persisted) {
+                console.log('Restaurado desde caché, recargando favoritos...');
+                await loadFavorites();
+
+                // Recargar el estado global de favoritos (IDs) para mantener sincronía
+                if (window.initFavorites) await window.initFavorites();
+
+                // Actualizar UI global si es necesario
+                if (window.updateFavoritesUI) window.updateFavoritesUI();
+            }
         });
     </script>
 </body>

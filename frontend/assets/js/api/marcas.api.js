@@ -1,5 +1,5 @@
 // API base URL from config
-const API_BASE = 'http://localhost:3000/api/v1';
+const API_BASE = CONFIG.API_BASE_URL;
 
 const MarcasAPI = {
     /**
