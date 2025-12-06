@@ -13,7 +13,7 @@
 /* ========================================
    1. TOKENS - Variables de diseño
    ======================================== */
-@import './tokens/colors.css';
+@import './ceveco-design.css';
 @import './tokens/typography.css';
 @import './tokens/spacing.css';
 @import './tokens/radius.css';
