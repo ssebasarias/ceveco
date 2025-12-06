@@ -187,7 +187,45 @@ async function loadSharedComponents() {
     }
 }
 
+// Expose global functions
+window.formatPrice = formatPrice;
+window.renderProductCard = renderProductCard;
+
+/**
+ * Handle search from navbar - GLOBAL FUNCTION
+ */
+window.handleSearch = function () {
+    const input = document.getElementById('search-input');
+    console.log('handleSearch called, input:', input);
+    if (input && input.value.trim()) {
+        const query = input.value.trim();
+        console.log('Searching for:', query);
+        // Determine correct path
+        const currentPath = window.location.pathname;
+        const isInPagesDir = currentPath.includes('/pages/');
+        const targetPath = isInPagesDir ? 'productos.html' : 'pages/productos.html';
+
+        window.location.href = `${targetPath}?q=${encodeURIComponent(query)}`;
+    }
+};
+
 // Initialize loading when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    loadSharedComponents();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadSharedComponents();
+
+    // Initialize search AFTER components are loaded
+    setTimeout(() => {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.handleSearch();
+                }
+            });
+            console.log('✓ Search initialized');
+        } else {
+            console.warn('✗ Search input not found');
+        }
+    }, 200);
 });

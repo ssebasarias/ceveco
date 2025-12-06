@@ -255,8 +255,15 @@
                 // Actualizar UI según contexto
                 updatePageHeader(params);
 
-                // Fetch productos
-                const response = await ProductosAPI.getAll(filters);
+                let response;
+
+                // Si hay búsqueda, usar endpoint de búsqueda
+                if (params.q) {
+                    response = await ProductosAPI.buscar(params.q, filters);
+                } else {
+                    // Fetch productos normales
+                    response = await ProductosAPI.getAll(filters);
+                }
 
                 loading.classList.add('hidden');
 
@@ -274,6 +281,10 @@
                     lucide.createIcons();
                 } else {
                     empty.classList.remove('hidden');
+                    if (params.q) {
+                        empty.querySelector('h3').textContent = 'No encontramos resultados';
+                        empty.querySelector('p').textContent = `No hay productos que coincidan con "${params.q}". Intenta con otras palabras.`;
+                    }
                 }
 
                 // Update Favorites State

@@ -72,6 +72,30 @@
         .animate-scroll:hover {
             animation-play-state: paused;
         }
+
+        /* Hide scrollbar but keep functionality */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Product card in carousel - fixed width */
+        #featured-products>div {
+            min-width: 280px;
+            max-width: 280px;
+            scroll-snap-align: start;
+        }
+
+        @media (min-width: 640px) {
+            #featured-products>div {
+                min-width: 320px;
+                max-width: 320px;
+            }
+        }
     </style>
 </head>
 
@@ -190,22 +214,9 @@
                 <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest">Nuestras Marcas Aliadas</h3>
             </div>
             <div class="relative w-full overflow-hidden">
-                <div class="flex animate-scroll gap-12 items-center w-max">
-                    <span class="text-2xl font-bold text-gray-400">SAMSUNG</span>
-                    <span class="text-2xl font-bold text-gray-400">LG</span>
-                    <span class="text-2xl font-bold text-gray-400">HACEB</span>
-                    <span class="text-2xl font-bold text-gray-400">MABE</span>
-                    <span class="text-2xl font-bold text-gray-400">WHIRLPOOL</span>
-                    <span class="text-2xl font-bold text-gray-400">OSTER</span>
-                    <span class="text-2xl font-bold text-gray-400">SONY</span>
-                    <span class="text-2xl font-bold text-gray-400">RIMAX</span>
-                    <span class="text-2xl font-bold text-gray-400">STIHL</span>
-                    <!-- Duplicate for scroll -->
-                    <span class="text-2xl font-bold text-gray-400">SAMSUNG</span>
-                    <span class="text-2xl font-bold text-gray-400">LG</span>
-                    <span class="text-2xl font-bold text-gray-400">HACEB</span>
-                    <span class="text-2xl font-bold text-gray-400">MABE</span>
-                    <span class="text-2xl font-bold text-gray-400">WHIRLPOOL</span>
+                <div id="brands-carousel" class="flex animate-scroll gap-12 items-center w-max">
+                    <!-- Loading state -->
+                    <span class="text-xl font-bold text-gray-400">Cargando marcas...</span>
                 </div>
             </div>
         </div>
@@ -214,15 +225,31 @@
         <div class="mt-20">
             <div class="flex items-center justify-between mb-8">
                 <h2 class="text-3xl font-bold text-gray-900">Productos Destacados</h2>
-                <a href="productos.html?destacado=true"
-                    class="text-primary font-semibold hover:underline flex items-center gap-2">
-                    Ver todos <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
+                <div class="flex items-center gap-4">
+                    <!-- Navigation Arrows -->
+                    <button id="scroll-left"
+                        class="p-2 bg-white border-2 border-gray-200 rounded-full hover:border-primary hover:bg-blue-50 transition-all">
+                        <i data-lucide="chevron-left" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <button id="scroll-right"
+                        class="p-2 bg-white border-2 border-gray-200 rounded-full hover:border-primary hover:bg-blue-50 transition-all">
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <a href="productos.html?destacado=true"
+                        class="text-primary font-semibold hover:underline flex items-center gap-2">
+                        Ver todos <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
             </div>
-            <div id="featured-products" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Loading State -->
-                <div class="col-span-full flex justify-center py-12">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+
+            <!-- Horizontal Scrollable Container -->
+            <div class="relative">
+                <div id="featured-products"
+                    class="flex gap-6 overflow-x-auto pb-4 scroll-smooth snap-x snap-mandatory hide-scrollbar">
+                    <!-- Loading State -->
+                    <div class="flex justify-center py-12 w-full">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -236,6 +263,7 @@
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/utils/utils.js"></script>
     <script src="../assets/js/api/productos.api.js"></script>
+    <script src="../assets/js/api/marcas.api.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
@@ -257,14 +285,15 @@
         async function loadFeaturedProducts() {
             const container = document.getElementById('featured-products');
             try {
-                const response = await ProductosAPI.getDestacados(8);
+                // Reducir a 6 productos para no saturar
+                const response = await ProductosAPI.getDestacados(6);
 
                 if (response.success && response.data.length > 0) {
                     const cardsHtml = (await Promise.all(response.data.map(producto => renderProductCard(producto)))).join('');
                     container.innerHTML = cardsHtml;
                     lucide.createIcons();
                 } else {
-                    container.innerHTML = `<p class="col-span-full text-center text-gray-500 py-8">No hay productos destacados disponibles.</p>`;
+                    container.innerHTML = `<p class="text-center text-gray-500 py-8 w-full">No hay productos destacados disponibles.</p>`;
                 }
 
                 // Update Favorites State
@@ -274,11 +303,61 @@
                 }
             } catch (error) {
                 console.error('Error:', error);
-                container.innerHTML = `<p class="col-span-full text-center text-red-500 py-8">Error al cargar productos.</p>`;
+                container.innerHTML = `<p class="text-center text-red-500 py-8 w-full">Error al cargar productos.</p>`;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadFeaturedProducts);
+        // Carousel navigation
+        function initCarouselNavigation() {
+            const container = document.getElementById('featured-products');
+            const leftBtn = document.getElementById('scroll-left');
+            const rightBtn = document.getElementById('scroll-right');
+
+            leftBtn.addEventListener('click', () => {
+                container.scrollBy({
+                    left: -340, // Width of card + gap
+                    behavior: 'smooth'
+                });
+            });
+
+            rightBtn.addEventListener('click', () => {
+                container.scrollBy({
+                    left: 340,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
+        // Cargar marcas desde la base de datos
+        async function loadBrands() {
+            const container = document.getElementById('brands-carousel');
+            try {
+                const response = await MarcasAPI.getActivas();
+
+                if (response.success && response.data.length > 0) {
+                    const brands = response.data;
+
+                    // Crear elementos de marca (duplicados para efecto infinito)
+                    const brandElements = brands.map(marca =>
+                        `<span class="text-2xl font-bold text-gray-400 uppercase">${marca.nombre}</span>`
+                    ).join('');
+
+                    // Duplicar para efecto de scroll infinito
+                    container.innerHTML = brandElements + brandElements;
+                } else {
+                    container.innerHTML = '<span class="text-xl font-bold text-gray-400">No hay marcas disponibles</span>';
+                }
+            } catch (error) {
+                console.error('Error loading brands:', error);
+                container.innerHTML = '<span class="text-xl font-bold text-gray-400">Error al cargar marcas</span>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFeaturedProducts();
+            initCarouselNavigation();
+            loadBrands();
+        });
     </script>
 </body>
 

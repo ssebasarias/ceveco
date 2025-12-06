@@ -10,7 +10,7 @@
     <div class="container mx-auto px-4 lg:px-8">
         <div class="flex items-center justify-between h-20 gap-8">
             <a href="index.html" class="flex-shrink-0">
-                <img src="../assets/img/logo.png" alt="Ceveco" class="h-10 w-auto object-contain">
+                <img src="../assets/img/logo.png" alt="Ceveco" class="h-14 w-auto object-contain">
             </a>
 
             <div class="hidden md:flex flex-1 max-w-2xl relative">
@@ -23,34 +23,35 @@
             </div>
 
             <div class="hidden lg:flex items-center gap-6">
-                <a href="productos.html?destacado=true" class="hover:text-primary transition-colors font-medium">Más
-                    vendidos</a>
-                <a href="https://wa.me/573000000000" target="_blank"
-                    class="hover:text-primary transition-colors font-medium">Contáctanos</a>
-                <a href="sedes.html" class="hover:text-primary transition-colors font-medium">Nuestras sedes</a>
+                <a href="productos.html?destacado=true"
+                    class="hover:text-primary transition-colors font-medium text-[15px]">Más vendidos</a>
+                <a href="contacto.html"
+                    class="hover:text-primary transition-colors font-medium text-[15px]">Contáctanos</a>
+                <a href="sedes.html" class="hover:text-primary transition-colors font-medium text-[15px]">Nuestras
+                    sedes</a>
             </div>
 
-            <div class="flex items-center gap-6 text-gray-600">
+            <div class="flex items-center gap-5 text-gray-600">
                 <!-- Contenedor del menú de usuario (inyectado por auth.js) -->
                 <div id="user-menu-container" data-auth-button>
                     <button class="flex flex-col items-center gap-1 hover:text-primary transition-colors group">
-                        <i data-lucide="user" class="w-6 h-6"></i>
-                        <span class="text-[10px] font-medium hidden lg:block">Cuenta</span>
+                        <i data-lucide="user" class="w-7 h-7"></i>
+                        <span class="text-xs font-medium hidden lg:block">Cuenta</span>
                     </button>
                 </div>
 
                 <a href="/pages/favoritos.html" id="favorites-link"
                     class="flex flex-col items-center gap-1 hover:text-primary transition-colors group">
-                    <i data-lucide="heart" class="w-6 h-6"></i>
-                    <span class="text-[10px] font-medium hidden lg:block">Favoritos</span>
+                    <i data-lucide="heart" class="w-7 h-7"></i>
+                    <span class="text-xs font-medium hidden lg:block">Favoritos</span>
                 </a>
                 <button
                     class="flex flex-col items-center gap-1 hover:text-primary transition-colors group relative js-toggle-cart">
-                    <i data-lucide="shopping-cart" class="w-6 h-6 pointer-events-none"></i>
+                    <i data-lucide="shopping-cart" class="w-7 h-7 pointer-events-none"></i>
                     <span id="cart-count"
-                        class="absolute -top-1 -right-1 w-4 h-4 bg-primary text-white text-[10px] flex items-center justify-center rounded-full font-bold pointer-events-none"
+                        class="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs flex items-center justify-center rounded-full font-bold pointer-events-none"
                         style="display: none;">0</span>
-                    <span class="text-[10px] font-medium hidden lg:block pointer-events-none">Carrito</span>
+                    <span class="text-xs font-medium hidden lg:block pointer-events-none">Carrito</span>
                 </button>
             </div>
         </div>

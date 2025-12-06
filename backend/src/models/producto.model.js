@@ -95,13 +95,21 @@ class ProductoModel {
       paramIndex++;
     }
 
-    // Búsqueda por texto
+    // Búsqueda por texto (mejorada con fuzzy search)
     if (busqueda) {
       queryText += ` AND (
-        to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '')) 
+        -- Full-text search (alta prioridad)
+        to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '') || ' ' || m.nombre || ' ' || c.nombre) 
         @@ plainto_tsquery('spanish', $${paramIndex})
+        -- ILIKE para coincidencias parciales
         OR p.nombre ILIKE $${paramIndex + 1}
         OR p.sku ILIKE $${paramIndex + 1}
+        OR p.descripcion_corta ILIKE $${paramIndex + 1}
+        OR m.nombre ILIKE $${paramIndex + 1}
+        OR c.nombre ILIKE $${paramIndex + 1}
+        -- Similaridad difusa (tolerante a errores)
+        OR similarity(p.nombre, $${paramIndex}) > 0.3
+        OR similarity(m.nombre, $${paramIndex}) > 0.3
       )`;
       params.push(busqueda, `%${busqueda}%`);
       paramIndex += 2;
@@ -297,9 +305,14 @@ class ProductoModel {
 
     if (busqueda) {
       queryText += ` AND (
-        to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '')) 
+        to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '') || ' ' || m.nombre || ' ' || c.nombre) 
         @@ plainto_tsquery('spanish', $${paramIndex})
         OR p.nombre ILIKE $${paramIndex + 1}
+        OR p.descripcion_corta ILIKE $${paramIndex + 1}
+        OR m.nombre ILIKE $${paramIndex + 1}
+        OR c.nombre ILIKE $${paramIndex + 1}
+        OR similarity(p.nombre, $${paramIndex}) > 0.3
+        OR similarity(m.nombre, $${paramIndex}) > 0.3
       )`;
       params.push(busqueda, `%${busqueda}%`);
     }
