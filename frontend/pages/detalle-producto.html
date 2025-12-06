@@ -317,13 +317,15 @@
             } catch (error) {
                 console.error('Error al cargar producto:', error);
                 showError();
+            } finally {
+                // Ocultar loading siempre
+                document.getElementById('loading-state').classList.add('hidden');
             }
         }
 
         // Renderizar información del producto
         function renderProduct(product) {
-            // Ocultar loading, mostrar contenido
-            document.getElementById('loading-state').classList.add('hidden');
+            // Mostrar contenido (el loading se oculta en finally)
             document.getElementById('product-content').classList.remove('hidden');
             document.getElementById('product-details-tabs').classList.remove('hidden');
             document.getElementById('related-products-section').classList.remove('hidden');

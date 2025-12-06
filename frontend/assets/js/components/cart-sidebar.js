@@ -136,13 +136,19 @@ function updateCartUI() {
     if (!cartItems) return;
 
     if (cart.length === 0) {
-        if (emptyCart) emptyCart.classList.remove('hidden');
+        if (emptyCart) {
+            emptyCart.classList.remove('hidden');
+            emptyCart.classList.add('flex');
+        }
         if (cartFooter) cartFooter.classList.add('hidden');
         cartItems.innerHTML = '';
         return;
     }
 
-    if (emptyCart) emptyCart.classList.add('hidden');
+    if (emptyCart) {
+        emptyCart.classList.add('hidden');
+        emptyCart.classList.remove('flex');
+    }
     if (cartFooter) cartFooter.classList.remove('hidden');
 
     cartItems.innerHTML = cart.map(item => `
@@ -185,7 +191,7 @@ function updateCartUI() {
 // Show notification when item is added
 function showCartNotification(productName) {
     const notification = document.createElement('div');
-    notification.className = 'fixed top-24 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in';
+    notification.className = 'fixed top-32 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in';
     notification.innerHTML = `
         <i data-lucide="check-circle" class="w-5 h-5"></i>
         <span class="font-medium">Producto agregado al carrito</span>

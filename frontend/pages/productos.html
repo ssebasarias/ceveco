@@ -114,7 +114,7 @@
                 </div>
 
                 <!-- Loading State -->
-                <div id="loading-state" class="hidden flex justify-center py-20">
+                <div id="loading-state" class="hidden justify-center py-20">
                     <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                 </div>
 
@@ -201,6 +201,7 @@
             // Mostrar loading
             grid.innerHTML = '';
             loading.classList.remove('hidden');
+            loading.classList.add('flex');
             empty.classList.add('hidden');
             pagination.classList.add('hidden');
 
@@ -276,6 +277,7 @@
                 empty.querySelector('p').textContent = 'Por favor intenta nuevamente más tarde.';
             } finally {
                 loading.classList.add('hidden');
+                loading.classList.remove('flex');
             }
         }
 

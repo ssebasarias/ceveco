@@ -89,8 +89,10 @@ window.handleToggleFavorite = async (btn, productId, event) => {
 
     if (isFav) {
         favoriteIds.delete(id);
+        showFavoriteNotification('Producto eliminado de favoritos', 'remove');
     } else {
         favoriteIds.add(id);
+        showFavoriteNotification('Producto agregado a favoritos', 'add');
     }
 
     updateFavoritesUI();
@@ -110,9 +112,32 @@ window.handleToggleFavorite = async (btn, productId, event) => {
         console.error('Error toggling favorite', error);
         if (isFav) favoriteIds.add(id); else favoriteIds.delete(id);
         updateFavoritesUI();
-        alert('No se pudo actualizar favoritos. Intenta de nuevo.');
+        showFavoriteNotification('Error al actualizar favoritos', 'error');
     }
 };
+
+// Show notification
+function showFavoriteNotification(message, type = 'add') {
+    const notification = document.createElement('div');
+    const bgClass = type === 'remove' ? 'bg-red-500' : 'bg-primary';
+    const iconName = type === 'remove' ? 'trash-2' : 'heart';
+
+    notification.className = `fixed top-32 right-4 ${bgClass} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 animate-fade-in`;
+    notification.innerHTML = `
+        <i data-lucide="${iconName}" class="w-5 h-5 ${type === 'add' ? 'fill-current' : ''}"></i>
+        <span class="font-medium">${message}</span>
+    `;
+
+    document.body.appendChild(notification);
+    if (window.lucide) window.lucide.createIcons();
+
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(-10px)';
+        notification.style.transition = 'all 0.3s';
+        setTimeout(() => notification.remove(), 300);
+    }, 2000);
+}
 
 /**
  * Auto-detect page and setup behaviors
