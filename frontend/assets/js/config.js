@@ -38,6 +38,11 @@ const CONFIG = {
         cart: 'ceveco_cart',
         favorites: 'ceveco_favorites',
         user: 'ceveco_user'
+    },
+
+    // Configuración de OAuth
+    OAUTH: {
+        GOOGLE_CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com'
     }
 };
 

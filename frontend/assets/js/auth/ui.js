@@ -57,9 +57,21 @@ export async function updateAuthUI(user) {
                 e.stopPropagation();
                 toggleUserMenu();
             });
-            document.getElementById('logout-btn')?.addEventListener('click', (e) => {
-                if (window.handleLogout) window.handleLogout();
-            });
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Intentando cerrar sesión...');
+                    if (window.handleLogout) {
+                        window.handleLogout();
+                    } else {
+                        console.error('CRITICAL: window.handleLogout no está definido');
+                        // Fallback de emergencia
+                        if (window.authManager) window.authManager.logout();
+                        else window.location.href = 'index.html';
+                    }
+                });
+            }
 
         } else {
             // Fallback

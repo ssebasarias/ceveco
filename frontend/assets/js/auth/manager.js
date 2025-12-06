@@ -121,7 +121,8 @@ export class AuthManager {
     }
 
     initGoogleLogin(resolve, reject) {
-        const GOOGLE_CLIENT_ID = window.GOOGLE_CLIENT_ID || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+        // Obtener Client ID de la configuración global
+        const GOOGLE_CLIENT_ID = window.CONFIG?.OAUTH?.GOOGLE_CLIENT_ID || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
         if (GOOGLE_CLIENT_ID.includes('TU_GOOGLE')) {
             console.warn('⚠️ Configura GOOGLE_CLIENT_ID en tu aplicación');
             reject(new Error('Google Client ID no configurado.'));
