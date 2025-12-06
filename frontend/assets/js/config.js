@@ -42,6 +42,11 @@ const CONFIG = {
 
     // Configuración de OAuth
     OAUTH: {
+        // TODO: Para activar el inicio de sesión real con Google:
+        // 1. Crea un proyecto en Google Cloud Console (https://console.cloud.google.com/)
+        // 2. Crea credenciales OAuth 2.0 Web Client
+        // 3. Agrega 'http://localhost:3000' (o tu dominio) en "Orígenes autorizados de JavaScript"
+        // 4. Copia el CLIENT ID y pégalo abajo reemplazando el texto.
         GOOGLE_CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com'
     }
 };

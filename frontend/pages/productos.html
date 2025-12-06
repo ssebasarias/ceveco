@@ -38,18 +38,19 @@
     <!-- Sticky Header -->
     <div id="navbar-root"></div>
     <!-- Hero Section -->
-    <section id="category-hero" class="relative bg-gray-50 h-[300px] overflow-hidden hidden">
+    <section id="category-hero" class="relative bg-gray-50 h-[200px] overflow-hidden hidden">
         <div class="absolute inset-0">
-            <img id="hero-image" src="../assets/img/hero.png" alt="Banner"
+            <img id="hero-image" src="../assets/img/banner-hero/hero_main.png" alt="Banner"
                 class="w-full h-full object-cover opacity-90">
             <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent"></div>
         </div>
         <div class="container mx-auto px-4 h-full relative flex items-center">
             <div class="max-w-xl space-y-4">
-                <h1 id="hero-title" class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                <h1 id="hero-title" class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
                     Catálogo <span class="text-primary">Ceveco</span>
                 </h1>
-                <p id="hero-subtitle" class="text-lg text-gray-600">Encuentra los mejores productos para tu hogar.</p>
+                <p id="hero-subtitle" class="text-sm md:text-base text-gray-600">Encuentra los mejores productos para tu
+                    hogar.</p>
             </div>
         </div>
     </section>
@@ -313,6 +314,20 @@
                 // Mostrar Hero específico
                 heroSection.classList.remove('hidden');
                 heroTitle.innerHTML = `${catName}`;
+
+                // Update Hero Image dynamically
+                const heroImg = document.getElementById('hero-image');
+                if (params.categoria === 'electro-hogar') {
+                    heroImg.src = '../assets/img/banner-category/hero_electro.png';
+                } else if (params.categoria === 'muebles') {
+                    heroImg.src = '../assets/img/banner-category/hero_muebles.png';
+                } else if (params.categoria === 'motos') {
+                    heroImg.src = '../assets/img/banner-category/hero_motos.png';
+                } else if (params.categoria === 'herramientas') {
+                    heroImg.src = '../assets/img/banner-category/hero_herramientas.png';
+                } else {
+                    heroImg.src = '../assets/img/banner-hero/hero_main.png';
+                }
             } else if (params.destacado) {
                 title.textContent = 'Productos Destacados';
                 document.title = 'Destacados - Ceveco';

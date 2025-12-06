@@ -322,8 +322,12 @@
 
         // Google Sign In
         function handleGoogleSignIn() {
-            alert('Funcionalidad de Google Sign-In próximamente. Por ahora, usa el formulario de registro.');
-            // Aquí se integraría Google OAuth
+            if (window.loginWithGoogle) {
+                window.loginWithGoogle();
+            } else {
+                console.error('El módulo de autenticación no se ha cargado correctamente');
+                alert('Error al cargar la autenticación. Por favor recarga la página.');
+            }
         }
     </script>
 </body>
