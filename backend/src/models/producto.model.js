@@ -95,21 +95,22 @@ class ProductoModel {
       paramIndex++;
     }
 
-    // Búsqueda por texto (mejorada con fuzzy search)
+    // Búsqueda por texto (mejorada con fuzzy search usando pg_trgm)
     if (busqueda) {
       queryText += ` AND (
-        -- Full-text search (alta prioridad)
+        -- Full-text search en español (alta prioridad)
         to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '') || ' ' || m.nombre || ' ' || c.nombre) 
         @@ plainto_tsquery('spanish', $${paramIndex})
-        -- ILIKE para coincidencias parciales
-        OR p.nombre ILIKE $${paramIndex + 1}
-        OR p.sku ILIKE $${paramIndex + 1}
-        OR p.descripcion_corta ILIKE $${paramIndex + 1}
-        OR m.nombre ILIKE $${paramIndex + 1}
-        OR c.nombre ILIKE $${paramIndex + 1}
-        -- Similaridad difusa (tolerante a errores)
-        OR similarity(p.nombre, $${paramIndex}) > 0.3
-        OR similarity(m.nombre, $${paramIndex}) > 0.3
+        -- ILIKE para coincidencias parciales (case-insensitive)
+        OR LOWER(p.nombre) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(p.sku) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(COALESCE(p.descripcion_corta, '')) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(m.nombre) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(c.nombre) ILIKE LOWER($${paramIndex + 1})
+        -- Búsqueda difusa con pg_trgm (tolerante a errores ortográficos)
+        -- similarity > 0.3 significa 30% de similitud mínima
+        OR similarity(LOWER(p.nombre), LOWER($${paramIndex})) > 0.3
+        OR similarity(LOWER(m.nombre), LOWER($${paramIndex})) > 0.3
       )`;
       params.push(busqueda, `%${busqueda}%`);
       paramIndex += 2;
@@ -307,12 +308,12 @@ class ProductoModel {
       queryText += ` AND (
         to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '') || ' ' || m.nombre || ' ' || c.nombre) 
         @@ plainto_tsquery('spanish', $${paramIndex})
-        OR p.nombre ILIKE $${paramIndex + 1}
-        OR p.descripcion_corta ILIKE $${paramIndex + 1}
-        OR m.nombre ILIKE $${paramIndex + 1}
-        OR c.nombre ILIKE $${paramIndex + 1}
-        OR similarity(p.nombre, $${paramIndex}) > 0.3
-        OR similarity(m.nombre, $${paramIndex}) > 0.3
+        OR LOWER(p.nombre) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(COALESCE(p.descripcion_corta, '')) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(m.nombre) ILIKE LOWER($${paramIndex + 1})
+        OR LOWER(c.nombre) ILIKE LOWER($${paramIndex + 1})
+        OR similarity(LOWER(p.nombre), LOWER($${paramIndex})) > 0.3
+        OR similarity(LOWER(m.nombre), LOWER($${paramIndex})) > 0.3
       )`;
       params.push(busqueda, `%${busqueda}%`);
     }

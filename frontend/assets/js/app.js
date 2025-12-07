@@ -274,8 +274,8 @@ window.toggleMobileMenu = function () {
  * Handle search from navbar - GLOBAL FUNCTION
  */
 // Header Search Logic
-window.handleSearch = function () {
-    const input = document.getElementById('search-input');
+window.handleSearch = function (inputId = 'search-input') {
+    const input = document.getElementById(inputId);
     if (input && input.value.trim()) {
         const query = input.value.trim();
         // Determine correct path
@@ -334,24 +334,42 @@ function setupGlobalListeners() {
 }
 
 // Initialize loading when DOM is ready
-document.addEventListener('DOMContentLoaded', async () => {
-    setupGlobalListeners();
-    await loadSharedComponents();
+// Initialize Search Listeners (Desktop & Mobile) with Retry Logic
+function initSearchListeners(retryCount = 0) {
+    const ids = ['search-input', 'mobile-search-input'];
+    let anyMissing = false;
 
-
-    // Initialize search AFTER components are loaded
-    setTimeout(() => {
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) {
-            searchInput.addEventListener('keypress', (e) => {
+    ids.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            // Use onkeypress to avoid duplicate listeners on retries
+            input.onkeypress = (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
-                    window.handleSearch();
+                    window.handleSearch(id);
                 }
-            });
-            console.log('✓ Search initialized');
+            };
+            console.log(`✓ Search listener attached to ${id}`);
         } else {
-            console.warn('✗ Search input not found');
+            anyMissing = true;
+            console.warn(`Search input ${id} not found (attempt ${retryCount + 1})`);
         }
-    }, 200);
+    });
+
+    // Retry if any input is missing, up to 5 times (1 second total)
+    if (anyMissing && retryCount < 5) {
+        setTimeout(() => initSearchListeners(retryCount + 1), 200);
+    }
+}
+
+// Initialize loading when DOM is ready
+document.addEventListener('DOMContentLoaded', async () => {
+    setupGlobalListeners();
+    try {
+        await loadSharedComponents();
+        // Initialize search listeners
+        initSearchListeners();
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
 });

@@ -123,10 +123,8 @@
             <!-- Mobile Search -->
             <div class="relative">
                 <input type="text" id="mobile-search-input" placeholder="Buscar productos..."
-                    class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
-                    onkeypress="if(event.key === 'Enter') { window.location.href='productos.html?q='+this.value; }">
-                <button
-                    onclick="window.location.href='productos.html?q='+document.getElementById('mobile-search-input').value"
+                    class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium">
+                <button onclick="window.handleSearch('mobile-search-input')"
                     class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-primary text-white rounded-lg shadow-sm">
                     <i data-lucide="search" class="w-4 h-4"></i>
                 </button>
