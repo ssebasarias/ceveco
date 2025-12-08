@@ -9,6 +9,7 @@ class ProductoModel {
   static async findAll(filters = {}) {
     const {
       categoria,
+      subcategoria,
       marca,
       precioMin,
       precioMax,
@@ -65,6 +66,13 @@ class ProductoModel {
     if (categoria) {
       queryText += ` AND c.slug = $${paramIndex}`;
       params.push(categoria);
+      paramIndex++;
+    }
+
+    // Filtro por subcategoría
+    if (subcategoria) {
+      queryText += ` AND sc.slug = $${paramIndex}`;
+      params.push(subcategoria);
       paramIndex++;
     }
 
@@ -384,6 +392,32 @@ class ProductoModel {
 
     return result.rows[0].stock >= cantidad;
   }
+
+  /**
+   * Obtener subcategorías por categoría
+   * @param {string} categorySlug - Slug de la categoría
+   * @returns {Promise<Array>} Lista de subcategorías
+   */
+  static async findSubcategoriesByCategory(categorySlug) {
+    const queryText = `
+      SELECT 
+        sc.id_subcategoria,
+        sc.nombre,
+        sc.slug,
+        COUNT(p.id_producto) as total_productos
+      FROM subcategorias sc
+      INNER JOIN categorias c ON sc.id_categoria = c.id_categoria
+      LEFT JOIN productos p ON sc.id_subcategoria = p.id_subcategoria AND p.activo = TRUE
+      WHERE c.slug = $1
+      GROUP BY sc.id_subcategoria, sc.nombre, sc.slug
+      HAVING COUNT(p.id_producto) > 0
+      ORDER BY sc.nombre ASC
+    `;
+
+    const result = await query(queryText, [categorySlug]);
+    return result.rows;
+  }
+
   /**
    * Obtener atributos para filtros por categoría
    * @param {string} categorySlug - Slug de la categoría

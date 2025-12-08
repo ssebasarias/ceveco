@@ -14,6 +14,7 @@ class ProductoService {
         // Preparar filtros
         const queryFilters = {
             categoria: filters.categoria,
+            subcategoria: filters.subcategoria,
             marca: filters.marca ? parseInt(filters.marca) : undefined,
             precioMin: filters.precioMin ? parseFloat(filters.precioMin) : undefined,
             precioMax: filters.precioMax ? parseFloat(filters.precioMax) : undefined,
@@ -143,16 +144,24 @@ class ProductoService {
     /**
      * Obtener filtros de atributos por categoría
      * @param {string} categorySlug - Slug de categoría
-     * @returns {Promise<Object>} Lista de atributos
+     * @returns {Promise<Object>} Lista de atributos y subcategorías
      */
     async getAttributes(categorySlug) {
-        const attributes = await ProductoModel.findAttributesByCategory(categorySlug);
+        // Obtener atributos y subcategorías en paralelo
+        const [attributes, subcategories] = await Promise.all([
+            ProductoModel.findAttributesByCategory(categorySlug),
+            ProductoModel.findSubcategoriesByCategory(categorySlug)
+        ]);
+
         // Filter out attributes with no values (optional, but good UX)
         const activeAttributes = attributes.filter(attr => attr.valores && attr.valores.length > 0);
 
         return {
             success: true,
-            data: activeAttributes
+            data: {
+                subcategorias: subcategories,
+                atributos: activeAttributes
+            }
         };
     }
 }
