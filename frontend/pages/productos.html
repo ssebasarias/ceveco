@@ -60,61 +60,14 @@
         <div class="flex flex-col lg:flex-row gap-10">
 
             <!-- Sidebar Filters -->
-            <aside class="w-full lg:w-64 flex-shrink-0">
-                <!-- Mobile Toggle -->
-                <button onclick="document.getElementById('filters-wrapper').classList.toggle('hidden')"
-                    class="filters-toggle-mobile lg:hidden mb-4">
-                    <span class="flex items-center gap-2">
-                        <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
-                        Filtros
-                    </span>
-                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                </button>
-
-                <!-- Filters Container -->
-                <div id="filters-wrapper" class="hidden lg:block filters-sidebar">
-                    <!-- Header -->
-                    <div class="filters-header">
-                        <h3>
-                            <i data-lucide="sliders-horizontal" class="w-5 h-5 filters-header-icon"></i>
-                            Filtros
-                        </h3>
-                        <button onclick="clearAllFilters()" class="btn-clear-filters" id="clear-filters-btn"
-                            style="display: none;">
-                            Limpiar
-                        </button>
-                    </div>
-
-                    <!-- Dynamic Attribute Filters -->
-                    <div id="dynamic-filters-container">
-                        <!-- Filters will be loaded dynamically -->
-                    </div>
-
-                    <!-- Price Filter -->
-                    <div class="filter-group">
-                        <h3 class="font-bold text-lg mb-4 text-gray-900">Precio</h3>
-                        <div class="px-1">
-                            <div class="relative w-full h-1 bg-gray-200 rounded-full mb-6 mt-2">
-                                <div class="absolute h-full bg-primary rounded-full" style="left: 0%; width: 100%;">
-                                </div>
-                                <div
-                                    class="absolute h-5 w-5 bg-primary rounded-full shadow-md -top-2 -right-1 cursor-pointer border-2 border-white">
-                                </div>
-                            </div>
-                            <div class="flex justify-between items-center text-gray-900 font-medium">
-                                <span>$1.000,000</span>
-                                <span>$3.000,000</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+            <!-- Sidebar Filters -->
+            <div id="filters-sidebar-root" class="w-full lg:w-64 flex-shrink-0"></div>
 
             <!-- Product Grid -->
             <div class="flex-1">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
                     <h2 id="catalog-title" class="text-xl md:text-2xl font-bold text-gray-900">Todos los Productos</h2>
-                    <select id="sort-select" onchange="applyFilters()"
+                    <select id="sort-select"
                         class="w-full sm:w-auto border-none bg-gray-50 text-sm font-medium text-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 cursor-pointer">
                         <option value="relevancia">Ordenar por: Relevancia</option>
                         <option value="precio_asc">Precio: Menor a Mayor</option>
@@ -143,12 +96,12 @@
                 <!-- Pagination -->
                 <div id="pagination" class="mt-12 flex justify-center hidden">
                     <nav class="flex items-center gap-2">
-                        <button id="prev-page" onclick="changePage(-1)"
+                        <button id="prev-page"
                             class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                             <i data-lucide="chevron-left" class="w-5 h-5"></i>
                         </button>
                         <span id="page-info" class="px-4 font-medium text-gray-600">Página 1</span>
-                        <button id="next-page" onclick="changePage(1)"
+                        <button id="next-page"
                             class="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
                             <i data-lucide="chevron-right" class="w-5 h-5"></i>
                         </button>
@@ -173,22 +126,27 @@
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script src="../assets/js/app.js"></script>
 
-    <script>
+    <script type="module">
+        import { FiltersSidebar } from '../assets/js/components/filters-sidebar.js';
+
         // Inicializar iconos Lucide
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
 
         // Estado global
         let currentPage = 1;
         let currentLimit = 12;
         let totalPages = 1;
 
+        // Componente de filtros
+        let filtersSidebar;
+
         // Función de búsqueda
-        function handleSearch() {
+        window.handleSearch = function () {
             const query = document.getElementById('search-input').value;
             if (query) {
                 window.location.href = `productos.html?q=${encodeURIComponent(query)}`;
             }
-        }
+        };
 
         // Obtener parámetros de URL
         function getUrlParams() {
@@ -198,124 +156,6 @@
                 q: params.get('q'),
                 destacado: params.get('destacado')
             };
-        }
-
-        // Cargar filtros dinámicos
-        async function loadDynamicFilters(categoria) {
-            const container = document.getElementById('dynamic-filters-container');
-            container.innerHTML = '<div class="filter-loading"><div class="filter-loading-spinner"></div></div>';
-
-            // Función para obtener icono según el nombre del atributo
-            const getIconForAttribute = (nombre) => {
-                const iconMap = {
-                    'cilindraje': 'gauge',
-                    'tipo de motor': 'zap',
-                    'tipo de frenos': 'disc',
-                    'color': 'palette',
-                    'material': 'layers',
-                    'dimensiones': 'maximize-2',
-                    'capacidad': 'package',
-                    'potencia': 'battery-charging',
-                    'voltaje': 'zap',
-                    'peso': 'weight',
-                    'tamaño': 'maximize',
-                    'marca': 'tag',
-                    'modelo': 'box',
-                    'año': 'calendar',
-                };
-
-                const lowerName = nombre.toLowerCase();
-                for (const [key, icon] of Object.entries(iconMap)) {
-                    if (lowerName.includes(key)) {
-                        return icon;
-                    }
-                }
-                return 'settings'; // Icono por defecto
-            };
-
-            try {
-                const response = await ProductosAPI.getFilters(categoria);
-                if (response.success && response.data) {
-                    const { subcategorias, atributos } = response.data;
-                    let html = '';
-
-                    // Renderizar Subcategorías dinámicamente
-                    if (subcategorias && subcategorias.length > 0) {
-                        html += `
-                            <div class="filter-group">
-                                <h4 class="filter-group-title">
-                                    <i data-lucide="folder" class="w-4 h-4"></i>
-                                    Subcategorías
-                                </h4>
-                                <div class="filter-options">
-                                    ${subcategorias.map(sub => {
-                            const filterId = `filter-sub-${sub.slug}`;
-                            return `
-                                        <label class="filter-option" for="${filterId}">
-                                            <input 
-                                                type="checkbox" 
-                                                id="${filterId}"
-                                                name="subcategoria" 
-                                                value="${sub.slug}" 
-                                                onchange="applyFilters()" 
-                                                class="filter-checkbox">
-                                            <span class="filter-label">${sub.nombre}</span>
-                                        </label>
-                                    `;
-                        }).join('')}
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    // Renderizar Atributos dinámicamente
-                    if (atributos && atributos.length > 0) {
-                        html += atributos.map(attr => {
-                            const uniqueValues = [...new Set(attr.valores)].filter(v => v !== null);
-
-                            if (uniqueValues.length === 0) return '';
-
-                            const icon = getIconForAttribute(attr.nombre);
-
-                            return `
-                                <div class="filter-group">
-                                    <h4 class="filter-group-title">
-                                        <i data-lucide="${icon}" class="w-4 h-4"></i>
-                                        ${attr.nombre}
-                                        ${attr.unidad ? `<span class="filter-group-badge">${attr.unidad}</span>` : ''}
-                                    </h4>
-                                    <div class="filter-options">
-                                        ${uniqueValues.map(val => {
-                                const safeVal = String(val).replace(/"/g, '&quot;');
-                                const filterId = `filter-${attr.id_atributo}-${safeVal.replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
-                                return `
-                                            <label class="filter-option" for="${filterId}">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="${filterId}"
-                                                    name="attr_${attr.id_atributo}" 
-                                                    value="${safeVal}" 
-                                                    onchange="applyFilters()" 
-                                                    class="filter-checkbox">
-                                                <span class="filter-label">${val}</span>
-                                            </label>
-                                        `;
-                            }).join('')}
-                                    </div>
-                                </div>
-                            `;
-                        }).filter(html => html !== '').join('');
-                    }
-
-                    container.innerHTML = html || '<div class="filter-group"><p class="text-sm text-gray-500">No hay filtros disponibles</p></div>';
-
-                    // Re-inicializar iconos de Lucide
-                    lucide.createIcons();
-                }
-            } catch (err) {
-                console.error('Error loading filters', err);
-                container.innerHTML = '<div class="filter-group"><p class="text-sm text-gray-500">No se pudieron cargar los filtros</p></div>';
-            }
         }
 
         // Cargar productos
@@ -334,12 +174,18 @@
 
             const params = getUrlParams();
             const sortValue = document.getElementById('sort-select').value;
-            const minPrice = null;
-            const maxPrice = null;
 
-            // Load filters ONLY if not already loaded or if needed
-            if (params.categoria && !document.querySelector('#dynamic-filters-container .filter-group')) {
-                await loadDynamicFilters(params.categoria);
+            // Load filters via component if needed
+            if (params.categoria && filtersSidebar) {
+                // We check if the container is empty, or better, let the component handle logic.
+                // However, component.loadDynamicFilters checks internally if it should render?
+                // Actually the current component.loadDynamicFilters just renders.
+                // To avoid re-fetching on every page load (pagination), we should check.
+                // But for now, let's just checking if the container has content is a good proxy.
+                const dynamicContainer = document.getElementById('dynamic-filters-container');
+                if (dynamicContainer && !dynamicContainer.querySelector('.filter-group')) {
+                    await filtersSidebar.loadDynamicFilters(params.categoria);
+                }
             }
 
             // Preparar filtros
@@ -351,33 +197,21 @@
             if (params.categoria) filters.categoria = params.categoria;
             if (params.q) filters.busqueda = params.q;
             if (params.destacado) filters.destacado = true;
-            if (minPrice) filters.precioMin = minPrice;
-            if (maxPrice) filters.precioMax = maxPrice;
 
-            // Collect selected subcategories
-            const selectedSubcategories = [];
-            document.querySelectorAll('input[name="subcategoria"]:checked').forEach(input => {
-                selectedSubcategories.push(input.value);
-            });
-
-            // Solo enviar la primera subcategoría seleccionada (el backend espera un solo valor)
-            if (selectedSubcategories.length > 0) {
-                filters.subcategoria = selectedSubcategories[0];
-            }
-
-            // Collect dynamic attributes
-            const selectedAttrs = {};
-            document.querySelectorAll('#dynamic-filters-container input:checked').forEach(input => {
-                // Skip subcategory checkboxes (already handled above)
-                if (input.name === 'subcategoria') return;
-
-                const attrId = input.name.replace('attr_', '');
-                if (!selectedAttrs[attrId]) selectedAttrs[attrId] = [];
-                selectedAttrs[attrId].push(input.value);
-            });
-
-            if (Object.keys(selectedAttrs).length > 0) {
-                filters.atributos = JSON.stringify(selectedAttrs);
+            // Get values from component (using DOM directly for now as per refactor plan to match previous logic)
+            // Or better, use the new method if available.
+            if (filtersSidebar) {
+                const values = filtersSidebar.getFilterValues();
+                if (values.precioMin !== null) filters.precioMin = values.precioMin;
+                if (values.precioMax !== null) filters.precioMax = values.precioMax;
+                if (values.subcategoria) filters.subcategoria = values.subcategoria;
+                if (values.atributos) filters.atributos = values.atributos;
+            } else {
+                // Fallback if component not ready (unlikely)
+                const minInput = document.getElementById('price-min');
+                const maxInput = document.getElementById('price-max');
+                if (minInput && minInput.value) filters.precioMin = Number(minInput.value);
+                if (maxInput && maxInput.value) filters.precioMax = Number(maxInput.value);
             }
 
             // Ordenamiento
@@ -511,41 +345,34 @@
 
         function applyFilters() {
             currentPage = 1;
-            updateClearFiltersButton();
+            // Clear Filters button update is handled by component internally? 
+            // The component updates its own button.
             loadProducts();
         }
 
-        // Limpiar todos los filtros
-        function clearAllFilters() {
-            // Limpiar checkboxes de atributos
-            document.querySelectorAll('#dynamic-filters-container input[type="checkbox"]:checked').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-
-            // Limpiar precio
-            // document.getElementById('min-price').value = '';
-            // document.getElementById('max-price').value = '';
-
-            // Ocultar botón de limpiar
-            updateClearFiltersButton();
-
-            // Aplicar filtros (sin filtros)
-            applyFilters();
-        }
-
-        // Actualizar visibilidad del botón de limpiar filtros
-        function updateClearFiltersButton() {
-            const hasActiveFilters =
-                document.querySelectorAll('#dynamic-filters-container input[type="checkbox"]:checked').length > 0;
-
-            const clearBtn = document.getElementById('clear-filters-btn');
-            if (clearBtn) {
-                clearBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
-            }
-        }
-
         // Init
-        document.addEventListener('DOMContentLoaded', loadProducts);
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Initialize Filter Component
+            filtersSidebar = new FiltersSidebar('filters-sidebar-root', {
+                onFilterChange: () => {
+                    applyFilters();
+                }
+            });
+            await filtersSidebar.init();
+
+            // Add event listener for sort dropdown
+            const sortSelect = document.getElementById('sort-select');
+            if (sortSelect) sortSelect.addEventListener('change', applyFilters);
+
+            // Add event listeners for pagination buttons
+            const prevPage = document.getElementById('prev-page');
+            const nextPage = document.getElementById('next-page');
+            if (prevPage) prevPage.addEventListener('click', () => changePage(-1));
+            if (nextPage) nextPage.addEventListener('click', () => changePage(1));
+
+            // Load initial products
+            loadProducts();
+        });
     </script>
 </body>
 
