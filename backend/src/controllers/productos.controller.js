@@ -173,6 +173,31 @@ class ProductoController {
             });
         }
     }
+    /**
+     * Obtener atributos para filtros
+     * GET /api/v1/productos/filtros?categoria=slug
+     */
+    async getFilters(req, res) {
+        try {
+            const { categoria } = req.query;
+            if (!categoria) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Categoría requerida'
+                });
+            }
+
+            const result = await ProductoService.getAttributes(categoria);
+            res.json(result);
+        } catch (error) {
+            console.error('Error en getFilters:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al obtener filtros',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
 }
 
 module.exports = new ProductoController();

@@ -23,12 +23,13 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co", "https://*.devtunnels.ms"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co"],
-            connectSrc: ["'self'", "https://*.devtunnels.ms"],
-            frameSrc: ["'self'", "https://checkout.wompi.co", "https://www.google.com", "https://*.devtunnels.ms"],
+            connectSrc: ["'self'"],
+            frameSrc: ["'self'", "https://checkout.wompi.co", "https://www.google.com"],
+            upgradeInsecureRequests: null
         },
     },
 }));
@@ -59,6 +60,27 @@ if (process.env.NODE_ENV === 'development') {
 const path = require('path');
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend/pages')));
+
+const fs = require('fs');
+
+// Endpoint para obtener banners dinámicos
+app.get('/api/v1/hero-banners', (req, res) => {
+    const bannersDir = path.join(__dirname, '../frontend/assets/img/banner-hero');
+
+    fs.readdir(bannersDir, (err, files) => {
+        if (err) {
+            console.error('Error reading banner directory:', err);
+            return res.status(500).json({ success: false, message: 'Error reading banners' });
+        }
+
+        // Filtrar solo imágenes
+        const images = files.filter(file =>
+            /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
+        ).map(file => `../assets/img/banner-hero/${file}`);
+
+        res.json({ success: true, data: images });
+    });
+});
 
 // ============================================
 // RUTAS

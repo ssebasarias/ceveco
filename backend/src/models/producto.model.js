@@ -17,7 +17,8 @@ class ProductoModel {
       limit = 12,
       offset = 0,
       orderBy = 'fecha_creacion',
-      orderDir = 'DESC'
+      orderDir = 'DESC',
+      atributos
     } = filters;
 
     let queryText = `
@@ -93,6 +94,35 @@ class ProductoModel {
       queryText += ` AND p.destacado = $${paramIndex}`;
       params.push(destacado);
       paramIndex++;
+    }
+
+    // Filtros dinámicos de atributos
+    if (atributos) {
+      try {
+        const attrs = typeof atributos === 'string' ? JSON.parse(atributos) : atributos;
+        Object.keys(attrs).forEach(key => {
+          const attrId = parseInt(key);
+          if (isNaN(attrId)) return;
+          const values = attrs[key];
+          if (values && values.length > 0) {
+            // Cast numeric and boolean values to text for comparison against string array
+            queryText += ` AND EXISTS (
+                 SELECT 1 FROM producto_atributos pa_${attrId}
+                 WHERE pa_${attrId}.id_producto = p.id_producto
+                 AND pa_${attrId}.id_atributo = $${paramIndex}
+                 AND (
+                    pa_${attrId}.valor_texto = ANY($${paramIndex + 1}::text[]) 
+                    OR pa_${attrId}.valor_numero::text = ANY($${paramIndex + 1}::text[])
+                    OR (CASE WHEN pa_${attrId}.valor_booleano THEN 'Sí' ELSE 'No' END) = ANY($${paramIndex + 1}::text[])
+                 )
+              )`;
+            params.push(attrId, values);
+            paramIndex += 2;
+          }
+        });
+      } catch (e) {
+        console.error('Error parsing attributes filter', e);
+      }
     }
 
     // Búsqueda por texto (mejorada con fuzzy search usando pg_trgm)
@@ -353,6 +383,68 @@ class ProductoModel {
     if (result.rows.length === 0) return false;
 
     return result.rows[0].stock >= cantidad;
+  }
+  /**
+   * Obtener atributos para filtros por categoría
+   * @param {string} categorySlug - Slug de la categoría
+   * @returns {Promise<Array>} Lista de atributos con valores
+   */
+  static async findAttributesByCategory(categorySlug) {
+    const queryText = `
+      SELECT 
+        a.id_atributo,
+        a.nombre,
+        a.unidad,
+        a.tipo_dato,
+        a.id_categoria,
+        (
+            SELECT json_agg(DISTINCT 
+                COALESCE(pa.valor_texto, pa.valor_numero::TEXT, 
+                CASE WHEN pa.valor_booleano THEN 'Sí' ELSE 'No' END)
+            )
+            FROM producto_atributos pa
+            INNER JOIN productos p ON pa.id_producto = p.id_producto
+            INNER JOIN categorias c2 ON p.id_categoria = c2.id_categoria
+            WHERE pa.id_atributo = a.id_atributo 
+            AND p.activo = TRUE
+            AND (c2.slug = $1 OR a.id_categoria IS NULL)
+        ) as valores
+      FROM atributos a
+      LEFT JOIN categorias c ON a.id_categoria = c.id_categoria
+      WHERE c.slug = $1 OR a.id_categoria IS NULL
+      ORDER BY a.priority DESC, a.nombre ASC
+    `;
+    // Note: 'priority' column doesn't exist in schema shown, I should remove it or use default order.
+    // Schema: id_atributo, nombre, unidad, tipo_dato, id_categoria.
+
+    // Correct query without 'priority':
+    const queryTextCorrect = `
+      SELECT 
+        a.id_atributo,
+        a.nombre,
+        a.unidad,
+        a.tipo_dato,
+        a.id_categoria,
+        (
+            SELECT json_agg(DISTINCT 
+                COALESCE(pa.valor_texto, pa.valor_numero::TEXT, 
+                CASE WHEN pa.valor_booleano THEN 'Sí' ELSE 'No' END)
+            )
+            FROM producto_atributos pa
+            INNER JOIN productos p ON pa.id_producto = p.id_producto
+            INNER JOIN categorias c2 ON p.id_categoria = c2.id_categoria
+            WHERE pa.id_atributo = a.id_atributo 
+            AND p.activo = TRUE
+            AND (c2.slug = $1 OR a.id_categoria IS NULL)
+        ) as valores
+      FROM atributos a
+      LEFT JOIN categorias c ON a.id_categoria = c.id_categoria
+      WHERE c.slug = $1 OR a.id_categoria IS NULL
+      ORDER BY a.nombre ASC
+    `;
+
+    const result = await query(queryTextCorrect, [categorySlug]);
+    return result.rows;
   }
 }
 

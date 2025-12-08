@@ -22,7 +22,7 @@ function formatPrice(price) {
 async function getProductCardTemplate() {
     if (productCardTemplateCache) return productCardTemplateCache;
     try {
-        const response = await fetch('../components/card-producto.html');
+        const response = await fetch('/components/card-producto.html');
         if (response.ok) {
             productCardTemplateCache = await response.text();
             return productCardTemplateCache;
@@ -58,6 +58,8 @@ async function renderProductCard(product) {
 
     const nombre = product.nombre || 'Producto sin nombre';
     const categoria = product.categoria || product.marca || '';
+
+
 
     // Preparar bloques HTML
     const badgeBlock = product.badge
@@ -133,9 +135,9 @@ async function loadSharedComponents() {
     try {
         // 1. Fetch all components in parallel
         const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
-            fetchText('../components/navbar.html'),
-            fetchText('../components/footer.html'),
-            fetchText('../components/cart-sidebar.html'),
+            fetchText('/components/navbar.html'),
+            fetchText('/components/footer.html'),
+            fetchText('/components/cart-sidebar.html'),
             getProductCardTemplate() // Preload card template
         ]);
 

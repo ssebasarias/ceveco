@@ -21,6 +21,7 @@ class ProductoService {
             busqueda: filters.busqueda,
             orderBy: filters.orderBy || 'fecha_creacion',
             orderDir: filters.orderDir || 'DESC',
+            atributos: filters.atributos, // Pass attributes filter
             limit,
             offset
         };
@@ -137,6 +138,21 @@ class ProductoService {
                     ? 'Stock disponible'
                     : 'Stock insuficiente'
             }
+        };
+    }
+    /**
+     * Obtener filtros de atributos por categoría
+     * @param {string} categorySlug - Slug de categoría
+     * @returns {Promise<Object>} Lista de atributos
+     */
+    async getAttributes(categorySlug) {
+        const attributes = await ProductoModel.findAttributesByCategory(categorySlug);
+        // Filter out attributes with no values (optional, but good UX)
+        const activeAttributes = attributes.filter(attr => attr.valores && attr.valores.length > 0);
+
+        return {
+            success: true,
+            data: activeAttributes
         };
     }
 }

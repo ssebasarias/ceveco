@@ -63,6 +63,19 @@ router.get('/buscar',
 );
 
 /**
+ * @route   GET /api/v1/productos/filtros
+ * @desc    Obtener filtros por categoría
+ * @access  Public
+ * @query   {string} categoria - Slug de la categoría
+ */
+router.get('/filtros',
+    [
+        query('categoria').notEmpty().withMessage('Categoría requerida')
+    ],
+    ProductoController.getFilters
+);
+
+/**
  * @route   GET /api/v1/productos/:id
  * @desc    Obtener un producto por ID
  * @access  Public

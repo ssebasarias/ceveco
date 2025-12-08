@@ -1,0 +1,374 @@
+/* =========================================
+   FILTERS COMPONENT - Sistema de Filtros Premium
+   ========================================= */
+
+/* Container de filtros */
+.filters-sidebar {
+    background: var(--surface-white);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+}
+
+/* Header de filtros */
+.filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--brand-red);
+}
+
+.filters-header h3 {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--brand-navy);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filters-header-icon {
+    color: var(--brand-red);
+}
+
+/* Botón de limpiar filtros */
+.btn-clear-filters {
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+    text-decoration: underline;
+}
+
+.btn-clear-filters:hover {
+    color: var(--brand-red);
+    background-color: rgba(254, 36, 24, 0.05);
+}
+
+/* Grupo de filtros */
+.filter-group {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* Título del grupo de filtros */
+.filter-group-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--brand-navy);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-group-title i {
+    color: var(--brand-blue-royal);
+}
+
+.filter-group-badge {
+    font-size: 0.65rem;
+    background-color: var(--brand-blue-royal);
+    color: white;
+    padding: 2px 6px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    text-transform: none;
+}
+
+/* Container de opciones de filtro */
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 240px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+/* Scrollbar personalizado para opciones de filtro */
+.filter-options::-webkit-scrollbar {
+    width: 4px;
+}
+
+.filter-options::-webkit-scrollbar-track {
+    background: var(--surface-off-white);
+    border-radius: var(--radius-sm);
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+    background: var(--brand-blue-royal);
+    border-radius: var(--radius-sm);
+}
+
+.filter-options::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-navy);
+}
+
+/* Opción de filtro individual */
+.filter-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.filter-option:hover {
+    background-color: rgba(0, 69, 142, 0.05);
+    transform: translateX(4px);
+}
+
+/* Checkbox personalizado */
+.filter-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    background: var(--surface-white);
+}
+
+.filter-checkbox:hover {
+    border-color: var(--brand-blue-royal);
+    box-shadow: 0 0 0 3px rgba(0, 69, 142, 0.1);
+}
+
+.filter-checkbox:checked {
+    background-color: var(--brand-blue-royal);
+    border-color: var(--brand-blue-royal);
+    box-shadow: 0 0 0 3px rgba(0, 69, 142, 0.15);
+}
+
+/* Icono de check */
+.filter-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 5px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Label del filtro */
+.filter-label {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+    flex: 1;
+}
+
+.filter-option:hover .filter-label {
+    color: var(--brand-navy);
+}
+
+.filter-checkbox:checked+.filter-label {
+    color: var(--brand-navy);
+    font-weight: 500;
+}
+
+/* Contador de productos por filtro */
+.filter-count {
+    font-size: var(--text-xs);
+    color: var(--text-placeholder);
+    background-color: var(--surface-off-white);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+}
+
+/* Filtros de precio */
+.price-filter-inputs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.price-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+    background-color: var(--surface-white);
+}
+
+.price-input::placeholder {
+    color: var(--text-placeholder);
+}
+
+.price-input:focus {
+    outline: none;
+    border-color: var(--brand-blue-royal);
+    box-shadow: 0 0 0 3px rgba(0, 69, 142, 0.1);
+}
+
+.price-separator {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.btn-apply-price {
+    margin-top: 0.5rem;
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--brand-red);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    font-family: var(--font-heading);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn-apply-price:hover {
+    background-color: #d91b10;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(254, 36, 24, 0.2);
+}
+
+/* Filtro activo badge */
+.active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--surface-off-white);
+    border-radius: var(--radius-md);
+}
+
+.active-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--brand-blue-royal);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: 500;
+}
+
+.active-filter-tag button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.25rem;
+    font-size: 1rem;
+    line-height: 1;
+    transition: transform 0.2s ease;
+}
+
+.active-filter-tag button:hover {
+    transform: scale(1.2);
+}
+
+/* Loading state para filtros */
+.filter-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.filter-loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--brand-blue-royal);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive: Mobile */
+@media (max-width: 1024px) {
+    .filters-sidebar {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        margin-bottom: 1rem;
+    }
+
+    .filter-options {
+        max-height: 180px;
+    }
+}
+
+/* Toggle de filtros móvil */
+.filters-toggle-mobile {
+    display: none;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--surface-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--brand-navy);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+.filters-toggle-mobile:hover {
+    background-color: var(--surface-off-white);
+    box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 1024px) {
+    .filters-toggle-mobile {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

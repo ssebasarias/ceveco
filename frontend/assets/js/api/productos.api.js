@@ -122,6 +122,13 @@ const ProductosAPI = {
      */
     async verificarStock(id, cantidad = 1) {
         return api.get(CONFIG.API_ENDPOINTS.productoStock(id), { cantidad });
+    },
+
+    /**
+     * Obtener filtros dinámicos por categoría
+     */
+    async getFilters(categoria) {
+        return api.get(`${CONFIG.API_ENDPOINTS.productos}/filtros`, { categoria });
     }
 };
 

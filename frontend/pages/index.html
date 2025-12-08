@@ -329,17 +329,35 @@
             loadBrands();
 
             // Hero Carousel Logic
-            const heroImages = [
-                '../assets/img/banner-hero/hero_main.jpg',
-                '../assets/img/banner-hero/hero_muebles.jpg',
-                '../assets/img/banner-hero/hero_electro.jpg',
-                '../assets/img/banner-hero/hero_motos.jpg',
-                '../assets/img/banner-hero/hero_herramientas.jpg'
-            ];
-            let currentHeroIndex = 0;
             const heroImageEl = document.getElementById('hero-image');
+            let currentHeroIndex = 0;
+            let heroImages = [];
 
-            if (heroImageEl) {
+            // Fetch dynamic banners
+            async function initHeroCarousel() {
+                try {
+                    const response = await fetch('/api/v1/hero-banners');
+                    const result = await response.json();
+
+                    if (result.success && result.data.length > 0) {
+                        heroImages = result.data;
+
+                        // Set first image immediately if not set (or just to be safe)
+                        // Note: HTML already has a default src, but we can override or wait for interval
+
+                        // Start interval only if we have images
+                        startCarousel();
+                    } else {
+                        console.warn('No dynamic banners found, using default.');
+                    }
+                } catch (error) {
+                    console.error('Error loading banners:', error);
+                }
+            }
+
+            function startCarousel() {
+                if (!heroImageEl || heroImages.length <= 1) return;
+
                 setInterval(() => {
                     // Fade out
                     heroImageEl.style.opacity = '0';
@@ -352,13 +370,15 @@
                         heroImageEl.onload = () => {
                             heroImageEl.style.opacity = '0.9';
                         };
-                        // Fallback if cached
+                        // Fallback in case of cached image
                         if (heroImageEl.complete) {
                             heroImageEl.style.opacity = '0.9';
                         }
                     }, 1000); // Matches transition-opacity duration-1000
                 }, 5000);
             }
+
+            initHeroCarousel();
         });
     </script>
 </body>

@@ -61,57 +61,49 @@
 
             <!-- Sidebar Filters -->
             <aside class="w-full lg:w-64 flex-shrink-0">
-                <div class="lg:hidden pb-4">
-                    <button onclick="document.getElementById('filters-wrapper').classList.toggle('hidden')"
-                        class="w-full py-3 px-4 bg-white border border-gray-200 rounded-lg shadow-sm font-semibold text-gray-700 flex items-center justify-between hover:bg-gray-50 transition-colors">
-                        <span class="flex items-center gap-2"><i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
-                            Filtros</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                    </button>
-                </div>
+                <!-- Mobile Toggle -->
+                <button onclick="document.getElementById('filters-wrapper').classList.toggle('hidden')"
+                    class="filters-toggle-mobile lg:hidden mb-4">
+                    <span class="flex items-center gap-2">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                        Filtros
+                    </span>
+                    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                </button>
 
-                <div id="filters-wrapper" class="hidden lg:block space-y-6">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-4 hidden lg:flex items-center gap-2">
-                            <i data-lucide="sliders-horizontal" class="w-5 h-5"></i> Filtros
+                <!-- Filters Container -->
+                <div id="filters-wrapper" class="hidden lg:block filters-sidebar">
+                    <!-- Header -->
+                    <div class="filters-header">
+                        <h3>
+                            <i data-lucide="sliders-horizontal" class="w-5 h-5 filters-header-icon"></i>
+                            Filtros
                         </h3>
+                        <button onclick="clearAllFilters()" class="btn-clear-filters" id="clear-filters-btn"
+                            style="display: none;">
+                            Limpiar
+                        </button>
+                    </div>
 
-                        <!-- Categoría -->
-                        <div class="border-b border-gray-100 py-4">
-                            <h4 class="font-semibold text-gray-700 mb-3">Categorías</h4>
-                            <ul class="space-y-2 text-sm text-gray-600">
-                                <li><a href="productos.html?categoria=electro-hogar"
-                                        class="hover:text-primary flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-gray-300"></span> Electro Hogar
-                                    </a></li>
-                                <li><a href="productos.html?categoria=muebles"
-                                        class="hover:text-primary flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-gray-300"></span> Muebles
-                                    </a></li>
-                                <li><a href="productos.html?categoria=motos"
-                                        class="hover:text-primary flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-gray-300"></span> Motos
-                                    </a></li>
-                                <li><a href="productos.html?categoria=herramientas"
-                                        class="hover:text-primary flex items-center gap-2">
-                                        <span class="w-2 h-2 rounded-full bg-gray-300"></span> Herramientas
-                                    </a></li>
-                            </ul>
-                        </div>
+                    <!-- Dynamic Attribute Filters -->
+                    <div id="dynamic-filters-container">
+                        <!-- Filters will be injected here by JavaScript -->
+                    </div>
 
-                        <!-- Precio -->
-                        <div class="border-b border-gray-100 py-4">
-                            <h4 class="font-semibold text-gray-700 mb-3">Precio</h4>
-                            <div class="flex items-center gap-2 text-sm">
-                                <input type="number" id="min-price" placeholder="Min"
-                                    class="w-20 px-2 py-1 border border-gray-200 rounded">
-                                <span>-</span>
-                                <input type="number" id="max-price" placeholder="Max"
-                                    class="w-20 px-2 py-1 border border-gray-200 rounded">
-                            </div>
-                            <button onclick="applyFilters()"
-                                class="mt-2 text-xs bg-primary text-white px-3 py-1 rounded hover:bg-primary-dark transition-colors">Aplicar</button>
+                    <!-- Price Filter -->
+                    <div class="filter-group">
+                        <h4 class="filter-group-title">
+                            <i data-lucide="dollar-sign" class="w-4 h-4"></i>
+                            Precio
+                        </h4>
+                        <div class="price-filter-inputs">
+                            <input type="number" id="min-price" placeholder="Mín" class="price-input">
+                            <span class="price-separator">-</span>
+                            <input type="number" id="max-price" placeholder="Máx" class="price-input">
                         </div>
+                        <button onclick="applyFilters()" class="btn-apply-price">
+                            Aplicar
+                        </button>
                     </div>
                 </div>
             </aside>
@@ -206,6 +198,96 @@
             };
         }
 
+        // Cargar filtros dinámicos
+        async function loadDynamicFilters(categoria) {
+            const container = document.getElementById('dynamic-filters-container');
+            container.innerHTML = '<div class="filter-loading"><div class="filter-loading-spinner"></div></div>';
+
+            // Función para obtener icono según el nombre del atributo
+            const getIconForAttribute = (nombre) => {
+                const iconMap = {
+                    'cilindraje': 'gauge',
+                    'tipo de motor': 'zap',
+                    'tipo de frenos': 'disc',
+                    'color': 'palette',
+                    'material': 'layers',
+                    'dimensiones': 'maximize-2',
+                    'capacidad': 'package',
+                    'potencia': 'battery-charging',
+                    'voltaje': 'zap',
+                    'peso': 'weight',
+                    'tamaño': 'maximize',
+                    'marca': 'tag',
+                    'modelo': 'box',
+                    'año': 'calendar',
+                };
+
+                const lowerName = nombre.toLowerCase();
+                for (const [key, icon] of Object.entries(iconMap)) {
+                    if (lowerName.includes(key)) {
+                        return icon;
+                    }
+                }
+                return 'settings'; // Icono por defecto
+            };
+
+            try {
+                const response = await ProductosAPI.getFilters(categoria);
+                if (response.success && response.data) {
+                    const attributes = response.data;
+
+                    if (attributes.length === 0) {
+                        container.innerHTML = '';
+                        return;
+                    }
+
+                    const html = attributes.map(attr => {
+                        const uniqueValues = [...new Set(attr.valores)].filter(v => v !== null);
+
+                        if (uniqueValues.length === 0) return '';
+
+                        const icon = getIconForAttribute(attr.nombre);
+
+                        return `
+                            <div class="filter-group">
+                                <h4 class="filter-group-title">
+                                    <i data-lucide="${icon}" class="w-4 h-4"></i>
+                                    ${attr.nombre}
+                                    ${attr.unidad ? `<span class="filter-group-badge">${attr.unidad}</span>` : ''}
+                                </h4>
+                                <div class="filter-options">
+                                    ${uniqueValues.map(val => {
+                            const safeVal = String(val).replace(/"/g, '&quot;');
+                            const filterId = `filter-${attr.id_atributo}-${safeVal.replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
+                            return `
+                                            <label class="filter-option" for="${filterId}">
+                                                <input 
+                                                    type="checkbox" 
+                                                    id="${filterId}"
+                                                    name="attr_${attr.id_atributo}" 
+                                                    value="${safeVal}" 
+                                                    onchange="applyFilters()" 
+                                                    class="filter-checkbox">
+                                                <span class="filter-label">${val}</span>
+                                            </label>
+                                        `;
+                        }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).filter(html => html !== '').join('');
+
+                    container.innerHTML = html;
+
+                    // Re-inicializar iconos de Lucide
+                    lucide.createIcons();
+                }
+            } catch (err) {
+                console.error('Error loading filters', err);
+                container.innerHTML = '<div class="filter-group"><p class="text-sm text-gray-500">No se pudieron cargar los filtros</p></div>';
+            }
+        }
+
         // Cargar productos
         async function loadProducts() {
             const grid = document.getElementById('product-grid');
@@ -225,6 +307,11 @@
             const minPrice = document.getElementById('min-price').value;
             const maxPrice = document.getElementById('max-price').value;
 
+            // Load filters ONLY if not already loaded or if needed
+            if (params.categoria && document.getElementById('dynamic-filters-container').innerHTML.trim() === '') {
+                loadDynamicFilters(params.categoria);
+            }
+
             // Preparar filtros
             const filters = {
                 page: currentPage,
@@ -236,6 +323,18 @@
             if (params.destacado) filters.destacado = true;
             if (minPrice) filters.precioMin = minPrice;
             if (maxPrice) filters.precioMax = maxPrice;
+
+            // Collect dynamic attributes
+            const selectedAttrs = {};
+            document.querySelectorAll('#dynamic-filters-container input:checked').forEach(input => {
+                const attrId = input.name.replace('attr_', '');
+                if (!selectedAttrs[attrId]) selectedAttrs[attrId] = [];
+                selectedAttrs[attrId].push(input.value);
+            });
+
+            if (Object.keys(selectedAttrs).length > 0) {
+                filters.atributos = JSON.stringify(selectedAttrs);
+            }
 
             // Ordenamiento
             if (sortValue === 'precio_asc') {
@@ -341,10 +440,10 @@
 
         function formatCategoryName(slug) {
             const names = {
-                'electro-hogar': 'Electro Hogar',
-                'muebles': 'Muebles y Organización',
-                'motos': 'Motos',
-                'herramientas': 'Herramientas STIHL'
+                'electro-hogar': 'Electrodomésticos y Tecnología',
+                'muebles': 'Muebles y Decoración',
+                'motos': 'Movilidad y Transporte',
+                'herramientas': 'Maquinaria y Herramientas'
             };
             return names[slug] || 'Productos';
         }
@@ -368,7 +467,39 @@
 
         function applyFilters() {
             currentPage = 1;
+            updateClearFiltersButton();
             loadProducts();
+        }
+
+        // Limpiar todos los filtros
+        function clearAllFilters() {
+            // Limpiar checkboxes de atributos
+            document.querySelectorAll('#dynamic-filters-container input[type="checkbox"]:checked').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            // Limpiar precio
+            document.getElementById('min-price').value = '';
+            document.getElementById('max-price').value = '';
+
+            // Ocultar botón de limpiar
+            updateClearFiltersButton();
+
+            // Aplicar filtros (sin filtros)
+            applyFilters();
+        }
+
+        // Actualizar visibilidad del botón de limpiar filtros
+        function updateClearFiltersButton() {
+            const hasActiveFilters =
+                document.querySelectorAll('#dynamic-filters-container input[type="checkbox"]:checked').length > 0 ||
+                document.getElementById('min-price').value !== '' ||
+                document.getElementById('max-price').value !== '';
+
+            const clearBtn = document.getElementById('clear-filters-btn');
+            if (clearBtn) {
+                clearBtn.style.display = hasActiveFilters ? 'inline-block' : 'none';
+            }
         }
 
         // Init
