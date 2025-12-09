@@ -183,7 +183,7 @@
                             <input type="password" id="password" name="password" required
                                 class="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                 placeholder="••••••••">
-                            <button type="button" onclick="togglePassword('password')"
+                            <button type="button" onclick="togglePasswordRegister('password')"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center">
                                 <i data-lucide="eye" class="w-5 h-5 text-gray-400 hover:text-gray-600"></i>
                             </button>
@@ -203,7 +203,7 @@
                             <input type="password" id="confirm-password" name="confirm-password" required
                                 class="w-full pl-12 pr-12 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                                 placeholder="••••••••">
-                            <button type="button" onclick="togglePassword('confirm-password')"
+                            <button type="button" onclick="togglePasswordRegister('confirm-password')"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center">
                                 <i data-lucide="eye" class="w-5 h-5 text-gray-400 hover:text-gray-600"></i>
                             </button>
@@ -264,19 +264,23 @@
         lucide.createIcons();
 
         // Toggle password visibility
-        function togglePassword(inputId) {
+        // Toggle password visibility (register page)
+        function togglePasswordRegister(inputId) {
             const input = document.getElementById(inputId);
-            const icon = input.nextElementSibling.querySelector('i');
+            const btn = input.parentElement.querySelector('button');
+            const icon = btn ? btn.querySelector('i') : null;
 
             if (input.type === 'password') {
                 input.type = 'text';
-                icon.setAttribute('data-lucide', 'eye-off');
+                if (icon) icon.setAttribute('data-lucide', 'eye-off');
             } else {
                 input.type = 'password';
-                icon.setAttribute('data-lucide', 'eye');
+                if (icon) icon.setAttribute('data-lucide', 'eye');
             }
-            lucide.createIcons();
+            // Re‑render Lucide icons only if we have an icon to update
+            if (icon) lucide.createIcons();
         }
+
 
         // Handle form submission
         document.getElementById('registro-form').addEventListener('submit', async (e) => {

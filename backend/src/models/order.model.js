@@ -1,108 +1,148 @@
 const { query, getClient } = require('../config/db');
 
 class OrderModel {
-    /**
-     * Crear un nuevo pedido con transacción
-     * @param {number} userId - ID del usuario
-     * @param {Object} orderData - Datos del pedido (items, direccion, contacto)
-     * @returns {Promise<Object>} Pedido creado
-     */
-    static async create(userId, orderData) {
-        const client = await getClient();
+  /**
+   * Crear un nuevo pedido con transacción
+   * @param {number} userId - ID del usuario
+   * @param {Object} orderData - Datos del pedido (items, direccion, contacto)
+   * @returns {Promise<Object>} Pedido creado
+   */
+  static async create(userId, orderData) {
+    const client = await getClient();
 
-        try {
-            await client.query('BEGIN');
+    try {
+      await client.query('BEGIN');
 
-            // 1. Crear o reutilizar dirección (Simplificado: Siempre creamos una nueva para este historial)
-            // Ajustar campos según tabla 'direcciones' en bd.sql
-            const addressQuery = `
-        INSERT INTO direcciones (
-          id_usuario, nombre_destinatario, telefono_contacto,
-          departamento, ciudad, direccion_linea1, codigo_postal, tipo
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'casa')
-        RETURNING id_direccion
-      `;
-            const addressValues = [
-                userId,
-                `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
-                orderData.contact.phone,
-                orderData.shippingAddress.department,
-                orderData.shippingAddress.city,
-                orderData.shippingAddress.address,
-                orderData.shippingAddress.zip || null
-            ];
+      // 1. Validar productos y calcular totales desde la BD (SEGURIDAD)
+      // NO confíamos en los precios enviados por el frontend
+      let calculatedSubtotal = 0;
+      const validatedItems = [];
 
-            const addressResult = await client.query(addressQuery, addressValues);
-            const addressId = addressResult.rows[0].id_direccion;
+      for (const item of orderData.items) {
+        // Consultar precio real en la base de datos
+        const productQuery = 'SELECT precio_actual, stock, nombre FROM productos WHERE id_producto = $1 AND activo = TRUE';
+        const productResult = await client.query(productQuery, [item.id]);
 
-            // 2. Crear Pedido
-            // Generar numero de pedido único (ej: ORD-TIMESTAMP-RANDOM)
-            const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-            const orderQuery = `
-        INSERT INTO pedidos (
-          numero_pedido, id_usuario, id_direccion_envio,
-          email_contacto, telefono_contacto,
-          subtotal, costo_envio, total,
-          metodo_pago, estado, estado_pago,
-          empresa_envio, fecha_entrega
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'wompi', 'procesando', 'pagado', 'Coordinadora', CURRENT_DATE + INTERVAL '3 days')
-        RETURNING id_pedido, numero_pedido, fecha_pedido
-      `;
-
-            const orderValues = [
-                orderNumber,
-                userId,
-                addressId,
-                orderData.contact.email,
-                orderData.contact.phone,
-                orderData.totals.subtotal,
-                orderData.totals.shipping || 0,
-                orderData.totals.total
-            ];
-
-            const orderResult = await client.query(orderQuery, orderValues);
-            const newOrder = orderResult.rows[0];
-
-            // 3. Insertar Items
-            for (const item of orderData.items) {
-                const itemQuery = `
-          INSERT INTO pedido_items (
-            id_pedido, id_producto, cantidad, precio_unitario, subtotal, total
-          ) VALUES ($1, $2, $3, $4, $5, $6)
-        `;
-                const itemTotal = item.price * item.quantity;
-                await client.query(itemQuery, [
-                    newOrder.id_pedido,
-                    item.id,
-                    item.quantity,
-                    item.price,
-                    itemTotal,
-                    itemTotal // Asumiendo sin descuento por ahora
-                ]);
-
-                // (Opcional) Actualizar Stock
-                // await client.query('UPDATE productos SET stock = stock - $1 WHERE id_producto = $2', [item.quantity, item.id]);
-            }
-
-            await client.query('COMMIT');
-            return newOrder;
-
-        } catch (error) {
-            await client.query('ROLLBACK');
-            console.error('Error creating order transaction:', error);
-            throw error;
-        } finally {
-            client.release();
+        if (productResult.rowCount === 0) {
+          throw new Error(`Producto con ID ${item.id} no encontrado o inactivo`);
         }
-    }
 
-    /**
-     * Obtener pedidos de un usuario
-     * @param {number} userId 
-     */
-    static async findByUser(userId) {
-        const queryText = `
+        const product = productResult.rows[0];
+        const quantity = parseInt(item.quantity);
+
+        if (quantity <= 0) {
+          throw new Error(`Cantidad inválida para el producto ${product.nombre}`);
+        }
+
+        // Opcional: Validar stock
+        // if (product.stock < quantity) {
+        //    throw new Error(`Stock insuficiente para ${product.nombre}`);
+        // }
+
+        const realPrice = parseFloat(product.precio_actual);
+        const itemSubtotal = realPrice * quantity;
+
+        calculatedSubtotal += itemSubtotal;
+
+        validatedItems.push({
+          id_producto: item.id,
+          cantidad: quantity,
+          precio_unitario: realPrice,
+          subtotal: itemSubtotal
+        });
+      }
+
+      // Usamos costo de envío del frontend por ahora, pero el subtotal de productos es seguro
+      const shippingCost = parseFloat(orderData.totals.shipping) || 0;
+      const calculatedTotal = calculatedSubtotal + shippingCost;
+
+      // 2. Crear o reutilizar dirección (Simplificado)
+      const addressQuery = `
+                INSERT INTO direcciones (
+                  id_usuario, nombre_destinatario, telefono_contacto,
+                  departamento, ciudad, direccion_linea1, codigo_postal, tipo
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'casa')
+                RETURNING id_direccion
+            `;
+      const addressValues = [
+        userId,
+        `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
+        orderData.contact.phone,
+        orderData.shippingAddress.department,
+        orderData.shippingAddress.city,
+        orderData.shippingAddress.address,
+        orderData.shippingAddress.zip || null
+      ];
+
+      const addressResult = await client.query(addressQuery, addressValues);
+      const addressId = addressResult.rows[0].id_direccion;
+
+      // 3. Crear Pedido con los totales calculados
+      const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+      const orderQuery = `
+                INSERT INTO pedidos (
+                  numero_pedido, id_usuario, id_direccion_envio,
+                  email_contacto, telefono_contacto,
+                  subtotal, costo_envio, total,
+                  metodo_pago, estado, estado_pago,
+                  empresa_envio, fecha_entrega
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'wompi', 'procesando', 'pagado', 'Coordinadora', CURRENT_DATE + INTERVAL '3 days')
+                RETURNING id_pedido, numero_pedido, fecha_pedido
+            `;
+
+      const orderValues = [
+        orderNumber,
+        userId,
+        addressId,
+        orderData.contact.email,
+        orderData.contact.phone,
+        calculatedSubtotal, // Precio calculado del backend
+        shippingCost,
+        calculatedTotal     // Total seguro
+      ];
+
+      const orderResult = await client.query(orderQuery, orderValues);
+      const newOrder = orderResult.rows[0];
+
+      // 4. Insertar Items validados
+      for (const item of validatedItems) {
+        const itemQuery = `
+                  INSERT INTO pedido_items (
+                    id_pedido, id_producto, cantidad, precio_unitario, subtotal, total
+                  ) VALUES ($1, $2, $3, $4, $5, $6)
+                `;
+        await client.query(itemQuery, [
+          newOrder.id_pedido,
+          item.id_producto,
+          item.cantidad,
+          item.precio_unitario,
+          item.subtotal,
+          item.subtotal
+        ]);
+
+        // Actualizar stock (opcional)
+        // await client.query('UPDATE productos SET stock = stock - $1 WHERE id_producto = $2', [item.cantidad, item.id_producto]);
+      }
+
+      await client.query('COMMIT');
+      return newOrder;
+
+    } catch (error) {
+      await client.query('ROLLBACK');
+      console.error('Error creating order transaction:', error);
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
+   * Obtener pedidos de un usuario
+   * @param {number} userId 
+   */
+  static async findByUser(userId) {
+    const queryText = `
       SELECT 
         p.id_pedido,
         p.numero_pedido,
@@ -124,9 +164,9 @@ class OrderModel {
       ORDER BY p.fecha_pedido DESC
     `;
 
-        const result = await query(queryText, [userId]);
-        return result.rows;
-    }
+    const result = await query(queryText, [userId]);
+    return result.rows;
+  }
 }
 
 module.exports = OrderModel;
