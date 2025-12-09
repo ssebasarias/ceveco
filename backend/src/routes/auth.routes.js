@@ -182,4 +182,11 @@ router.post('/providers/link', authMiddleware, AuthController.linkProvider);
  */
 router.delete('/providers/:provider', authMiddleware, AuthController.unlinkProvider);
 
+/**
+ * @route   POST /api/v1/auth/logout
+ * @desc    Cerrar sesión (Invalidar cookie)
+ * @access  Public
+ */
+router.post('/logout', AuthController.logout);
+
 module.exports = router;

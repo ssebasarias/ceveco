@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 const { testConnection } = require('./src/config/db');
 
 // Importar rutas
@@ -19,16 +20,17 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 // ============================================
 
 // Seguridad con Helmet
+// Seguridad con Helmet
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co", "https://accounts.google.com", "https://apis.google.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Keeping unsafe-inline for styles is often necessary for frameworks unless using strict nonce/hash
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co"],
-            connectSrc: ["'self'"],
-            frameSrc: ["'self'", "https://checkout.wompi.co", "https://www.google.com"],
+            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com"], // Added Google for avatars
+            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com"], // Allow connecting to Google OAuth
+            frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com"],
             upgradeInsecureRequests: null
         },
     },
@@ -37,7 +39,11 @@ app.use(helmet({
 // CORS - Configuración para permitir peticiones desde el frontend
 // CORS - Configuración para permitir peticiones desde el frontend
 const corsOptions = {
-    origin: '*', // Permitir todo para desarrollo y acceso local (file://)
+    origin: function (origin, callback) {
+        // Permitir requests sin origen (como apps móviles, curl o postman)
+        if (!origin) return callback(null, true);
+        callback(null, true);
+    },
     credentials: true,
     optionsSuccessStatus: 200
 };
@@ -46,6 +52,7 @@ app.use(cors(corsOptions));
 // Body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Logger de peticiones HTTP (solo en desarrollo)
 if (process.env.NODE_ENV === 'development') {

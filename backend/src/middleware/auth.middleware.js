@@ -2,33 +2,31 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ceveco_secret_key_change_in_production';
 
+// nombre de la cookie para token
+const COOKIE_NAME = 'jwt_token';
+
 /**
  * Middleware de autenticación JWT
  * Verifica el token en el header Authorization
  */
 const authMiddleware = (req, res, next) => {
     try {
-        // Obtener token del header
+        // Obtener token del header o de la cookie
+        let token = null;
+
         const authHeader = req.headers.authorization;
-
-        if (!authHeader) {
-            return res.status(401).json({
-                success: false,
-                message: 'Token de autenticación no proporcionado'
-            });
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        } else if (req.cookies && req.cookies[COOKIE_NAME]) {
+            token = req.cookies[COOKIE_NAME];
         }
 
-        // Formato esperado: "Bearer <token>"
-        const parts = authHeader.split(' ');
-
-        if (parts.length !== 2 || parts[0] !== 'Bearer') {
+        if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Formato de token inválido'
+                message: 'Token dev autenticación no proporcionado'
             });
         }
-
-        const token = parts[1];
 
         // Verificar token
         const decoded = jwt.verify(token, JWT_SECRET);

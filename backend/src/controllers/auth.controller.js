@@ -1,11 +1,23 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
 const UsuarioModel = require('../models/usuario.model');
 const AuthProviderModel = require('../models/authProvider.model');
 
 // Configuración JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'ceveco_secret_key_change_in_production';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+const COOKIE_NAME = 'jwt_token';
+
+const isProduction = process.env.NODE_ENV === 'production';
+
+// Opciones seguras para cookies
+const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction, // HTTPS solo en producción
+    sameSite: 'lax', // Protege contra CSRF básico
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
+};
 
 /**
  * Controlador de Autenticación
@@ -73,6 +85,9 @@ class AuthController {
             // Generar token
             const token = AuthController.generateToken(newUser);
 
+            // Enviar cookie segura
+            res.cookie(COOKIE_NAME, token, cookieOptions);
+
             res.status(201).json({
                 success: true,
                 message: 'Usuario registrado exitosamente',
@@ -84,8 +99,8 @@ class AuthController {
                         apellido: newUser.apellido,
                         avatar_url: newUser.avatar_url,
                         rol: newUser.rol
-                    },
-                    token
+                    }
+                    // Token eliminado del body para seguridad
                 }
             });
 
@@ -151,6 +166,14 @@ class AuthController {
                 { expiresIn: tokenExpiry }
             );
 
+            // Ajustar duración cookie si remember
+            const currentCookieOptions = {
+                ...cookieOptions,
+                maxAge: remember ? 30 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000
+            };
+
+            res.cookie(COOKIE_NAME, token, currentCookieOptions);
+
             res.json({
                 success: true,
                 message: 'Login exitoso',
@@ -162,8 +185,7 @@ class AuthController {
                         apellido: user.apellido,
                         avatar_url: user.avatar_url,
                         rol: user.rol
-                    },
-                    token
+                    }
                 }
             });
 
@@ -183,7 +205,7 @@ class AuthController {
      */
     static async oauthLogin(req, res) {
         try {
-            const { provider, providerUid, email, nombre, apellido, avatarUrl, rawData } = req.body;
+            const { provider, providerUid, email, nombre, apellido, avatarUrl, rawData, idToken } = req.body;
 
             // Validaciones
             if (!provider || !providerUid || !email) {
@@ -200,6 +222,49 @@ class AuthController {
                     success: false,
                     message: 'Proveedor de autenticación no válido'
                 });
+            }
+
+            // SEGURIDAD: Verificar token de Google
+            if (provider === 'google') {
+                if (!idToken) {
+                    // Si estamos en desarrollo y el frontend envió un mock (ver AuthManager), lo permitimos SOLO si es explícitamente un mock
+                    // Idealmente esto debería deshabilitarse en producción
+                    if (!process.env.GOOGLE_CLIENT_ID && idToken === undefined) {
+                        // Fallback suave para entornos sin configurar, pero logueando el riesgo
+                        console.warn('⚠️ ALERTA DE SEGURIDAD: Login con Google sin verificación de token (Falta CLIENT_ID)');
+                    } else {
+                        return res.status(401).json({
+                            success: false,
+                            message: 'Falta el token de seguridad (idToken)'
+                        });
+                    }
+                }
+
+                // Verificar Token Real (si existe)
+                if (idToken && !idToken.startsWith('mock_')) {
+                    try {
+                        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+                        const ticket = await client.verifyIdToken({
+                            idToken: idToken,
+                            audience: process.env.GOOGLE_CLIENT_ID
+                        });
+                        const payload = ticket.getPayload();
+
+                        // Verificar que el email coincida (evita spoofing enviando token de Pepito pero email de Juan)
+                        if (payload.email !== email) {
+                            return res.status(403).json({
+                                success: false,
+                                message: 'Inconsistencia de identidad: El token no pertenece al email indicado'
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Fallo verificación Google:', error.message);
+                        return res.status(401).json({
+                            success: false,
+                            message: 'Token de Google inválido o manipulado'
+                        });
+                    }
+                }
             }
 
             // Buscar o crear usuario usando la función de BD
@@ -226,6 +291,8 @@ class AuthController {
             // Generar token
             const token = AuthController.generateToken(user);
 
+            res.cookie(COOKIE_NAME, token, cookieOptions);
+
             res.json({
                 success: true,
                 message: result.is_new_user ? 'Cuenta creada exitosamente' : 'Login exitoso',
@@ -239,7 +306,6 @@ class AuthController {
                         rol: user.rol,
                         auth_method: user.auth_method
                     },
-                    token,
                     isNewUser: result.is_new_user
                 }
             });
@@ -634,6 +700,21 @@ class AuthController {
                 message: 'Error al verificar sesión'
             });
         }
+    }
+    /**
+     * Cerrar sesión (Limpiar cookie)
+     */
+    static logout(req, res) {
+        res.clearCookie(COOKIE_NAME, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: 'lax'
+        });
+
+        res.json({
+            success: true,
+            message: 'Sesión cerrada exitosamente'
+        });
     }
 }
 

@@ -8,21 +8,21 @@ export class AuthManager {
     }
 
     async init() {
-        if (this.sessionManager.getToken()) {
+        // We rely on verifyToken to check if the httpOnly cookie is valid
+        if (this.sessionManager.getCurrentUser()) {
             try {
                 await this.verifyToken();
             } catch (error) {
-                console.log('Token inválido, sesión cerrada');
+                console.log('Sesión inválida o expirada');
                 this.sessionManager.clearSession();
             }
         }
     }
 
     async verifyToken() {
+        // No headers needed, browser sends cookie automatically
         const response = await fetch(`${AUTH_CONFIG.API_URL}/verify`, {
-            headers: {
-                'Authorization': `Bearer ${this.sessionManager.getToken()}`
-            }
+            credentials: 'include' // Needed for HttpOnly cookies
         });
 
         if (!response.ok) throw new Error('Token inválido');
@@ -38,6 +38,7 @@ export class AuthManager {
         try {
             const response = await fetch(`${AUTH_CONFIG.API_URL}/register`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: userData.email,
@@ -51,7 +52,7 @@ export class AuthManager {
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Error en registro');
 
-            this.sessionManager.saveSession(data.data.user, data.data.token);
+            this.sessionManager.saveSession(data.data.user);
             return { success: true, user: data.data.user };
         } catch (error) {
             console.error('Error en registro:', error);
@@ -63,6 +64,7 @@ export class AuthManager {
         try {
             const response = await fetch(`${AUTH_CONFIG.API_URL}/login`, {
                 method: 'POST',
+                credentials: 'include',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     email: credentials.email,
@@ -74,7 +76,7 @@ export class AuthManager {
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Credenciales inválidas');
 
-            this.sessionManager.saveSession(data.data.user, data.data.token);
+            this.sessionManager.saveSession(data.data.user);
             return { success: true, user: data.data.user };
         } catch (error) {
             console.error('Error en login:', error);
@@ -93,7 +95,7 @@ export class AuthManager {
             const data = await response.json();
             if (!response.ok) throw new Error(data.message || 'Error en autenticación OAuth');
 
-            this.sessionManager.saveSession(data.data.user, data.data.token);
+            this.sessionManager.saveSession(data.data.user);
             return {
                 success: true,
                 user: data.data.user,
@@ -156,7 +158,8 @@ export class AuthManager {
                         nombre: payload.name,
                         apellido: payload.family_name || null,
                         avatarUrl: payload.picture,
-                        rawData: payload
+                        rawData: payload,
+                        idToken: response.credential // Send raw token for backend verification
                     });
                     resolve(result);
                 } catch (error) {
@@ -186,7 +189,16 @@ export class AuthManager {
         }
     }
 
-    logout() {
+    async logout() {
+        try {
+            await fetch(`${AUTH_CONFIG.API_URL}/logout`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+        } catch (e) {
+            console.error('Error logout API', e);
+        }
+
         this.sessionManager.clearSession();
 
         if (typeof google !== 'undefined' && google.accounts) {

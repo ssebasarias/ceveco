@@ -87,7 +87,7 @@ class OrderModel {
                   subtotal, costo_envio, total,
                   metodo_pago, estado, estado_pago,
                   empresa_envio, fecha_entrega
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'wompi', 'procesando', 'pagado', 'Coordinadora', CURRENT_DATE + INTERVAL '3 days')
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'wompi', 'pendiente', 'pendiente', NULL, NULL)
                 RETURNING id_pedido, numero_pedido, fecha_pedido
             `;
 
@@ -166,6 +166,36 @@ class OrderModel {
 
     const result = await query(queryText, [userId]);
     return result.rows;
+  }
+
+  /**
+   * Actualizar estado de pago del pedido
+   * @param {string} orderNumber - Número de pedido (ej: ORD-123...)
+   * @param {string} status - Nuevo estado (pagado, fallido, pendiente)
+   */
+  static async updatePaymentStatus(orderNumber, status) {
+    // Validar estado permitido
+    const validStatuses = ['pendiente', 'pagado', 'fallido', 'reembolsado'];
+    if (!validStatuses.includes(status)) {
+      throw new Error('Estado de pago no válido');
+    }
+
+    const queryText = `
+        UPDATE pedidos 
+        SET 
+            estado_pago = $1,
+            estado = CASE 
+                WHEN $1 = 'pagado' THEN 'procesando'::estado_pedido_enum
+                WHEN $1 = 'fallido' THEN 'cancelado'::estado_pedido_enum
+                ELSE estado 
+            END,
+            fecha_actualizacion = CURRENT_TIMESTAMP
+        WHERE numero_pedido = $2
+        RETURNING id_pedido, estado_pago, estado
+    `;
+
+    const result = await query(queryText, [status, orderNumber]);
+    return result.rows[0];
   }
 }
 

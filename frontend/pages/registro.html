@@ -12,69 +12,66 @@
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
+    <!-- Load Theme Config BEFORE Tailwind -->
+    <script src="../assets/js/theme.config.js"></script>
+
     <link rel="stylesheet" href="../assets/css/main.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: 'var(--brand-red)', dark: '#d91b10', light: '#ff4d4d' },
-                        secondary: { DEFAULT: 'var(--brand-blue-royal)', dark: '#002a5c', light: '#3366cc' },
-                        accent: { DEFAULT: '#FFD23F', dark: '#E6BD38' },
-                        dark: 'var(--brand-navy)',
-                        white: 'var(--surface-white)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+
+
+    <!-- Scripts -->
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/utils/utils.js"></script>
+    <script src="../assets/js/api/productos.api.js"></script>
+    <script src="../assets/js/components/cart-sidebar.js"></script>
+    <script type="module" src="../assets/js/auth/index.js"></script>
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/pages/registro.js"></script> <!-- Page specific logic -->
+    </body>
+
+</html>
+<style>
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Animaciones */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
         }
 
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
+        to {
+            opacity: 1;
+            transform: translateY(0);
         }
+    }
 
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        /* Animaciones */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* Efecto glassmorphism */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-    </style>
+    /* Efecto glassmorphism */
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+</style>
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 via-white to-blue-50 min-h-screen font-sans antialiased">
@@ -259,81 +256,8 @@
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script src="../assets/js/app.js"></script>
-    <script>
-        // Inicializar iconos Lucide
-        lucide.createIcons();
+    <script src="../assets/js/pages/registro.js"></script> <!-- Page specific logic -->
 
-        // Toggle password visibility
-        // Toggle password visibility (register page)
-        function togglePasswordRegister(inputId) {
-            const input = document.getElementById(inputId);
-            const btn = input.parentElement.querySelector('button');
-            const icon = btn ? btn.querySelector('i') : null;
-
-            if (input.type === 'password') {
-                input.type = 'text';
-                if (icon) icon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                input.type = 'password';
-                if (icon) icon.setAttribute('data-lucide', 'eye');
-            }
-            // Re‑render Lucide icons only if we have an icon to update
-            if (icon) lucide.createIcons();
-        }
-
-
-        // Handle form submission
-        document.getElementById('registro-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const formData = {
-                nombre: document.getElementById('nombre').value,
-                email: document.getElementById('email').value,
-                telefono: document.getElementById('telefono').value,
-                password: document.getElementById('password').value,
-                confirmPassword: document.getElementById('confirm-password').value
-            };
-
-            // Validar que las contraseñas coincidan
-            if (formData.password !== formData.confirmPassword) {
-                alert('Las contraseñas no coinciden');
-                return;
-            }
-
-            // Validar longitud de contraseña
-            if (formData.password.length < 6) {
-                alert('La contraseña debe tener al menos 6 caracteres');
-                return;
-            }
-
-            try {
-                const result = await handleRegistro(formData);
-                if (result.success) {
-                    alert('¡Registro exitoso! Bienvenido a Ceveco');
-                    const redirectUrl = sessionStorage.getItem('redirect_after_login');
-                    if (redirectUrl) {
-                        sessionStorage.removeItem('redirect_after_login');
-                        window.location.href = redirectUrl;
-                    } else {
-                        window.location.href = 'index.html';
-                    }
-                }
-            } catch (error) {
-                console.error('Error en registro:', error);
-                alert('Error al crear la cuenta. Por favor intenta nuevamente.');
-            }
-        });
-
-        // Google Sign In
-        function handleGoogleSignIn() {
-            if (window.loginWithGoogle) {
-                window.loginWithGoogle();
-            } else {
-                console.error('El módulo de autenticación no se ha cargado correctamente');
-                alert('Error al cargar la autenticación. Por favor recarga la página.');
-            }
-        }
-    </script>
 </body>
 
 </html>
