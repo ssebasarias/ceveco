@@ -2,6 +2,15 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('../controllers/auth.controller');
 const { authMiddleware } = require('../middleware/auth.middleware');
+// Rate limiting middleware
+const rateLimit = require('express-rate-limit');
+const authLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 10, // limit each IP to 10 requests per windowMs
+    message: { success: false, message: 'Too many requests, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 // ============================================
 // RUTAS PÚBLICAS (sin autenticación)
@@ -12,14 +21,14 @@ const { authMiddleware } = require('../middleware/auth.middleware');
  * @desc    Registrar nuevo usuario
  * @access  Public
  */
-router.post('/register', AuthController.register);
+router.post('/register', authLimiter, AuthController.register);
 
 /**
  * @route   POST /api/v1/auth/login
  * @desc    Iniciar sesión con email/contraseña
  * @access  Public
  */
-router.post('/login', AuthController.login);
+router.post('/login', authLimiter, AuthController.login);
 
 /**
  * @route   POST /api/v1/auth/oauth

@@ -91,7 +91,7 @@ export class FiltersSidebar {
                                                 name="subcategoria" 
                                                 value="${sub.slug}" 
                                                 class="filter-checkbox">
-                                            <span class="filter-label">${sub.nombre}</span>
+                                            <span class="filter-label">${this.escapeHTML(sub.nombre)}</span>
                                         </label>
                                     `;
                     }).join('')}
@@ -112,8 +112,8 @@ export class FiltersSidebar {
                             <div class="filter-group">
                                 <h4 class="filter-group-title">
                                     <i data-lucide="${icon}" class="w-4 h-4"></i>
-                                    ${attr.nombre}
-                                    ${attr.unidad ? `<span class="filter-group-badge">${attr.unidad}</span>` : ''}
+                                      ${this.escapeHTML(attr.nombre)}
+                                     ${attr.unidad ? `<span class=\"filter-group-badge\">${this.escapeHTML(attr.unidad)}</span>` : ''}
                                 </h4>
                                 <div class="filter-options">
                                     ${uniqueValues.map(val => {
@@ -127,7 +127,7 @@ export class FiltersSidebar {
                                                     name="attr_${attr.id_atributo}" 
                                                     value="${safeVal}" 
                                                     class="filter-checkbox">
-                                                <span class="filter-label">${val}</span>
+                                                <span class="filter-label">${this.escapeHTML(val)}</span>
                                             </label>
                                         `;
                         }).join('')}
@@ -179,6 +179,19 @@ export class FiltersSidebar {
             }
         }
         return 'settings';
+    }
+
+    // Utility to escape HTML characters to prevent XSS
+    escapeHTML(str) {
+        return String(str).replace(/[&<>"']/g, function (c) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[c];
+        });
     }
 
     triggerFilterChange() {
