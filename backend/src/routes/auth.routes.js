@@ -2,6 +2,21 @@ const express = require('express');
 const router = express.Router();
 const AuthController = require('../controllers/auth.controller');
 const { authMiddleware } = require('../middleware/auth.middleware');
+// Express‑validator helpers
+const { body, validationResult } = require('express-validator');
+
+// Middleware to return validation errors in a unified format
+const validate = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            success: false,
+            message: 'Datos de entrada inválidos',
+            errors: errors.array().map(e => ({ field: e.param, msg: e.msg }))
+        });
+    }
+    next();
+};
 // Rate limiting middleware
 const rateLimit = require('express-rate-limit');
 const authLimiter = rateLimit({
@@ -21,14 +36,35 @@ const authLimiter = rateLimit({
  * @desc    Registrar nuevo usuario
  * @access  Public
  */
-router.post('/register', authLimiter, AuthController.register);
+router.post(
+    '/register',
+    authLimiter,
+    [
+        body('email').isEmail().withMessage('Email debe ser válido'),
+        body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+        body('nombre').notEmpty().withMessage('Nombre es requerido'),
+        body('apellido').optional().isString(),
+        body('telefono').optional().isString()
+    ],
+    validate,
+    AuthController.register
+);
 
 /**
  * @route   POST /api/v1/auth/login
  * @desc    Iniciar sesión con email/contraseña
  * @access  Public
  */
-router.post('/login', authLimiter, AuthController.login);
+router.post(
+    '/login',
+    authLimiter,
+    [
+        body('email').isEmail().withMessage('Email debe ser válido'),
+        body('password').notEmpty().withMessage('Contraseña es requerida')
+    ],
+    validate,
+    AuthController.login
+);
 
 /**
  * @route   POST /api/v1/auth/oauth
@@ -36,21 +72,50 @@ router.post('/login', authLimiter, AuthController.login);
  * @access  Public
  * @body    { provider, providerUid, email, nombre, apellido?, avatarUrl?, rawData? }
  */
-router.post('/oauth', AuthController.oauthLogin);
+router.post(
+    '/oauth',
+    [
+        body('provider')
+            .isIn(['google', 'facebook', 'github', 'apple', 'microsoft'])
+            .withMessage('Proveedor no soportado'),
+        body('providerUid').notEmpty().withMessage('providerUid es requerido'),
+        body('email').isEmail().withMessage('Email debe ser válido'),
+        body('nombre').optional().isString()
+    ],
+    validate,
+    AuthController.oauthLogin
+);
 
 /**
  * @route   POST /api/v1/auth/forgot-password
  * @desc    Solicitar recuperación de contraseña
  * @access  Public
  */
-router.post('/forgot-password', AuthController.forgotPassword);
+router.post(
+    '/forgot-password',
+    [body('email').isEmail().withMessage('Email debe ser válido')],
+    validate,
+    AuthController.forgotPassword
+);
+
 
 /**
  * @route   POST /api/v1/auth/reset-password
  * @desc    Restablecer contraseña con token
  * @access  Public
  */
-router.post('/reset-password', AuthController.resetPassword);
+router.post(
+    '/reset-password',
+    [
+        body('token').notEmpty().withMessage('Token es requerido'),
+        body('newPassword')
+            .isLength({ min: 6 })
+            .withMessage('La nueva contraseña debe tener al menos 6 caracteres')
+    ],
+    validate,
+    AuthController.resetPassword
+);
+
 
 // ============================================
 // RUTAS PROTEGIDAS (requieren autenticación)
@@ -82,7 +147,19 @@ router.put('/profile', authMiddleware, AuthController.updateProfile);
  * @desc    Cambiar contraseña (requiere contraseña actual si existe)
  * @access  Private
  */
-router.put('/change-password', authMiddleware, AuthController.changePassword);
+router.put(
+    '/change-password',
+    authMiddleware,
+    [
+        body('newPassword')
+            .isLength({ min: 6 })
+            .withMessage('La nueva contraseña debe tener al menos 6 caracteres'),
+        body('currentPassword').optional().isString()
+    ],
+    validate,
+    AuthController.changePassword
+);
+
 
 /**
  * @route   GET /api/v1/auth/providers
