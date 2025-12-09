@@ -276,8 +276,22 @@
 
     <!-- Scripts -->
     <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/utils.js"></script>
-    <script src="../assets/js/api/productos.api.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+
+    <!-- Legacy Compatibility Bridge -->
+    <script>
+        window.Utils = window.Helpers;
+        window.formatPrice = window.Helpers.formatPrice;
+    </script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
@@ -316,7 +330,7 @@
             }
 
             try {
-                const response = await ProductosAPI.getById(productId);
+                const response = await window.ProductService.getById(productId);
 
                 if (response.success && response.data) {
                     currentProduct = response.data;
@@ -495,7 +509,7 @@
         // Cargar productos relacionados
         async function loadRelatedProducts(productId) {
             try {
-                const response = await ProductosAPI.getRelacionados(productId, 4);
+                const response = await window.ProductService.getRelated(productId, 4);
                 const container = document.getElementById('related-products');
 
                 if (response.success && response.data.length > 0) {

@@ -74,15 +74,28 @@
 
     <!-- Scripts -->
     <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/utils.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+
+    <!-- Legacy Bridge -->
+    <script>
+        window.Utils = window.Helpers;
+        window.formatPrice = window.Helpers.formatPrice;
+    </script>
     <script type="module" src="../assets/js/auth/index.js"></script>
-    <script type="module" src="../assets/js/api/favoritos.api.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script src="../assets/js/app.js"></script>
 
     <script type="module">
-        import { FavoritosAPI } from '../assets/js/api/favoritos.api.js';
-
+        // Already loaded via global services
         async function loadFavorites() {
             const container = document.getElementById('favorites-grid');
             const loading = document.getElementById('loading-state');
@@ -90,23 +103,36 @@
             const counter = document.getElementById('fav-count');
 
             try {
-                // Verificar auth
-                if (!window.isUserAuthenticated || !window.isUserAuthenticated()) {
+                // Verificar auth (Compatibilidad con sistema nuevo y viejo)
+                const isAuth = window.AuthService?.isAuthenticated() ||
+                    (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
+
+                if (!isAuth) {
                     window.location.href = 'login.html';
                     return;
                 }
 
-                const response = await FavoritosAPI.getList();
+                // Usar nuevo servicio
+                const data = await window.FavoritesService.getAll();
+                // Nota: getAll devuelve array data directamente según mi Service implementation? No, getAll retorna response.
+                // Revisemos FavoritesService implementation en paso 156.
+                // "if (response.success) { return response.data; } return [];"
+                // Así que retorna el ARRAY directamente.
 
-                if (response.success && response.data.length > 0) {
+                // Adaptar lógica que espera { success: true, data: [] }
+                // O ajustar FavoritesService.
+                // Ajustaré aquí asuminedo data es el array.
+                const favorites = data;
+
+                if (favorites && favorites.length > 0) {
                     container.classList.remove('hidden');
                     empty.classList.add('hidden');
 
                     // Update counter
-                    counter.textContent = `${response.data.length} producto${response.data.length !== 1 ? 's' : ''}`;
+                    counter.textContent = `${favorites.length} producto${favorites.length !== 1 ? 's' : ''}`;
 
                     // Render cards
-                    const cardsHtml = (await Promise.all(response.data.map(async (p) => {
+                    const cardsHtml = (await Promise.all(favorites.map(async (p) => {
                         return await renderProductCard(p);
                     }))).join('');
 

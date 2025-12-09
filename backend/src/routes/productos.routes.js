@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const ProductoController = require('../controllers/productos.controller');
-const { query, param } = require('express-validator');
+const { authMiddleware, requireAdmin } = require('../middleware');
+const { query, param, body } = require('express-validator');
 
 /**
  * @route   GET /api/v1/productos
@@ -116,6 +117,84 @@ router.get('/:id/stock',
         query('cantidad').optional().isInt({ min: 1 }).withMessage('Cantidad debe ser mayor a 0')
     ],
     ProductoController.verificarStock
+);
+
+// ============================================
+// RUTAS ADMINISTRATIVAS (Requieren Auth + Admin Role)
+// ============================================
+
+/**
+ * @route   POST /api/v1/productos
+ * @desc    Crear nuevo producto
+ * @access  Private (Admin only)
+ */
+router.post('/',
+    authMiddleware,
+    requireAdmin,
+    [
+        body('nombre').notEmpty().withMessage('Nombre es requerido'),
+        body('descripcion').optional().isString(),
+        body('precio_actual').isFloat({ min: 0 }).withMessage('Precio debe ser un número positivo'),
+        body('precio_anterior').optional().isFloat({ min: 0 }),
+        body('id_categoria').isInt().withMessage('Categoría es requerida'),
+        body('stock').isInt({ min: 0 }).withMessage('Stock debe ser un número positivo'),
+        body('id_marca').optional().isInt(),
+        body('sku').optional().isString(),
+        body('badge').optional().isString()
+    ],
+    ProductoController.create
+);
+
+/**
+ * @route   PUT /api/v1/productos/:id
+ * @desc    Actualizar producto existente
+ * @access  Private (Admin only)
+ */
+router.put('/:id',
+    authMiddleware,
+    requireAdmin,
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        body('nombre').optional().isString(),
+        body('descripcion').optional().isString(),
+        body('precio_actual').optional().isFloat({ min: 0 }),
+        body('precio_anterior').optional().isFloat({ min: 0 }),
+        body('stock').optional().isInt({ min: 0 }),
+        body('activo').optional().isBoolean(),
+        body('destacado').optional().isBoolean(),
+        body('badge').optional().isString()
+    ],
+    ProductoController.update
+);
+
+/**
+ * @route   DELETE /api/v1/productos/:id
+ * @desc    Eliminar producto (soft delete - marca como inactivo)
+ * @access  Private (Admin only)
+ */
+router.delete('/:id',
+    authMiddleware,
+    requireAdmin,
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido')
+    ],
+    ProductoController.delete
+);
+
+/**
+ * @route   PATCH /api/v1/productos/:id/stock
+ * @desc    Actualizar solo el stock del producto
+ * @access  Private (Admin only)
+ */
+router.patch('/:id/stock',
+    authMiddleware,
+    requireAdmin,
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        body('stock').isInt({ min: 0 }).withMessage('Stock debe ser un número positivo'),
+        body('operacion').optional().isIn(['set', 'increment', 'decrement']).withMessage('Operación debe ser set, increment o decrement')
+    ],
+    ProductoController.updateStock
 );
 
 module.exports = router;

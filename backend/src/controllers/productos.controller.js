@@ -198,6 +198,145 @@ class ProductoController {
             });
         }
     }
+
+    // ============================================
+    // MÉTODOS ADMINISTRATIVOS
+    // ============================================
+
+    /**
+     * Crear nuevo producto (Admin only)
+     * POST /api/v1/productos
+     */
+    async create(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    errors: errors.array()
+                });
+            }
+
+            const productData = req.body;
+
+            // Por ahora retornamos que la funcionalidad está pendiente
+            // TODO: Implementar ProductoService.createProducto()
+            return res.status(501).json({
+                success: false,
+                message: 'Funcionalidad de creación de productos en desarrollo',
+                info: 'Esta ruta requiere implementar ProductoService.createProducto()'
+            });
+
+        } catch (error) {
+            console.error('Error en create:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al crear producto',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
+
+    /**
+     * Actualizar producto existente (Admin only)
+     * PUT /api/v1/productos/:id
+     */
+    async update(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    errors: errors.array()
+                });
+            }
+
+            const { id } = req.params;
+            const updates = req.body;
+
+            // TODO: Implementar ProductoService.updateProducto()
+            return res.status(501).json({
+                success: false,
+                message: 'Funcionalidad de actualización de productos en desarrollo',
+                info: 'Esta ruta requiere implementar ProductoService.updateProducto()'
+            });
+
+        } catch (error) {
+            console.error('Error en update:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al actualizar producto',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
+
+    /**
+     * Eliminar producto - Soft Delete (Admin only)
+     * DELETE /api/v1/productos/:id
+     */
+    async delete(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    errors: errors.array()
+                });
+            }
+
+            const { id } = req.params;
+
+            // TODO: Implementar ProductoService.deleteProducto() - Soft delete
+            return res.status(501).json({
+                success: false,
+                message: 'Funcionalidad de eliminación de productos en desarrollo',
+                info: 'Esta ruta requiere implementar ProductoService.deleteProducto() con soft delete'
+            });
+
+        } catch (error) {
+            console.error('Error en delete:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al eliminar producto',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
+
+    /**
+     * Actualizar stock del producto (Admin only)
+     * PATCH /api/v1/productos/:id/stock
+     */
+    async updateStock(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    errors: errors.array()
+                });
+            }
+
+            const { id } = req.params;
+            const { stock, operacion = 'set' } = req.body;
+
+            // TODO: Implementar ProductoService.updateStock()
+            return res.status(501).json({
+                success: false,
+                message: 'Funcionalidad de actualización de stock en desarrollo',
+                info: 'Esta ruta requiere implementar ProductoService.updateStock()'
+            });
+
+        } catch (error) {
+            console.error('Error en updateStock:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al actualizar stock',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
 }
 
 module.exports = new ProductoController();

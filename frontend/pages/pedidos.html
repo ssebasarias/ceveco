@@ -66,28 +66,47 @@
     <div id="footer-root"></div>
 
     <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/utils.js"></script>
-    <script src="../assets/js/api/productos.api.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/services/orders.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+
+    <!-- Legacy Bridge -->
+    <script>
+        window.Utils = window.Helpers;
+        window.formatPrice = window.Helpers.formatPrice;
+    </script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module">
-        import { OrdersAPI } from '../assets/js/api/orders.api.js';
-        import { AuthManager } from '../assets/js/auth/manager.js';
+        // Global services already loaded
 
         document.addEventListener('DOMContentLoaded', async () => {
             const loadingState = document.getElementById('loading-state');
             const emptyState = document.getElementById('empty-state');
             const ordersList = document.getElementById('orders-list');
 
-            // Check auth
-            const auth = new AuthManager();
-            if (!auth.isAuthenticated()) {
+            // Check auth (AuthService)
+            // Note: Since we use type=module script (to keep using existing logic if any), we can use global window.AuthService.
+            // Wait for core (DOMContentLoaded runs after scripts)
+
+            const isAuth = window.AuthService?.isAuthenticated() ||
+                (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
+
+            if (!isAuth) {
                 window.location.href = 'login.html';
                 return;
             }
 
             try {
-                const orders = await OrdersAPI.getAll();
+                const orders = await window.OrdersService.getUserOrders();
 
                 loadingState.classList.add('hidden');
 

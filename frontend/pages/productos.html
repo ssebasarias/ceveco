@@ -119,8 +119,22 @@
 
     <!-- Scripts -->
     <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/utils.js"></script>
-    <script src="../assets/js/api/productos.api.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+
+    <!-- Legacy Compatibility Bridge -->
+    <script>
+        window.Utils = window.Helpers;
+        window.formatPrice = window.Helpers.formatPrice;
+    </script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
@@ -231,10 +245,10 @@
 
                 // Si hay búsqueda, usar endpoint de búsqueda
                 if (params.q) {
-                    response = await ProductosAPI.buscar(params.q, filters);
+                    response = await window.ProductService.search(params.q, filters);
                 } else {
                     // Fetch productos normales
-                    response = await ProductosAPI.getAll(filters);
+                    response = await window.ProductService.getAll(filters);
                 }
 
                 if (response.success && response.data.length > 0) {

@@ -432,13 +432,27 @@
     <div id="footer-root"></div>
 
     <!-- Scripts -->
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
     <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/utils.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/services/orders.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+
+    <!-- Legacy Bridge -->
+    <script>
+        window.Utils = window.Helpers;
+        window.formatPrice = window.Helpers.formatPrice;
+    </script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module">
-        import { OrdersAPI } from '../assets/js/api/orders.api.js';
-        window.OrdersAPI = OrdersAPI;
+        // Already loaded globally
     </script>
     <script src="../assets/js/app.js"></script>
     <script>
@@ -721,7 +735,7 @@
                     }
                 };
 
-                await window.OrdersAPI.create(orderData);
+                await window.OrdersService.createOrder(orderData);
 
                 // Clear the correct storage
                 if (sessionStorage.getItem('ceveco_direct_buy')) {

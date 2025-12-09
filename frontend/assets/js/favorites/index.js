@@ -1,5 +1,3 @@
-import { FavoritosAPI } from '../api/favoritos.api.js';
-
 // Global Favorites State
 let favoriteIds = new Set();
 
@@ -9,16 +7,18 @@ let favoriteIds = new Set();
  * - Updates UI to reflect status
  */
 window.initFavorites = async () => {
-    const token = localStorage.getItem('ceveco_auth_token');
+    // Check authentication using new Service or fallback
+    const isAuth = window.AuthService?.isAuthenticated() ||
+        (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
 
-    if (!token && (typeof window.isUserAuthenticated === 'function' && !window.isUserAuthenticated())) {
+    if (!isAuth) {
         favoriteIds.clear();
         updateFavoritesUI();
         return;
     }
 
     try {
-        const ids = await FavoritosAPI.getIds();
+        const ids = await window.FavoritesService.getIds();
         favoriteIds = new Set(ids);
         updateFavoritesUI();
     } catch (error) {
@@ -69,7 +69,10 @@ window.handleToggleFavorite = async (btn, productId, event) => {
         e.stopPropagation();
     }
 
-    if (typeof window.isUserAuthenticated === 'function' && !window.isUserAuthenticated()) {
+    const isAuth = window.AuthService?.isAuthenticated() ||
+        (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
+
+    if (!isAuth) {
         window.location.href = 'login.html';
         return;
     }
@@ -101,7 +104,7 @@ window.handleToggleFavorite = async (btn, productId, event) => {
     setTimeout(() => btn.classList.remove('scale-125'), 200);
 
     try {
-        await FavoritosAPI.toggle(id);
+        await window.FavoritesService.toggle(id);
 
         if (isFav) {
             document.dispatchEvent(new CustomEvent('favoriteRemoved', {

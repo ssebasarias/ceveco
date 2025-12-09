@@ -1,17 +1,24 @@
+/**
+ * Middleware de Autenticación JWT
+ * Verifica tokens y adjunta información del usuario al request
+ */
+
 const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'ceveco_secret_key_change_in_production';
-
-// nombre de la cookie para token
 const COOKIE_NAME = 'jwt_token';
 
 /**
- * Middleware de autenticación JWT
- * Verifica el token en el header Authorization
+ * Middleware principal de autenticación JWT
+ * Verifica el token en header Authorization o en cookies
+ * Adjunta req.user si es válido
+ * 
+ * @example
+ * router.get('/perfil', authMiddleware, controller);
  */
 const authMiddleware = (req, res, next) => {
     try {
-        // Obtener token del header o de la cookie
+        // Obtener token del header Authorization o de la cookie
         let token = null;
 
         const authHeader = req.headers.authorization;
@@ -24,14 +31,15 @@ const authMiddleware = (req, res, next) => {
         if (!token) {
             return res.status(401).json({
                 success: false,
-                message: 'Token dev autenticación no proporcionado'
+                message: 'Token de autenticación no proporcionado',
+                code: 'NO_TOKEN'
             });
         }
 
-        // Verificar token
+        // Verificar y decodificar token
         const decoded = jwt.verify(token, JWT_SECRET);
 
-        // Agregar datos del usuario al request
+        // Adjuntar datos del usuario al request
         req.user = {
             id: decoded.id,
             email: decoded.email,
@@ -66,26 +74,32 @@ const authMiddleware = (req, res, next) => {
 };
 
 /**
- * Middleware opcional de autenticación
+ * Middleware de autenticación opcional
  * Permite acceso sin token, pero si hay token lo valida
+ * Útil para rutas públicas que personalizan contenido si usuario está logueado
+ * 
+ * @example
+ * router.get('/productos', optionalAuth, controller);
+ * // En el controller: if (req.user) { ... contenido personalizado }
  */
 const optionalAuth = (req, res, next) => {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader) {
-        req.user = null;
-        return next();
-    }
-
-    const parts = authHeader.split(' ');
-
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
-        req.user = null;
-        return next();
-    }
-
     try {
-        const token = parts[1];
+        let token = null;
+
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        } else if (req.cookies && req.cookies[COOKIE_NAME]) {
+            token = req.cookies[COOKIE_NAME];
+        }
+
+        // Si no hay token, continuar sin usuario
+        if (!token) {
+            req.user = null;
+            return next();
+        }
+
+        // Intentar verificar token
         const decoded = jwt.verify(token, JWT_SECRET);
 
         req.user = {
@@ -95,6 +109,7 @@ const optionalAuth = (req, res, next) => {
         };
 
     } catch (error) {
+        // En caso de error, continuar sin usuario (token inválido/expirado)
         req.user = null;
     }
 
@@ -102,94 +117,32 @@ const optionalAuth = (req, res, next) => {
 };
 
 /**
- * Middleware para verificar roles
- * @param {string[]} allowedRoles - Roles permitidos
+ * Helper para extraer token sin validarlo
+ * Útil para debugging o análisis
  */
-const requireRole = (...allowedRoles) => {
-    return (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Autenticación requerida'
-            });
-        }
-
-        if (!allowedRoles.includes(req.user.rol)) {
-            return res.status(403).json({
-                success: false,
-                message: 'No tienes permiso para realizar esta acción'
-            });
-        }
-
-        next();
-    };
+const extractToken = (req) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return authHeader.split(' ')[1];
+    }
+    if (req.cookies && req.cookies[COOKIE_NAME]) {
+        return req.cookies[COOKIE_NAME];
+    }
+    return null;
 };
 
 /**
- * Middleware para verificar que el usuario es admin
+ * Verificar si existe un token (sin validarlo completamente)
+ * Útil para rate limiting personalizado
  */
-const requireAdmin = (req, res, next) => {
-    if (!req.user) {
-        return res.status(401).json({
-            success: false,
-            message: 'Autenticación requerida'
-        });
-    }
-
-    if (req.user.rol !== 'admin') {
-        return res.status(403).json({
-            success: false,
-            message: 'Se requieren permisos de administrador'
-        });
-    }
-
-    next();
-};
-
-/**
- * Middleware para verificar que el usuario es el propietario del recurso
- * @param {Function} getResourceOwner - Función async que retorna el id del propietario
- */
-const requireOwner = (getResourceOwner) => {
-    return async (req, res, next) => {
-        try {
-            if (!req.user) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Autenticación requerida'
-                });
-            }
-
-            // Admin puede acceder a cualquier recurso
-            if (req.user.rol === 'admin') {
-                return next();
-            }
-
-            const ownerId = await getResourceOwner(req);
-
-            if (ownerId !== req.user.id) {
-                return res.status(403).json({
-                    success: false,
-                    message: 'No tienes permiso para acceder a este recurso'
-                });
-            }
-
-            next();
-
-        } catch (error) {
-            console.error('Error en requireOwner:', error);
-            return res.status(500).json({
-                success: false,
-                message: 'Error al verificar permisos'
-            });
-        }
-    };
+const hasToken = (req) => {
+    return extractToken(req) !== null;
 };
 
 module.exports = {
     authMiddleware,
     optionalAuth,
-    requireRole,
-    requireAdmin,
-    requireOwner
+    extractToken,
+    hasToken,
+    COOKIE_NAME
 };

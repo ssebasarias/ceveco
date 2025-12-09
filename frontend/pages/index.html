@@ -231,9 +231,22 @@
 
     <!-- Scripts -->
     <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/utils.js"></script>
-    <script src="../assets/js/api/productos.api.js"></script>
-    <script src="../assets/js/api/marcas.api.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+
+    <!-- Legacy Compatibility Bridge -->
+    <script>
+        window.Utils = window.Helpers;
+        window.formatPrice = window.Helpers.formatPrice;
+    </script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
@@ -256,7 +269,7 @@
             const container = document.getElementById('featured-products');
             try {
                 // Reducir a 6 productos para no saturar
-                const response = await ProductosAPI.getDestacados(6);
+                const response = await window.ProductService.getFeatured(6);
 
                 if (response.success && response.data.length > 0) {
                     const cardsHtml = (await Promise.all(response.data.map(producto => renderProductCard(producto)))).join('');
@@ -302,7 +315,7 @@
         async function loadBrands() {
             const container = document.getElementById('brands-carousel');
             try {
-                const response = await MarcasAPI.getActivas();
+                const response = await window.ProductService.getBrands();
 
                 if (response.success && response.data.length > 0) {
                     const brands = response.data;

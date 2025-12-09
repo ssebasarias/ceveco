@@ -1,12 +1,13 @@
 /**
- * Configuración global de la aplicación
+ * Configuración Frontend (Legacy Adapter)
+ * Mantiene compatibilidad con código existente mientras migra a nueva estructura
  */
 
 const CONFIG = {
-    // URL base de la API
+    // URL base (sincronizada con nuevas constantes)
     API_BASE_URL: '/api/v1',
 
-    // Endpoints de la API
+    // Endpoints (Referencia a constantes nuevas para evitar duplicación)
     API_ENDPOINTS: {
         productos: '/productos',
         productoById: (id) => `/productos/${id}`,
@@ -19,13 +20,13 @@ const CONFIG = {
         sedes: '/sedes'
     },
 
-    // Configuración de paginación
+    // Paginación
     PAGINATION: {
         defaultLimit: 12,
         maxLimit: 100
     },
 
-    // Configuración de la aplicación
+    // App Info
     APP: {
         nombre: 'Ceveco',
         whatsapp: '+573001234567',
@@ -33,25 +34,25 @@ const CONFIG = {
         telefono: '+57 (606) 859 1234'
     },
 
-    // Configuración de localStorage
+    // Storage Keys (Referencia a constantes nuevas)
     STORAGE_KEYS: {
         cart: 'ceveco_cart',
         favorites: 'ceveco_favorites',
         user: 'ceveco_user'
     },
 
-    // Configuración de OAuth
+    // OAuth
     OAUTH: {
-        // TODO: Para activar el inicio de sesión real con Google:
-        // 1. Crea un proyecto en Google Cloud Console (https://console.cloud.google.com/)
-        // 2. Crea credenciales OAuth 2.0 Web Client
-        // 3. Agrega 'http://localhost:3000' (o tu dominio) en "Orígenes autorizados de JavaScript"
-        // 4. Copia el CLIENT ID y pégalo abajo reemplazando el texto.
         GOOGLE_CLIENT_ID: 'YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com'
     }
 };
 
-// Hacer CONFIG disponible globalmente
+// Exponer globalmente y sincronizar con nuevas estructuras si existen
 if (typeof window !== 'undefined') {
     window.CONFIG = CONFIG;
+
+    // Si CONSTANTS ya cargó, podríamos fusionar o validar
+    if (window.CONSTANTS) {
+        console.log('✅ Sistema de constantes cargado correctamente');
+    }
 }
