@@ -1,11 +1,13 @@
 /**
- * Configuración Frontend (Legacy Adapter)
- * Mantiene compatibilidad con código existente mientras migra a nueva estructura
+ * Configuración Frontend
+ * Configuración global de la aplicación
  */
 
 const CONFIG = {
     // URL base (sincronizada con nuevas constantes)
     API_BASE_URL: '/api/v1',
+    // Environment flag
+    IS_DEV: true,
 
     // Endpoints (Referencia a constantes nuevas para evitar duplicación)
     API_ENDPOINTS: {

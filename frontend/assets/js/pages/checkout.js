@@ -183,16 +183,7 @@ window.goToStep = function (step) {
     if (window.lucide) window.lucide.createIcons();
 };
 
-window.applyPromoCode = function () {
-    const codeInput = document.getElementById('promo-code');
-    const code = codeInput ? codeInput.value.trim() : '';
-    if (!code) {
-        alert('Por favor ingresa un código de descuento.');
-        return;
-    }
-    // TODO: Validate promo code with backend
-    alert('Funcionalidad de códigos promocionales próximamente disponible.');
-};
+
 
 window.initiatePayment = async function () {
     // Check authentication first
@@ -277,37 +268,46 @@ window.initiatePayment = async function () {
 
     } catch (e) {
         console.error('Wompi Error:', e);
-        alert('El sistema de pagos no está disponible. Usando modo simulación.');
-        simulateOrder();
+
+        // Development fallback only
+        if (window.CONFIG && window.CONFIG.IS_DEV) {
+            alert('Wompi no disponible. Usando modo simulación (DEV ONLY).');
+            simulateOrder();
+        } else {
+            alert('El sistema de pagos no está disponible en este momento. Por favor intenta más tarde.');
+        }
     }
 };
 
-window.simulateOrder = async function () {
-    const directBuy = sessionStorage.getItem('ceveco_direct_buy');
-    const savedCart = localStorage.getItem('cevecoCart');
-    const cart = directBuy ? JSON.parse(directBuy) : JSON.parse(savedCart || '[]');
+// Development helper - Only define in DEV mode
+if (window.CONFIG && window.CONFIG.IS_DEV) {
+    window.simulateOrder = async function () {
+        const directBuy = sessionStorage.getItem('ceveco_direct_buy');
+        const savedCart = localStorage.getItem('cevecoCart');
+        const cart = directBuy ? JSON.parse(directBuy) : JSON.parse(savedCart || '[]');
 
-    if (cart.length === 0) return;
+        if (cart.length === 0) return;
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-    // Capture values again just in case
-    const email = document.getElementById('email').value;
-    const phone = document.getElementById('phone').value;
-    const firstName = document.getElementById('firstName').value;
-    const lastName = document.getElementById('lastName').value;
-    const address = document.getElementById('address').value;
-    const department = document.getElementById('department').value;
-    const city = document.getElementById('city').value;
-    const zip = document.getElementById('zip').value;
+        // Capture values again just in case
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const address = document.getElementById('address').value;
+        const department = document.getElementById('department').value;
+        const city = document.getElementById('city').value;
+        const zip = document.getElementById('zip').value;
 
-    // Generate simulation reference
-    const reference = 'SIM-' + Date.now();
+        // Generate simulation reference
+        const reference = 'SIM-' + Date.now();
 
-    await createOrderBackend(cart, {
-        firstName, lastName, address, department, city, zip, email, phone
-    }, total, reference);
-};
+        await createOrderBackend(cart, {
+            firstName, lastName, address, department, city, zip, email, phone
+        }, total, reference);
+    };
+}
 
 async function createOrderBackend(cart, shippingData, total, reference) {
     try {

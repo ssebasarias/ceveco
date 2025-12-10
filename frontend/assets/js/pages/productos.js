@@ -110,7 +110,7 @@ async function loadProducts() {
         }
 
         if (response.success && response.data.length > 0) {
-            // Renderizar productos usando la función global de main.js/ceveco-core.js
+            // Renderizar productos usando la función global de core.js
             // Ensure renderProductCard is available
             if (!window.renderProductCard) {
                 console.warn('renderProductCard not ready yet');

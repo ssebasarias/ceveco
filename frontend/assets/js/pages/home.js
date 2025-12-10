@@ -47,7 +47,7 @@ async function loadFeaturedProducts() {
 
         if (response.success && response.data.length > 0) {
 
-            // Wait for renderProductCard reliably from ceveco-core.js
+            // Wait for renderProductCard reliably from core.js
             const renderFn = await waitForGlobal('renderProductCard');
 
             if (typeof renderFn === 'function') {

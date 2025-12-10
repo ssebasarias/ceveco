@@ -4,10 +4,18 @@
  * Debe cargarse antes que app.js o cualquier lógica de página
  */
 
-(function () {
-    console.log('🚀 Ceveco Frontend Core Initializing...');
+/**
+ * Ceveco Core System
+ * Central unified bootstrapper for Services, UI Components, and Global Logic.
+ * Replaces: core.js, ceveco-core.js, app-core.js
+ */
 
-    // Verificar dependencias críticas
+(function () {
+    console.log('🚀 Ceveco Core System Initializing...');
+
+    // ==========================================
+    // 1. DEPENDENCY CHECK & INITIALIZATION
+    // ==========================================
     const dependencies = [
         'CONSTANTS',
         'StorageUtils',
@@ -19,40 +27,306 @@
     ];
 
     let missing = [];
-
-    // Pequeño delay para asegurar que otros scripts hayan cargado si usamos defer
-    window.addEventListener('DOMContentLoaded', () => {
-        dependencies.forEach(dep => {
-            if (!window[dep]) {
-                missing.push(dep);
-            }
-        });
-
-        if (missing.length > 0) {
-            console.warn('⚠️ Algunas dependencias del Core no estÃ¡n cargadas:', missing.join(', '));
-            console.warn('AsegÃºrate de incluir los scripts en el orden correcto en tu HTML.');
-        } else {
-            console.log('✅ Core Services Ready');
-
-            // Inicializar estado global si es necesario
-            initializeGlobalState();
-        }
+    dependencies.forEach(dep => {
+        if (!window[dep]) missing.push(dep);
     });
 
+    if (missing.length > 0) {
+        console.warn('⚠️ Core Dependencies Missing:', missing.join(', '));
+    } else {
+        console.log('✅ Core Services Ready');
+        initializeGlobalState();
+    }
+
     function initializeGlobalState() {
-        // Restaurar sesiÃ³n si existe token
-        if (window.AuthService.isAuthenticated()) {
-            // Refrescar perfil en segundo plano
+        // Restore session if token exists
+        if (window.AuthService && window.AuthService.isAuthenticated()) {
             window.AuthService.refreshProfile().catch(() => {
-                // Si falla (token expirado), hacer logout silencioso
-                window.StorageUtils.removeUser();
+                if (window.StorageUtils) window.StorageUtils.removeUser();
             });
         }
-
-        // Inicializar carrito desde storage si no estÃ¡ en memoria
-        if (!window.cart) {
+        // Initialize cart from storage if not in memory
+        if (!window.cart && window.StorageUtils) {
             window.cart = window.StorageUtils.getCart();
         }
     }
 
+    // ==========================================
+    // 2. GLOBAL HELPERS (Exposed to Window)
+    // ==========================================
+
+    // Price Formatter
+    window.formatPrice = function (price) {
+        if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
+        return new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            maximumFractionDigits: 0
+        }).format(price);
+    };
+
+    // Mobile Menu Toggle
+    window.toggleMobileMenu = function () {
+        const backdrop = document.getElementById('mobile-menu-backdrop');
+        const drawer = document.getElementById('mobile-menu-drawer');
+
+        if (backdrop && drawer) {
+            if (backdrop.classList.contains('hidden')) {
+                // Open
+                backdrop.classList.remove('hidden');
+                // Force reflow
+                void backdrop.offsetWidth;
+                setTimeout(() => {
+                    backdrop.classList.remove('opacity-0');
+                    drawer.classList.remove('-translate-x-full');
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                // Close
+                backdrop.classList.add('opacity-0');
+                drawer.classList.add('-translate-x-full');
+                document.body.style.overflow = '';
+                setTimeout(() => {
+                    backdrop.classList.add('hidden');
+                }, 300);
+            }
+        } else {
+            console.warn('Mobile menu elements not found');
+        }
+        if (window.lucide) window.lucide.createIcons();
+    };
+
+    // Navigation Helper
+    window.goToProduct = function (id) {
+        if (!id) return;
+        const currentPath = window.location.pathname;
+        const isInPagesDir = currentPath.includes('/pages/');
+        const targetPath = isInPagesDir ? `detalle-producto.html?id=${id}` : `pages/detalle-producto.html?id=${id}`;
+        window.location.href = targetPath;
+    };
+
+    // Search Handler
+    window.handleSearch = function (inputId = 'search-input') {
+        const input = document.getElementById(inputId);
+        if (input && input.value.trim()) {
+            const query = input.value.trim();
+            const currentPath = window.location.pathname;
+            const isInPagesDir = currentPath.includes('/pages/');
+            const targetPage = 'productos.html';
+            const targetPath = isInPagesDir ? targetPage : `pages/${targetPage}`;
+            window.location.href = `${targetPath}?q=${encodeURIComponent(query)}`;
+        }
+    };
+
+    // ==========================================
+    // 3. COMPONENT RENDERING (Product Cards)
+    // ==========================================
+    let productCardTemplateCache = null;
+
+    async function getProductCardTemplate() {
+        if (productCardTemplateCache) return productCardTemplateCache;
+        try {
+            // Try absolute first
+            let response = await fetch('/components/card-producto.html');
+            if (!response.ok) {
+                // Try relative
+                response = await fetch('../components/card-producto.html');
+            }
+            if (response.ok) {
+                productCardTemplateCache = await response.text();
+                return productCardTemplateCache;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error loading template:', error);
+            return null;
+        }
+    }
+
+    window.renderProductCard = async function (product) {
+        const template = await getProductCardTemplate();
+        const formatter = window.formatPrice;
+
+        // Fallback if template missing
+        if (!template) {
+            return `<div class="p-4 border">Error template: ${product.nombre}</div>`;
+        }
+
+        // Normalize Data
+        const id = product.id_producto || product.id || '';
+        const precio = product.precio_actual || product.price || 0;
+        const precioAnterior = product.precio_anterior || product.oldPrice || 0;
+
+        // Fallback Image
+        const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f3f4f6' width='400' height='400'/%3E%3Ctext fill='%239ca3af' font-family='sans-serif' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ESin Imagen%3C/text%3E%3C/svg%3E";
+
+        let imagenUrl = product.imagen_principal || product.image;
+        if (!imagenUrl || imagenUrl.includes('via.placeholder.com')) imagenUrl = fallbackImage;
+
+        const nombre = product.nombre || 'Producto sin nombre';
+        const categoria = product.categoria || product.marca || '';
+
+        // HTML Blocks
+        const badgeBlock = product.badge
+            ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">${product.badge}</span>`
+            : '';
+
+        const oldPriceBlock = precioAnterior && precioAnterior > precio
+            ? `<span class="text-sm text-gray-400 line-through">${formatter(precioAnterior)}</span>`
+            : '';
+
+        // Safe Strings
+        const safeNombre = String(nombre);
+        const safeImagen = String(imagenUrl);
+        const safeCategoria = String(categoria);
+
+        const escapeJs = (str) => str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+        const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+        return template
+            .replace(/{{id}}/g, id)
+            .replace(/{{image}}/g, safeImagen)
+            .replace(/{{image_attr}}/g, escapeHtml(safeImagen))
+            .replace(/{{name}}/g, safeNombre)
+            .replace(/{{name_escaped}}/g, escapeJs(safeNombre))
+            .replace(/{{name_attr}}/g, escapeHtml(safeNombre))
+            .replace(/{{category}}/g, safeCategoria)
+            .replace(/{{category_attr}}/g, escapeHtml(safeCategoria))
+            .replace(/{{price}}/g, formatter(precio))
+            .replace(/{{price_raw}}/g, precio)
+            .replace(/{{image_escaped}}/g, escapeJs(safeImagen))
+            .replace(/{{badge_block}}/g, badgeBlock)
+            .replace(/{{old_price_block}}/g, oldPriceBlock);
+    };
+
+    // ==========================================
+    // 4. SHARED COMPONENTS LOADER (Navbar/Footer)
+    // ==========================================
+    async function loadSharedComponents() {
+        if (window.location.protocol === 'file:') return;
+
+        console.log('🔄 Loading Layout Components...');
+        const navbarRoot = document.getElementById('navbar-root');
+        const footerRoot = document.getElementById('footer-root');
+
+        const fetchText = async (url) => {
+            try {
+                let res = await fetch(url);
+                if (!res.ok) res = await fetch('.' + url);
+                if (!res.ok && url.startsWith('/')) res = await fetch('..' + url); // Try parent
+                return res.ok ? await res.text() : null;
+            } catch (e) {
+                return null;
+            }
+        };
+
+        try {
+            const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
+                fetchText('/components/navbar.html'),
+                fetchText('/components/footer.html'),
+                fetchText('/components/cart.html'),
+                getProductCardTemplate() // Preload
+            ]);
+
+            // Navbar
+            if (navbarRoot && navbarHtml) {
+                navbarRoot.innerHTML = navbarHtml;
+                // Move mobile menu to body to avoid z-index issues
+                const backdrop = document.getElementById('mobile-menu-backdrop');
+                const drawer = document.getElementById('mobile-menu-drawer');
+                if (backdrop) document.body.appendChild(backdrop);
+                if (drawer) document.body.appendChild(drawer);
+
+                // Attach Event Listeners
+                const mobileToggleBtn = document.getElementById('mobile-menu-toggle');
+                if (mobileToggleBtn) mobileToggleBtn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); };
+
+                const mobileCloseBtn = document.getElementById('mobile-menu-close');
+                if (mobileCloseBtn) mobileCloseBtn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); };
+            }
+
+            // Footer
+            if (footerRoot && footerHtml) {
+                footerRoot.innerHTML = footerHtml;
+            }
+
+            // Cart Sidebar injection
+            if (cartHtml && !document.getElementById('cart-sidebar')) {
+                const div = document.createElement('div');
+                div.innerHTML = cartHtml;
+                while (div.firstChild) document.body.appendChild(div.firstChild);
+            }
+
+            // Init Components
+            if (window.lucide) window.lucide.createIcons();
+            document.dispatchEvent(new CustomEvent('components:loaded'));
+
+            // Init Auth UI
+            if (typeof window.updateAuthUI === 'function') window.updateAuthUI();
+            else if (typeof window.setupUserMenu === 'function') window.setupUserMenu();
+
+            // Init Cart Logic
+            if (typeof window.loadCart === 'function') window.loadCart();
+
+            console.log('✅ Shared Components Loaded');
+
+        } catch (error) {
+            console.error('❌ Component Loading Error:', error);
+        }
+    }
+
+    // ==========================================
+    // 5. GLOBAL EVENT LISTENERS
+    // ==========================================
+    function setupGlobalListeners() {
+        // Search Inputs
+        const connectSearch = (retry = 0) => {
+            const inputs = ['search-input', 'mobile-search-input'];
+            let found = false;
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    found = true;
+                    el.onkeypress = (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            window.handleSearch(id);
+                        }
+                    };
+                }
+            });
+            // Retry if navbar hasn't loaded yet
+            if (!found && retry < 10) setTimeout(() => connectSearch(retry + 1), 500);
+        };
+        connectSearch();
+
+        // Delegate Clicks
+        document.addEventListener('click', (e) => {
+            // Buy Now
+            const buyBtn = e.target.closest('.js-buy-now');
+            if (buyBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const d = buyBtn.dataset;
+                if (window.buyNow) window.buyNow(d.id, d.name, parseFloat(d.price), d.image);
+                return;
+            }
+
+            // Product Link
+            const card = e.target.closest('.js-product-card');
+            if (card && !e.target.closest('button') && !e.target.closest('a')) {
+                window.goToProduct(card.dataset.productId);
+            }
+        });
+    }
+
+    // ==========================================
+    // 6. EXECUTION START
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadSharedComponents();
+        setupGlobalListeners();
+    });
+
 })();
+
