@@ -240,160 +240,21 @@
     <script src="../assets/js/services/auth.service.js"></script>
     <script src="../assets/js/services/products.service.js"></script>
     <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/services/orders.service.js"></script>
     <script src="../assets/js/core.js"></script>
 
-    <!-- Legacy Compatibility Bridge -->
-    <script>
-        window.Utils = window.Helpers;
-        window.formatPrice = window.Helpers.formatPrice;
-    </script>
-    <script src="../assets/js/components/cart-sidebar.js"></script>
+    <!-- Legacy Compatibility Bridge (REMOVED to prevent crash) -->
+    <!-- window.Utils and formatPrice are handled in ceveco-core.js -->
+
+    <!-- UI Logic -->
+    <script src="/assets/js/ceveco-core.js?v=rename1"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
-    <script src="../assets/js/app.js"></script>
 
-    <script>
-        // Inicializar iconos Lucide
-        lucide.createIcons();
-
-        // Función de búsqueda
-        function handleSearch() {
-            const query = document.getElementById('search-input').value;
-            if (query) {
-                window.location.href = `productos.html?q=${encodeURIComponent(query)}`;
-            }
-        }
-
-        // Cargar productos destacados con diseño Tailwind
-        async function loadFeaturedProducts() {
-            const container = document.getElementById('featured-products');
-            try {
-                // Reducir a 6 productos para no saturar
-                const response = await window.ProductService.getFeatured(6);
-
-                if (response.success && response.data.length > 0) {
-                    const cardsHtml = (await Promise.all(response.data.map(producto => renderProductCard(producto)))).join('');
-                    container.innerHTML = cardsHtml;
-                    lucide.createIcons();
-                } else {
-                    container.innerHTML = `<p class="text-center text-gray-500 py-8 w-full">No hay productos destacados disponibles.</p>`;
-                }
-
-                // Update Favorites State
-                if (typeof window.updateFavoritesUI === 'function') {
-                    // Small delay to ensure initFavorites has run if it's the first load
-                    setTimeout(window.updateFavoritesUI, 100);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                container.innerHTML = `<p class="text-center text-red-500 py-8 w-full">Error al cargar productos.</p>`;
-            }
-        }
-
-        // Carousel navigation
-        function initCarouselNavigation() {
-            const container = document.getElementById('featured-products');
-            const leftBtn = document.getElementById('scroll-left');
-            const rightBtn = document.getElementById('scroll-right');
-
-            leftBtn.addEventListener('click', () => {
-                container.scrollBy({
-                    left: -340, // Width of card + gap
-                    behavior: 'smooth'
-                });
-            });
-
-            rightBtn.addEventListener('click', () => {
-                container.scrollBy({
-                    left: 340,
-                    behavior: 'smooth'
-                });
-            });
-        }
-
-        // Cargar marcas desde la base de datos
-        async function loadBrands() {
-            const container = document.getElementById('brands-carousel');
-            try {
-                const response = await window.ProductService.getBrands();
-
-                if (response.success && response.data.length > 0) {
-                    const brands = response.data;
-
-                    // Crear elementos de marca (duplicados para efecto infinito)
-                    const brandElements = brands.map(marca =>
-                        `<span class="text-2xl font-bold text-gray-400 uppercase">${marca.nombre}</span>`
-                    ).join('');
-
-                    // Duplicar para efecto de scroll infinito
-                    container.innerHTML = brandElements + brandElements;
-                } else {
-                    container.innerHTML = '<span class="text-xl font-bold text-gray-400">No hay marcas disponibles</span>';
-                }
-            } catch (error) {
-                console.error('Error loading brands:', error);
-                container.innerHTML = '<span class="text-xl font-bold text-gray-400">Error al cargar marcas</span>';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadFeaturedProducts();
-            initCarouselNavigation();
-            loadBrands();
-
-            // Hero Carousel Logic
-            const heroImageEl = document.getElementById('hero-image');
-            let currentHeroIndex = 0;
-            let heroImages = [];
-
-            // Fetch dynamic banners
-            async function initHeroCarousel() {
-                try {
-                    const response = await fetch('/api/v1/hero-banners');
-                    const result = await response.json();
-
-                    if (result.success && result.data.length > 0) {
-                        heroImages = result.data;
-
-                        // Set first image immediately if not set (or just to be safe)
-                        // Note: HTML already has a default src, but we can override or wait for interval
-
-                        // Start interval only if we have images
-                        startCarousel();
-                    } else {
-                        console.warn('No dynamic banners found, using default.');
-                    }
-                } catch (error) {
-                    console.error('Error loading banners:', error);
-                }
-            }
-
-            function startCarousel() {
-                if (!heroImageEl || heroImages.length <= 1) return;
-
-                setInterval(() => {
-                    // Fade out
-                    heroImageEl.style.opacity = '0';
-
-                    setTimeout(() => {
-                        currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
-                        heroImageEl.src = heroImages[currentHeroIndex];
-
-                        // Fade in after load
-                        heroImageEl.onload = () => {
-                            heroImageEl.style.opacity = '0.9';
-                        };
-                        // Fallback in case of cached image
-                        if (heroImageEl.complete) {
-                            heroImageEl.style.opacity = '0.9';
-                        }
-                    }, 1000); // Matches transition-opacity duration-1000
-                }, 5000);
-            }
-
-            initHeroCarousel();
-        });
-    </script>
+    <script src="../assets/js/pages/home.js" defer></script>
 </body>
 
 </html>

@@ -1,0 +1,402 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Ceveco" [ref=e6] [cursor=pointer]:
+          - /url: index.html
+          - img "Ceveco" [ref=e7]
+        - generic [ref=e8]:
+          - textbox "Buscar neveras, muebles, motos..." [active] [ref=e9]: Samsung
+          - button [ref=e10] [cursor=pointer]:
+            - img [ref=e11]
+        - generic [ref=e14]:
+          - link "Más vendidos" [ref=e15] [cursor=pointer]:
+            - /url: productos.html?destacado=true
+          - link "Contáctanos" [ref=e16] [cursor=pointer]:
+            - /url: contacto.html
+          - link "Nuestras sedes" [ref=e17] [cursor=pointer]:
+            - /url: sedes.html
+        - generic [ref=e18]:
+          - button "Cuenta" [ref=e20] [cursor=pointer]:
+            - img [ref=e21]
+            - generic [ref=e24]: Cuenta
+          - link "Favoritos" [ref=e25] [cursor=pointer]:
+            - /url: favoritos.html
+            - img [ref=e26]
+            - generic [ref=e28]: Favoritos
+          - button "0 Carrito" [ref=e29] [cursor=pointer]:
+            - img
+            - generic: "0"
+            - generic: Carrito
+      - navigation [ref=e30]:
+        - list [ref=e31]:
+          - listitem [ref=e32]:
+            - link "Electro Hogar" [ref=e33] [cursor=pointer]:
+              - /url: productos.html?categoria=electro-hogar
+          - listitem [ref=e34]:
+            - link "Muebles y Organización" [ref=e35] [cursor=pointer]:
+              - /url: productos.html?categoria=muebles
+          - listitem [ref=e36]:
+            - link "Motos" [ref=e37] [cursor=pointer]:
+              - /url: productos.html?categoria=motos
+          - listitem [ref=e38]:
+            - link "Herramientas STIHL" [ref=e39] [cursor=pointer]:
+              - /url: productos.html?categoria=herramientas
+          - listitem [ref=e40]:
+            - link "Ofertas del Dia" [ref=e41] [cursor=pointer]:
+              - /url: "#"
+    - complementary [ref=e42]:
+      - generic [ref=e43]:
+        - img "Ceveco" [ref=e44]
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+      - generic [ref=e49]:
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - img [ref=e54]
+            - generic [ref=e57]:
+              - paragraph [ref=e58]: Bienvenido
+              - paragraph [ref=e59]: Ingresa para ver tus compras
+          - generic [ref=e60]:
+            - link "Iniciar sesión" [ref=e61] [cursor=pointer]:
+              - /url: login.html
+            - link "Registrarse" [ref=e62] [cursor=pointer]:
+              - /url: registro.html
+        - generic [ref=e63]:
+          - textbox "Buscar productos..." [ref=e64]
+          - button [ref=e65] [cursor=pointer]:
+            - img [ref=e66]
+        - navigation [ref=e69]:
+          - heading "Categorías" [level=3] [ref=e70]
+          - link "Electro Hogar" [ref=e71] [cursor=pointer]:
+            - /url: productos.html?categoria=electro-hogar
+          - link "Muebles y Organización" [ref=e72] [cursor=pointer]:
+            - /url: productos.html?categoria=muebles
+          - link "Motos" [ref=e73] [cursor=pointer]:
+            - /url: productos.html?categoria=motos
+          - link "Herramientas STIHL" [ref=e74] [cursor=pointer]:
+            - /url: productos.html?categoria=herramientas
+          - link "Ofertas del Día" [ref=e75] [cursor=pointer]:
+            - /url: productos.html?destacado=true
+            - img [ref=e76]
+            - text: Ofertas del Día
+        - generic [ref=e78]:
+          - link "Mis Favoritos" [ref=e79] [cursor=pointer]:
+            - /url: favoritos.html
+            - img [ref=e80]
+            - text: Mis Favoritos
+          - link "Más vendidos" [ref=e82] [cursor=pointer]:
+            - /url: productos.html?destacado=true
+            - img [ref=e83]
+            - text: Más vendidos
+          - link "Contáctanos" [ref=e85] [cursor=pointer]:
+            - /url: contacto.html
+            - img [ref=e86]
+            - text: Contáctanos
+          - link "Nuestras sedes" [ref=e88] [cursor=pointer]:
+            - /url: sedes.html
+            - img [ref=e89]
+            - text: Nuestras sedes
+  - main [ref=e92]:
+    - generic [ref=e93]:
+      - complementary [ref=e95]:
+        - generic [ref=e96]:
+          - heading "Filtros" [level=3] [ref=e98]:
+            - img [ref=e99]
+            - text: Filtros
+          - generic [ref=e103]:
+            - heading "Precio" [level=3] [ref=e104]
+            - generic [ref=e105]:
+              - generic [ref=e106]:
+                - generic [ref=e107]:
+                  - generic [ref=e108]: $
+                  - spinbutton [ref=e109]
+                - generic [ref=e110]: "-"
+                - generic [ref=e111]:
+                  - generic [ref=e112]: $
+                  - spinbutton [ref=e113]
+              - button "Filtrar Precio" [ref=e114] [cursor=pointer]
+      - generic [ref=e115]:
+        - generic [ref=e116]:
+          - heading "Todos los Productos" [level=2] [ref=e117]
+          - combobox [ref=e118] [cursor=pointer]:
+            - 'option "Ordenar por: Relevancia" [selected]'
+            - 'option "Precio: Menor a Mayor"'
+            - 'option "Precio: Mayor a Menor"'
+        - generic [ref=e119]:
+          - generic [ref=e120] [cursor=pointer]:
+            - button [ref=e121]:
+              - img
+            - generic:
+              - img "Guadaña STIHL FS 38"
+              - generic: Oferta
+            - generic:
+              - generic:
+                - paragraph: Herramientas STIHL
+              - heading "Guadaña STIHL FS 38" [level=3]
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - generic [ref=e124]: $ 850.000
+                  - generic [ref=e126]: $ 950.000
+                - generic [ref=e127]:
+                  - button "Agregar al carrito" [ref=e128]:
+                    - img
+                  - button "Comprar" [ref=e129]:
+                    - generic: Comprar
+          - generic [ref=e130] [cursor=pointer]:
+            - button [ref=e131]:
+              - img
+            - generic:
+              - img "Escritorio Rimax Moderno"
+            - generic:
+              - generic:
+                - paragraph: Muebles y Organización
+              - heading "Escritorio Rimax Moderno" [level=3]
+              - generic [ref=e132]:
+                - generic [ref=e133]:
+                  - generic [ref=e134]: $ 450.000
+                  - generic [ref=e136]: $ 550.000
+                - generic [ref=e137]:
+                  - button "Agregar al carrito" [ref=e138]:
+                    - img
+                  - button "Comprar" [ref=e139]:
+                    - generic: Comprar
+          - generic [ref=e140] [cursor=pointer]:
+            - button [ref=e141]:
+              - img
+            - generic:
+              - img "Moto Honda XR 190L"
+              - generic: Nuevo
+            - generic:
+              - generic:
+                - paragraph: Motos
+              - heading "Moto Honda XR 190L" [level=3]
+              - generic [ref=e142]:
+                - generic [ref=e144]: $ 9.850.000
+                - generic [ref=e146]:
+                  - button "Agregar al carrito" [ref=e147]:
+                    - img
+                  - button "Comprar" [ref=e148]:
+                    - generic: Comprar
+          - generic [ref=e149] [cursor=pointer]:
+            - button [ref=e150]:
+              - img
+            - generic:
+              - img "Microondas Kalley 20L"
+              - generic: Oferta
+            - generic:
+              - generic:
+                - paragraph: Electro Hogar
+              - heading "Microondas Kalley 20L" [level=3]
+              - generic [ref=e151]:
+                - generic [ref=e152]:
+                  - generic [ref=e153]: $ 380.000
+                  - generic [ref=e155]: $ 450.000
+                - generic [ref=e156]:
+                  - button "Agregar al carrito" [ref=e157]:
+                    - img
+                  - button "Comprar" [ref=e158]:
+                    - generic: Comprar
+          - generic [ref=e159] [cursor=pointer]:
+            - button [ref=e160]:
+              - img
+            - generic:
+              - img "Lavadora Samsung 16Kg"
+              - generic: Oferta
+            - generic:
+              - generic:
+                - paragraph: Electro Hogar
+              - heading "Lavadora Samsung 16Kg" [level=3]
+              - generic [ref=e161]:
+                - generic [ref=e162]:
+                  - generic [ref=e163]: $ 1.650.000
+                  - generic [ref=e165]: $ 1.850.000
+                - generic [ref=e166]:
+                  - button "Agregar al carrito" [ref=e167]:
+                    - img
+                  - button "Comprar" [ref=e168]:
+                    - generic: Comprar
+          - generic [ref=e169] [cursor=pointer]:
+            - button [ref=e170]:
+              - img
+            - generic:
+              - img "Silla Ergonómica Rimax"
+              - generic: Destacado
+            - generic:
+              - generic:
+                - paragraph: Muebles y Organización
+              - heading "Silla Ergonómica Rimax" [level=3]
+              - generic [ref=e171]:
+                - generic [ref=e172]:
+                  - generic [ref=e173]: $ 320.000
+                  - generic [ref=e175]: $ 380.000
+                - generic [ref=e176]:
+                  - button "Agregar al carrito" [ref=e177]:
+                    - img
+                  - button "Comprar" [ref=e178]:
+                    - generic: Comprar
+          - generic [ref=e179] [cursor=pointer]:
+            - button [ref=e180]:
+              - img
+            - generic:
+              - img "Nevera LG 320L No Frost"
+              - generic: Destacado
+            - generic:
+              - generic:
+                - paragraph: Electro Hogar
+              - heading "Nevera LG 320L No Frost" [level=3]
+              - generic [ref=e181]:
+                - generic [ref=e182]:
+                  - generic [ref=e183]: $ 1.850.000
+                  - generic [ref=e185]: $ 2.100.000
+                - generic [ref=e186]:
+                  - button "Agregar al carrito" [ref=e187]:
+                    - img
+                  - button "Comprar" [ref=e188]:
+                    - generic: Comprar
+          - generic [ref=e189] [cursor=pointer]:
+            - button [ref=e190]:
+              - img
+            - generic:
+              - img "Yamaha FZ 150"
+              - generic: Oferta
+            - generic:
+              - generic:
+                - paragraph: Motos
+              - heading "Yamaha FZ 150" [level=3]
+              - generic [ref=e191]:
+                - generic [ref=e192]:
+                  - generic [ref=e193]: $ 8.500.000
+                  - generic [ref=e195]: $ 8.900.000
+                - generic [ref=e196]:
+                  - button "Agregar al carrito" [ref=e197]:
+                    - img
+                  - button "Comprar" [ref=e198]:
+                    - generic: Comprar
+          - generic [ref=e199] [cursor=pointer]:
+            - button [ref=e200]:
+              - img
+            - generic:
+              - img "Smart TV Samsung 55"
+              - generic: Nuevo
+            - generic:
+              - generic:
+                - paragraph: Electro Hogar
+              - heading "Smart TV Samsung 55\" 4K" [level=3]
+              - generic [ref=e201]:
+                - generic [ref=e202]:
+                  - generic [ref=e203]: $ 1.950.000
+                  - generic [ref=e205]: $ 2.200.000
+                - generic [ref=e206]:
+                  - button "Agregar al carrito" [ref=e207]:
+                    - img
+                  - button "Comprar" [ref=e208]:
+                    - generic: Comprar
+          - generic [ref=e209] [cursor=pointer]:
+            - button [ref=e210]:
+              - img
+            - generic:
+              - img "Motosierra STIHL MS 170"
+              - generic: Destacado
+            - generic:
+              - generic:
+                - paragraph: Herramientas STIHL
+              - heading "Motosierra STIHL MS 170" [level=3]
+              - generic [ref=e211]:
+                - generic [ref=e212]:
+                  - generic [ref=e213]: $ 1.250.000
+                  - generic [ref=e215]: $ 1.400.000
+                - generic [ref=e216]:
+                  - button "Agregar al carrito" [ref=e217]:
+                    - img
+                  - button "Comprar" [ref=e218]:
+                    - generic: Comprar
+          - generic [ref=e219] [cursor=pointer]:
+            - button [ref=e220]:
+              - img
+            - generic:
+              - img "Nevera LG 461L NatureFRESH WIFI"
+            - generic:
+              - generic:
+                - paragraph: Electro Hogar
+              - heading "Nevera LG 461L NatureFRESH WIFI" [level=3]
+              - generic [ref=e221]:
+                - generic [ref=e223]: $ 3.595.000
+                - generic [ref=e225]:
+                  - button "Agregar al carrito" [ref=e226]:
+                    - img
+                  - button "Comprar" [ref=e227]:
+                    - generic: Comprar
+          - generic [ref=e228] [cursor=pointer]:
+            - button [ref=e229]:
+              - img
+            - generic:
+              - img "Nevecon LG 668L InstaView Door-In-Door"
+            - generic:
+              - generic:
+                - paragraph: Electro Hogar
+              - heading "Nevecon LG 668L InstaView Door-In-Door" [level=3]
+              - generic [ref=e230]:
+                - generic [ref=e232]: $ 9.075.000
+                - generic [ref=e234]:
+                  - button "Agregar al carrito" [ref=e235]:
+                    - img
+                  - button "Comprar" [ref=e236]:
+                    - generic: Comprar
+        - navigation [ref=e238]:
+          - button [disabled] [ref=e239]:
+            - img [ref=e240]
+          - generic [ref=e242]: Página 1 de 9
+          - button [ref=e243] [cursor=pointer]:
+            - img [ref=e244]
+  - contentinfo [ref=e247]:
+    - generic [ref=e248]:
+      - generic [ref=e249]:
+        - generic [ref=e250]:
+          - img "Ceveco - 50 años" [ref=e252]
+          - paragraph [ref=e253]: Tu aliado experto en electrodomésticos y hogar. Calidad, garantía y respaldo en cada compra.
+        - generic [ref=e254]:
+          - heading "Enlaces Rápidos" [level=4] [ref=e255]
+          - list [ref=e256]:
+            - listitem [ref=e257]:
+              - link "Nuestras Sedes" [ref=e258] [cursor=pointer]:
+                - /url: sedes.html
+            - listitem [ref=e259]:
+              - link "Políticas de Garantía" [ref=e260] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e261]:
+              - link "Contacto" [ref=e262] [cursor=pointer]:
+                - /url: contacto.html
+        - generic [ref=e263]:
+          - heading "Contacto" [level=4] [ref=e264]
+          - list [ref=e265]:
+            - listitem [ref=e266]:
+              - img [ref=e267]
+              - generic [ref=e270]:
+                - text: "Carrera 5 # 9-45"
+                - text: Riosucio, Caldas
+            - listitem [ref=e271]:
+              - img [ref=e272]
+              - link "+57 300 000 0000" [ref=e274] [cursor=pointer]:
+                - /url: https://wa.me/573000000000
+            - listitem [ref=e275]:
+              - img [ref=e276]
+              - link "contacto@ceveco.com.co" [ref=e279] [cursor=pointer]:
+                - /url: mailto:contacto@ceveco.com.co
+        - generic [ref=e280]:
+          - heading "Métodos de Pago" [level=4] [ref=e281]
+          - generic [ref=e282]:
+            - img [ref=e284]
+            - generic [ref=e287]: VISA
+            - generic [ref=e289]: PSE
+      - paragraph [ref=e291]: © 2025 Ceveco S.A.S. Todos los derechos reservados.
+  - generic [ref=e293]:
+    - heading "Mi Carrito" [level=2] [ref=e294]:
+      - img [ref=e295]
+      - text: Mi Carrito
+    - button [ref=e299] [cursor=pointer]:
+      - img
+```

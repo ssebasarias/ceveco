@@ -1,10 +1,18 @@
+console.log("CRITICAL: APP-CORE.JS STARTING EXECUTION");
 /**
  * Main Application Script
  * Shared functionality and UI components
  */
 
+console.log('App.js: Initializing...');
+
 // Cache para templates
 let productCardTemplateCache = null;
+
+// GLOBAL HELPERS EXPORTADOS INMEDIATAMENTE
+// Esto asegura que estén disponibles aunque falle algo más abajo
+window.renderProductCard = renderProductCard;
+window.formatPrice = formatPrice;
 
 // Helper global para precio
 function formatPrice(price) {
@@ -23,6 +31,16 @@ async function getProductCardTemplate() {
     if (productCardTemplateCache) return productCardTemplateCache;
     try {
         const response = await fetch('/components/card-producto.html');
+        // Fallback for pages folder structure if needed, but root path /components is usually best if server is set up right.
+        // If 404, try relative.
+        if (!response.ok) {
+            const responseRelative = await fetch('../components/card-producto.html');
+            if (responseRelative.ok) {
+                productCardTemplateCache = await responseRelative.text();
+                return productCardTemplateCache;
+            }
+        }
+
         if (response.ok) {
             productCardTemplateCache = await response.text();
             return productCardTemplateCache;
@@ -42,7 +60,11 @@ async function getProductCardTemplate() {
  */
 async function renderProductCard(product) {
     const template = await getProductCardTemplate();
-    if (!template) return '';
+    // Si falla el template, usar un fallback simple en código
+    if (!template) {
+        console.warn('Using fallback card render due to missing template');
+        return `<div class="p-4 border">Error template: ${product.nombre}</div>`;
+    }
 
     // Normalizar datos (Ensure fallbacks are safe)
     const id = product.id_producto || product.id || '';
@@ -58,8 +80,6 @@ async function renderProductCard(product) {
 
     const nombre = product.nombre || 'Producto sin nombre';
     const categoria = product.categoria || product.marca || '';
-
-
 
     // Preparar bloques HTML
     const badgeBlock = product.badge
@@ -112,7 +132,6 @@ async function loadSharedComponents() {
     // Check protocol
     if (window.location.protocol === 'file:') {
         console.error('CRITICAL: Running via file:// protocol. Dynamic imports will fail.');
-        alert('Por favor ejecuta este proyecto usando un servidor local (ej: npm run dev) para ver todas las funcionalidades.');
         return;
     }
 
@@ -124,10 +143,14 @@ async function loadSharedComponents() {
     const fetchText = async (url) => {
         try {
             const response = await fetch(url);
+            // Fallback strategy for paths
+            if (!response.ok) {
+                const responseRel = await fetch('.' + url);
+                if (responseRel.ok) return await responseRel.text();
+            }
             return response.ok ? await response.text() : null;
         } catch (e) {
             console.error(`Error loading ${url}:`, e);
-            document.body.innerHTML += `<div style="color:red; padding:20px;">Error loading resources. Check console.</div>`;
             return null;
         }
     };
@@ -142,29 +165,22 @@ async function loadSharedComponents() {
         ]);
 
         // 2. Inject Components
-        if (navbarRoot) {
-            if (navbarHtml) {
-                navbarRoot.innerHTML = navbarHtml;
+        if (navbarRoot && navbarHtml) {
+            navbarRoot.innerHTML = navbarHtml;
 
-                // --- FIX: Teleport Mobile Menu to Body ---
-                // This prevents stacking context issues (e.g. valid z-index but stuck inside header/nav)
-                const backdrop = document.getElementById('mobile-menu-backdrop');
-                const drawer = document.getElementById('mobile-menu-drawer');
+            // --- FIX: Teleport Mobile Menu to Body ---
+            const backdrop = document.getElementById('mobile-menu-backdrop');
+            const drawer = document.getElementById('mobile-menu-drawer');
 
-                if (backdrop) document.body.appendChild(backdrop);
-                if (drawer) document.body.appendChild(drawer);
-
-            } else {
-                console.error('Navbar HTML not loaded');
-            }
+            if (backdrop) document.body.appendChild(backdrop);
+            if (drawer) document.body.appendChild(drawer);
         }
 
-        if (footerRoot) {
-            if (footerHtml) footerRoot.innerHTML = footerHtml;
-            else console.error('Footer HTML not loaded');
+        if (footerRoot && footerHtml) {
+            footerRoot.innerHTML = footerHtml;
         }
 
-        // Inject Cart Sidebar if it doesn't exist and we have the HTML
+        // Inject Cart Sidebar
         if (cartHtml && !document.getElementById('cart-sidebar')) {
             const div = document.createElement('div');
             div.innerHTML = cartHtml;
@@ -200,9 +216,6 @@ async function loadSharedComponents() {
                 e.preventDefault();
                 window.toggleMobileMenu();
             };
-            console.log('Mobile menu (ID: mobile-menu-toggle) listener attached via JS');
-        } else {
-            console.warn('Mobile menu toggle button (ID: mobile-menu-toggle) NOT found in navbar');
         }
 
         // --- Explicitly Attach Mobile Menu CLOSE Listener ---
@@ -212,78 +225,62 @@ async function loadSharedComponents() {
                 e.preventDefault();
                 window.toggleMobileMenu();
             };
-            console.log('Mobile menu CLOSE button listener attached');
         }
 
-        // Final icon refresh ensures everything dynamic has icons
+        // Final icon refresh
         if (window.lucide) window.lucide.createIcons();
+
+        console.log('Shared components loaded successfully');
 
     } catch (error) {
         console.error('CRITICAL: Error initializing application', error);
     }
 }
 
-// Expose global functions
-window.formatPrice = formatPrice;
-window.renderProductCard = renderProductCard;
-
-/**
- * Toggle Mobile Menu Drawer
- */
 /**
  * Toggle Mobile Menu Drawer
  */
 window.toggleMobileMenu = function () {
-    console.log('Mobile Menu Toggle Clicked');
     const backdrop = document.getElementById('mobile-menu-backdrop');
     const drawer = document.getElementById('mobile-menu-drawer');
 
     if (backdrop && drawer) {
         if (backdrop.classList.contains('hidden')) {
-            console.log('Opening Menu');
             // Open
             backdrop.classList.remove('hidden');
-            // Force reflow
-            void backdrop.offsetWidth;
+            void backdrop.offsetWidth; // Force reflow
             setTimeout(() => {
                 backdrop.classList.remove('opacity-0');
                 drawer.classList.remove('-translate-x-full');
             }, 10);
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         } else {
-            console.log('Closing Menu');
             // Close
             backdrop.classList.add('opacity-0');
             drawer.classList.add('-translate-x-full');
-            document.body.style.overflow = ''; // Restore scrolling
-
+            document.body.style.overflow = '';
             setTimeout(() => {
                 backdrop.classList.add('hidden');
             }, 300);
         }
     } else {
-        console.error('Mobile menu elements not found in DOM');
-        // Fallback: If elements are missing, maybe dynamic load failed or ID mismatch.
-        // Try to find by class if needed, or querySelector.
-        const drawerFallback = document.querySelector('aside.fixed.top-0.left-0');
-        if (drawerFallback) console.warn('Found drawer by class but ID mismatch?');
+        console.warn('Mobile menu elements not found');
     }
-    // Re-init icons to be safe
     if (window.lucide) window.lucide.createIcons();
 };
 
 /**
  * Handle search from navbar - GLOBAL FUNCTION
  */
-// Header Search Logic
 window.handleSearch = function (inputId = 'search-input') {
     const input = document.getElementById(inputId);
     if (input && input.value.trim()) {
         const query = input.value.trim();
-        // Determine correct path
         const currentPath = window.location.pathname;
         const isInPagesDir = currentPath.includes('/pages/');
-        const targetPath = isInPagesDir ? 'productos.html' : 'pages/productos.html';
+        // Fix: always ensure we go to the correct product page location
+        const targetPage = 'productos.html';
+        const targetPath = isInPagesDir ? targetPage : `pages/${targetPage}`;
 
         window.location.href = `${targetPath}?q=${encodeURIComponent(query)}`;
     }
@@ -291,7 +288,6 @@ window.handleSearch = function (inputId = 'search-input') {
 
 /**
  * Navigate to product details
- * Handles path resolution from root or pages directory
  */
 window.goToProduct = function (id) {
     if (!id) return;
@@ -304,28 +300,22 @@ window.goToProduct = function (id) {
 // Initialize Global Listeners
 function setupGlobalListeners() {
     document.addEventListener('click', (e) => {
-        // 1. Buy Now Button
+        // Buy Now Button
         const buyBtn = e.target.closest('.js-buy-now');
         if (buyBtn) {
             e.preventDefault();
             e.stopPropagation();
             const d = buyBtn.dataset;
-            // Ensure data-price exists and is valid
             const price = d.price ? parseFloat(d.price) : 0;
 
             if (window.buyNow) {
                 window.buyNow(d.id, d.name, price, d.image);
-            } else {
-                console.error('buyNow function not available');
             }
             return;
         }
 
-        // 2. Product Card Navigation
-        // Only if we didn't click a button/link inside
+        // Product Card Navigation
         const card = e.target.closest('.js-product-card');
-        // Extra safety check: Ensure we didn't click on "add to cart" or "fav" which might have missed their own listeners 
-        // (though they should use stopPropagation, it's safer to check here)
         if (card && !e.target.closest('button') && !e.target.closest('a')) {
             const id = card.dataset.productId;
             if (window.goToProduct) {
@@ -336,7 +326,6 @@ function setupGlobalListeners() {
 }
 
 // Initialize loading when DOM is ready
-// Initialize Search Listeners (Desktop & Mobile) with Retry Logic
 function initSearchListeners(retryCount = 0) {
     const ids = ['search-input', 'mobile-search-input'];
     let anyMissing = false;
@@ -344,34 +333,32 @@ function initSearchListeners(retryCount = 0) {
     ids.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
-            // Use onkeypress to avoid duplicate listeners on retries
             input.onkeypress = (e) => {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     window.handleSearch(id);
                 }
             };
-            console.log(`✓ Search listener attached to ${id}`);
         } else {
             anyMissing = true;
-            console.warn(`Search input ${id} not found (attempt ${retryCount + 1})`);
         }
     });
 
-    // Retry if any input is missing, up to 5 times (1 second total)
     if (anyMissing && retryCount < 5) {
         setTimeout(() => initSearchListeners(retryCount + 1), 200);
     }
 }
 
-// Initialize loading when DOM is ready
+// Main execution
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM Ready, starting App init...');
     setupGlobalListeners();
     try {
         await loadSharedComponents();
-        // Initialize search listeners
         initSearchListeners();
     } catch (error) {
         console.error('Error during initialization:', error);
     }
 });
+
+console.log('App.js: Loaded and functions exposed.');

@@ -138,10 +138,79 @@
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
     <script src="../assets/js/components/cart-sidebar.js"></script>
-    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/main-app.js" defer></script>
 
     <script type="module">
         import { FiltersSidebar } from '../assets/js/components/filters-sidebar.js';
+
+        // --- INJECTED DEPENDENCY (Fix for renderProductCard missing) ---
+        let productCardTemplateCache = null;
+
+        function formatPrice(price) {
+            if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                maximumFractionDigits: 0
+            }).format(price);
+        }
+
+        async function getProductCardTemplate() {
+            if (productCardTemplateCache) return productCardTemplateCache;
+            try {
+                const response = await fetch('../components/card-producto.html'); // Relative to pages/
+                if (response.ok) {
+                    productCardTemplateCache = await response.text();
+                    return productCardTemplateCache;
+                }
+                return null;
+            } catch (e) { return null; }
+        }
+
+        async function renderProductCard(product) {
+            const template = await getProductCardTemplate();
+            if (!template) return `<div class="p-4 border">Error: ${product.nombre}</div>`;
+
+            const id = product.id_producto || product.id || '';
+            const precio = product.precio_actual || product.price || 0;
+            const precioAnterior = product.precio_anterior || product.oldPrice || 0;
+            const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23eee' width='100' height='100'/%3E%3Ctext fill='%23999' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ESin img%3C/text%3E%3C/svg%3E";
+
+            let imagenUrl = product.imagen_principal || product.image;
+            if (!imagenUrl || imagenUrl.includes('via.placeholder.com')) imagenUrl = fallbackImage;
+
+            const nombre = product.nombre || 'Producto';
+            const categoria = product.categoria || '';
+
+            const badgeBlock = product.badge ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">${product.badge}</span>` : '';
+            const oldPriceBlock = precioAnterior && precioAnterior > precio ? `<span class="text-sm text-gray-400 line-through">${formatPrice(precioAnterior)}</span>` : '';
+
+            const safeNombre = String(nombre);
+            const safeImagen = String(imagenUrl);
+            const safeCategoria = String(categoria);
+            // Simple escape for attributes
+            const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            const escapeJs = (str) => str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+
+            return template
+                .replace(/{{id}}/g, id)
+                .replace(/{{image}}/g, safeImagen)
+                .replace(/{{image_attr}}/g, escapeHtml(safeImagen))
+                .replace(/{{name}}/g, safeNombre)
+                .replace(/{{name_escaped}}/g, escapeJs(safeNombre))
+                .replace(/{{name_attr}}/g, escapeHtml(safeNombre))
+                .replace(/{{category}}/g, safeCategoria)
+                .replace(/{{category_attr}}/g, escapeHtml(safeCategoria))
+                .replace(/{{price}}/g, formatPrice(precio))
+                .replace(/{{price_raw}}/g, precio)
+                .replace(/{{image_escaped}}/g, escapeJs(safeImagen))
+                .replace(/{{badge_block}}/g, badgeBlock)
+                .replace(/{{old_price_block}}/g, oldPriceBlock);
+        }
+        // Expose to window just in case
+        window.renderProductCard = renderProductCard;
+        // --- END INJECTED ---
+
 
         // Inicializar iconos Lucide
         if (window.lucide) lucide.createIcons();
@@ -364,8 +433,64 @@
             loadProducts();
         }
 
+        // --- SHARED COMPONENTS (Injected fix) ---
+        async function loadSharedComponents() {
+            const navbarRoot = document.getElementById('navbar-root');
+            const footerRoot = document.getElementById('footer-root');
+            if (!navbarRoot && !footerRoot) return;
+
+            const fetchText = async (url) => {
+                try {
+                    let response = await fetch(url);
+                    if (!response.ok) response = await fetch('../' + url);
+                    return response.ok ? await response.text() : null;
+                } catch (e) { return null; }
+            };
+
+            const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
+                fetchText('../components/navbar.html'),
+                fetchText('../components/footer.html'),
+                fetchText('../components/cart-sidebar.html')
+            ]);
+
+            if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
+            if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
+            if (cartHtml && !document.getElementById('cart-sidebar')) {
+                const div = document.createElement('div');
+                div.innerHTML = cartHtml;
+                while (div.firstChild) document.body.appendChild(div.firstChild);
+            }
+            // Mobile toggle (simple version)
+            window.toggleMobileMenu = function () {
+                const backdrop = document.getElementById('mobile-menu-backdrop');
+                const drawer = document.getElementById('mobile-menu-drawer');
+                if (backdrop && drawer) {
+                    if (backdrop.classList.contains('hidden')) {
+                        backdrop.classList.remove('hidden');
+                        setTimeout(() => { backdrop.classList.remove('opacity-0'); drawer.classList.remove('-translate-x-full'); }, 10);
+                    } else {
+                        backdrop.classList.add('opacity-0'); drawer.classList.add('-translate-x-full');
+                        setTimeout(() => backdrop.classList.add('hidden'), 300);
+                    }
+                }
+            };
+            // Bind events if elements exist immediately (or wait for user interaction, but button is in navbarHtml)
+            setTimeout(() => {
+                const btn = document.getElementById('mobile-menu-toggle');
+                if (btn) btn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
+                const close = document.getElementById('mobile-menu-close');
+                if (close) close.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
+            }, 500);
+
+            if (window.lucide) lucide.createIcons();
+        }
+        // --- END SHARED ---
+
         // Init
         document.addEventListener('DOMContentLoaded', async () => {
+            // Load shared first
+            await loadSharedComponents();
+
             // Initialize Filter Component
             filtersSidebar = new FiltersSidebar('filters-sidebar-root', {
                 onFilterChange: () => {

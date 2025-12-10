@@ -211,10 +211,57 @@
 
     <script src="../assets/js/components/cart-sidebar.js"></script>
     <script type="module" src="../assets/js/auth/index.js"></script>
-    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/main-app.js" defer></script>
     <script>
-        // Inicializar iconos Lucide
-        lucide.createIcons();
+        // --- SHARED COMPONENTS LOADER (Injected Fix) ---
+        async function loadSharedComponents() {
+            const navbarRoot = document.getElementById('navbar-root');
+            const footerRoot = document.getElementById('footer-root');
+            if (!navbarRoot && !footerRoot) return;
+
+            const fetchText = async (url) => {
+                try {
+                    let r = await fetch(url);
+                    if (!r.ok) r = await fetch('../' + url);
+                    return r.ok ? await r.text() : null;
+                } catch (e) { return null; }
+            };
+
+            const [navbarHtml, footerHtml] = await Promise.all([
+                fetchText('../components/navbar.html'),
+                fetchText('../components/footer.html')
+            ]);
+
+            if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
+            if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
+
+            // Simple mobile toggle
+            window.toggleMobileMenu = function () {
+                const backdrop = document.getElementById('mobile-menu-backdrop');
+                const drawer = document.getElementById('mobile-menu-drawer');
+                if (backdrop && drawer) {
+                    backdrop.classList.toggle('hidden');
+                    backdrop.classList.toggle('opacity-0');
+                    drawer.classList.toggle('-translate-x-full');
+                }
+            };
+            setTimeout(() => {
+                const btn = document.getElementById('mobile-menu-toggle');
+                if (btn) btn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
+            }, 500);
+
+            if (window.lucide) lucide.createIcons();
+        }
+        // --- END SHARED ---
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadSharedComponents();
+            if (window.lucide) lucide.createIcons();
+        });
+
+        // Inicializar iconos Lucide (Legacy call removed, handled above)
+
 
         // The eye‑icon button lives inside the same .relative container as the input.
         // We climb to the parent element and then query for the button to get its <i> icon.
