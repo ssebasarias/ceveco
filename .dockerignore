@@ -1,0 +1,12 @@
+node_modules
+.git
+.gitignore
+.env
+.DS_Store
+*.log
+playwright-report
+test-results
+e2e
+.agent
+debug_log.txt
+*.ps1

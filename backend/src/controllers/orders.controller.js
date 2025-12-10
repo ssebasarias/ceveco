@@ -68,12 +68,18 @@ class OrdersController {
             const userId = req.user.id;
             const { id } = req.params;
 
-            // TODO: Implementar OrderModel.findById() con validación de ownership
-            // Solo el dueño o un admin pueden ver el pedido
-            return res.status(501).json({
-                success: false,
-                message: 'Funcionalidad en desarrollo',
-                info: 'Requiere implementar OrderModel.findById()'
+            const order = await OrderModel.findById(id, userId);
+
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Pedido no encontrado'
+                });
+            }
+
+            res.json({
+                success: true,
+                data: order
             });
 
         } catch (error) {

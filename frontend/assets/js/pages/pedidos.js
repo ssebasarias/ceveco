@@ -1,105 +1,130 @@
-
 document.addEventListener('DOMContentLoaded', async () => {
-    const loadingState = document.getElementById('loading-state');
-    const emptyState = document.getElementById('empty-state');
-    const ordersList = document.getElementById('orders-list');
+    lucide.createIcons();
 
-    // Check auth (AuthService)
-    // Note: Since we use type=module script (to keep using existing logic if any), we can use global window.AuthService.
-    // Wait for core (DOMContentLoaded runs after scripts)
-
-    const isAuth = window.AuthService?.isAuthenticated() ||
-        (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
-
-    if (!isAuth) {
+    // Validar Auth
+    if (!AuthService.checkAuth()) {
         window.location.href = 'login.html';
         return;
     }
 
-    try {
-        const orders = await window.OrdersService.getUserOrders();
-
-        loadingState.classList.add('hidden');
-
-        if (orders.length === 0) {
-            emptyState.classList.remove('hidden');
-        } else {
-            ordersList.classList.remove('hidden');
-            renderOrders(orders);
-        }
-    } catch (error) {
-        console.error(error);
-        loadingState.innerHTML = `<p class="text-red-500">Error al cargar pedidos. Intenta de nuevo.</p>`;
+    // Cargar datos usuario sidebar
+    const user = AuthService.getCurrentUser();
+    if (user) {
+        document.getElementById('sidebar-username').textContent = `${user.nombre} ${user.apellido}`;
+        document.getElementById('avatar-initials').textContent = user.nombre.charAt(0).toUpperCase();
     }
+
+    // Funciones
+    await loadOrders();
 });
 
-function renderOrders(orders) {
-    const container = document.getElementById('orders-list');
+async function loadOrders() {
+    const container = document.getElementById('orders-container');
+    const emptyState = document.getElementById('empty-orders');
 
-    container.innerHTML = orders.map(order => `
-        <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-            <div class="p-6 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4 bg-gray-50">
-                <div>
-                    <p class="text-sm text-gray-500 mb-1">Pedido realizado</p>
-                    <p class="font-semibold text-gray-900">${new Date(order.fecha_pedido).toLocaleDateString()}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 mb-1">Total</p>
-                    <p class="font-semibold text-gray-900">${window.formatPrice(order.total)}</p>
-                </div>
-                <div>
-                    <p class="text-sm text-gray-500 mb-1">Pedido #</p>
-                    <p class="font-semibold text-gray-900">${order.numero_pedido}</p>
-                </div>
-                <div class="ml-auto">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.estado)}">
-                        ${formatStatus(order.estado)}
-                    </span>
-                </div>
+    try {
+        const response = await OrdersService.getMyOrders();
+
+        if (!response.success || !response.data || response.data.length === 0) {
+            container.classList.add('hidden');
+            emptyState.classList.remove('hidden');
+            return;
+        }
+
+        const orders = response.data;
+        container.innerHTML = orders.map(renderOrderCard).join('');
+        lucide.createIcons();
+
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        container.innerHTML = `
+            <div class="text-center py-8 text-red-500 bg-red-50 rounded-xl">
+                Error al cargar tus pedidos. Por favor intenta nuevamente.
             </div>
-            <div class="p-6">
-                <div class="flex items-center gap-6">
-                    <div class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 border border-gray-200 p-2">
-                        <img src="${order.imagen_preview || 'https://via.placeholder.com/100'}" 
-                             alt="Producto" 
-                             class="w-full h-full object-contain">
+        `;
+    }
+}
+
+function renderOrderCard(order) {
+    const date = new Date(order.fecha_pedido).toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    const statusConfig = getStatusConfig(order.estado);
+
+    // Imagen preview (fallback to generic package if no image)
+    const imageHtml = order.imagen_preview
+        ? `<img src="${order.imagen_preview}" class="w-full h-full object-cover" alt="Producto">`
+        : `<div class="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400"><i data-lucide="package" class="w-8 h-8"></i></div>`;
+
+    return `
+        <div class="bg-white border border-gray-200 rounded-2xl p-6 transition-all hover:shadow-md hover:border-gray-300">
+            <div class="flex flex-col md:flex-row gap-6 items-center">
+                <!-- Image Preview -->
+                <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0 border border-gray-100">
+                    ${imageHtml}
+                </div>
+
+                <!-- Info Principal -->
+                <div class="flex-1 w-full md:w-auto text-center md:text-left">
+                    <div class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 mb-2">
+                        <span class="font-bold text-gray-900 text-lg">pedido #${order.numero_pedido}</span>
+                        <span class="${statusConfig.bg} ${statusConfig.text} px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide inline-block">
+                            ${order.estado}
+                        </span>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-lg text-gray-900 mb-2">
-                            Compuesto por ${order.items_count} producto(s)
-                        </h3>
-                        <p class="text-gray-500 text-sm mb-4">
-                            Enviado a través de Coordinadora. Llegada estimada: Pronto
-                        </p>
-                        <div class="flex gap-3">
-                            <button class="text-primary font-medium hover:text-blue-700 text-sm">
-                                Ver detalles del pedido
-                            </button>
-                            <span class="text-gray-300">|</span>
-                            <button class="text-primary font-medium hover:text-blue-700 text-sm">
-                                Ver factura
-                            </button>
-                        </div>
+                    <div class="text-sm text-gray-500">
+                        <span class="mr-3"><i data-lucide="calendar" class="w-4 h-4 inline mb-0.5"></i> ${date}</span>
+                        <span><i data-lucide="box" class="w-4 h-4 inline mb-0.5"></i> ${order.items_count} items</span>
                     </div>
+                </div>
+
+                <!-- Price and Action -->
+                <div class="flex flex-row md:flex-col items-center justify-between w-full md:w-auto gap-4 md:items-end">
+                    <div class="text-right">
+                        <p class="text-xs text-gray-500 mb-0.5">Total</p>
+                        <p class="text-xl font-bold text-gray-900">${formatCurrency(order.total)}</p>
+                    </div>
+                    
+                    <a href="pedidos-detalle.html?id=${order.id_pedido}" 
+                       class="bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white px-6 py-2 rounded-xl transition-all font-semibold text-sm flex items-center gap-2">
+                        Ver Detalles
+                        <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
                 </div>
             </div>
         </div>
-     `).join('');
-
-    if (window.lucide) lucide.createIcons();
+    `;
 }
 
-function getStatusColor(status) {
-    const colors = {
-        'pendiente': 'bg-yellow-100 text-yellow-800',
-        'procesando': 'bg-blue-100 text-blue-800',
-        'enviado': 'bg-purple-100 text-purple-800',
-        'entregado': 'bg-green-100 text-green-800',
-        'cancelado': 'bg-red-100 text-red-800'
+function getStatusConfig(status) {
+    const configs = {
+        'pendiente': { bg: 'bg-yellow-100', text: 'text-yellow-700' },
+        'procesando': { bg: 'bg-blue-100', text: 'text-blue-700' },
+        'enviado': { bg: 'bg-indigo-100', text: 'text-indigo-700' },
+        'entregado': { bg: 'bg-green-100', text: 'text-green-700' },
+        'cancelado': { bg: 'bg-red-100', text: 'text-red-700' },
+        'default': { bg: 'bg-gray-100', text: 'text-gray-700' }
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return configs[status.toLowerCase()] || configs['default'];
 }
 
-function formatStatus(status) {
-    return status.charAt(0).toUpperCase() + status.slice(1);
+function formatCurrency(value) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        maximumFractionDigits: 0
+    }).format(value);
 }
+
+// Global logout handler (reused from profile but good to have explicit)
+window.handleLogout = async () => {
+    try {
+        await AuthService.logout();
+    } catch (error) {
+        console.error('Logout error', error);
+        window.location.href = 'index.html';
+    }
+};

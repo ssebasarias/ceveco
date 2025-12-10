@@ -170,6 +170,43 @@ class OrderModel {
   }
 
   /**
+   * Obtener detalle completo de un pedido por ID y Usuario (Seguridad)
+   * @param {number} orderId 
+   * @param {number} userId 
+   */
+  static async findById(orderId, userId) {
+    const queryText = `
+      SELECT 
+        p.*,
+        to_json(d.*) as direccion_envio,
+        json_agg(
+          json_build_object(
+            'id_producto', pi.id_producto,
+            'nombre', pr.nombre,
+            'cantidad', pi.cantidad,
+            'precio_unitario', pi.precio_unitario,
+            'subtotal', pi.subtotal,
+            'imagen', (
+                SELECT url_imagen 
+                FROM producto_imagenes img 
+                WHERE img.id_producto = pr.id_producto AND img.es_principal = TRUE 
+                LIMIT 1
+            )
+          )
+        ) as items
+      FROM pedidos p
+      LEFT JOIN direcciones d ON p.id_direccion_envio = d.id_direccion
+      JOIN pedido_items pi ON p.id_pedido = pi.id_pedido
+      JOIN productos pr ON pi.id_producto = pr.id_producto
+      WHERE p.id_pedido = $1 AND p.id_usuario = $2
+      GROUP BY p.id_pedido, d.id_direccion
+    `;
+
+    const result = await query(queryText, [orderId, userId]);
+    return result.rows[0];
+  }
+
+  /**
    * Actualizar estado de pago del pedido
    * @param {string} orderNumber - Número de pedido (ej: ORD-123...)
    * @param {string} status - Nuevo estado (pagado, fallido, pendiente)

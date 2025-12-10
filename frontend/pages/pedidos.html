@@ -9,65 +9,135 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
-
     <link rel="stylesheet" href="../assets/css/main.css">
     <script src="../assets/js/theme.config.js"></script>
+    <style>
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            background-color: #EFF6FF;
+            /* blue-50 */
+            color: #2563EB;
+            /* blue-600 */
+        }
+
+        .sidebar-link.active {
+            border-right: 3px solid #2563EB;
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 min-h-screen font-sans flex flex-col">
-
+<body class="bg-gray-50 min-h-screen font-sans antialiased text-gray-800">
     <div id="navbar-root"></div>
 
-    <main class="flex-grow container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold mb-6">Mis Pedidos</h1>
-        <!-- Loading State -->
-        <div id="loading-state" class="text-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p class="text-gray-500">Cargando tus pedidos...</p>
-        </div>
+    <main class="container mx-auto px-4 py-8">
+        <div class="flex flex-col lg:flex-row gap-8 min-h-[600px]">
 
-        <!-- Orders List -->
-        <div id="orders-list" class="space-y-6 hidden">
-            <!-- Injected by JS -->
-        </div>
+            <!-- Sidebar Navigation -->
+            <aside class="w-full lg:w-64 flex-shrink-0">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                    <!-- User Info Mini -->
+                    <div class="flex items-center gap-3 mb-8 pb-6 border-b border-gray-100">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xl"
+                            id="avatar-initials">
+                            U
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="font-bold text-gray-900 truncate" id="sidebar-username">Usuario</p>
+                            <p class="text-xs text-gray-500 truncate">Mi Cuenta</p>
+                        </div>
+                    </div>
 
-        <!-- Empty State -->
-        <div id="empty-state" class="hidden bg-white rounded-xl shadow-sm p-12 text-center border border-gray-100">
-            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i data-lucide="package" class="w-10 h-10 text-gray-400"></i>
+                    <!-- Navigation Links -->
+                    <nav class="space-y-1">
+                        <a href="perfil.html"
+                            class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 font-medium">
+                            <i data-lucide="user" class="w-5 h-5"></i>
+                            Datos Personales
+                        </a>
+                        <a href="pedidos.html"
+                            class="sidebar-link active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 font-medium">
+                            <i data-lucide="package" class="w-5 h-5"></i>
+                            Mis Pedidos
+                        </a>
+                        <a href="favoritos.html"
+                            class="sidebar-link flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 font-medium">
+                            <i data-lucide="heart" class="w-5 h-5"></i>
+                            Favoritos
+                        </a>
+
+                        <div class="pt-4 mt-4 border-t border-gray-100">
+                            <button onclick="handleLogout()"
+                                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 font-medium transition-colors">
+                                <i data-lucide="log-out" class="w-5 h-5"></i>
+                                Cerrar Sesión
+                            </button>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="flex-1">
+                <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 min-h-full">
+
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Mis Pedidos</h1>
+                            <p class="text-gray-500 mt-1">Historial de tus compras y seguimientos</p>
+                        </div>
+                    </div>
+
+                    <!-- Orders List Container -->
+                    <div id="orders-container" class="space-y-4">
+                        <!-- Loading State -->
+                        <div class="space-y-4 animate-pulse">
+                            <div class="h-32 bg-gray-100 rounded-2xl w-full"></div>
+                            <div class="h-32 bg-gray-100 rounded-2xl w-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- Empty State Template (Hidden by default) -->
+                    <div id="empty-orders" class="hidden text-center py-16">
+                        <div class="bg-blue-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i data-lucide="shopping-bag" class="w-12 h-12 text-blue-500"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Aún no has realizado pedidos</h3>
+                        <p class="text-gray-500 max-w-md mx-auto mb-8">Explora nuestro catálogo y encuentra los mejores
+                            productos para ti.</p>
+                        <a href="productos.html"
+                            class="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl hover:bg-primary-dark transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                            Ver Productos
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+
+                </div>
             </div>
-            <h2 class="text-xl font-bold text-gray-900 mb-2">No tienes pedidos recientes</h2>
-            <p class="text-gray-500 mb-6">Tus compras aparecerán aquí.</p>
-            <a href="productos.html"
-                class="inline-block bg-primary text-white font-semibold py-2 px-6 rounded-lg hover:bg-primary-dark transition">
-                Ir a comprar
-            </a>
         </div>
     </main>
 
     <div id="footer-root"></div>
 
-    <!-- Modern Core Services -->
+    <!-- Scripts -->
     <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
     <script src="../assets/js/utils/storage.js"></script>
     <script src="../assets/js/config.js"></script>
     <script src="../assets/js/api/client.js"></script>
     <script src="../assets/js/services/auth.service.js"></script>
-    <script src="../assets/js/services/products.service.js"></script>
-    <script src="../assets/js/services/favorites.service.js"></script>
     <script src="../assets/js/services/orders.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
     <script src="../assets/js/core.js"></script>
-
-    <!-- UI Logic -->
     <script src="../assets/js/ceveco-core.js?v=rename3"></script>
     <script src="../assets/js/components/cart-sidebar.js" defer></script>
 
-    <!-- Modules -->
-    <script type="module" src="../assets/js/auth/index.js"></script>
-    <script type="module" src="../assets/js/favorites/index.js"></script>
-
-    <script src="../assets/js/pages/pedidos.js" defer></script>
+    <!-- Page Specific Script -->
+    <script src="../assets/js/pages/pedidos.js"></script>
 </body>
 
 </html>

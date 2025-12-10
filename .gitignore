@@ -1,0 +1,42 @@
+# Dependencias
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Entorno y Secretos
+.env
+.env.production
+.env.local
+.env.*.local
+# Excepción: ¡Queremos versionar el ejemplo!
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Editor y sistema
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Docker (Opcional, a veces queremos ignorar builds locales)
+docker-compose.override.yml
+
+# Testing
+playwright-report/
+test-results/
+blob-report/
+playwright/.cache/
+
+# Otros
+dist/
+build/
+coverage/
+.agent/
+debug_log.txt
+*.ps1

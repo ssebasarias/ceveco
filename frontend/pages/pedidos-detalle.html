@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pedido - Ceveco</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../assets/img/logo.png">
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <script src="../assets/js/theme.config.js"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans antialiased text-gray-800">
+    <div id="navbar-root"></div>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb & Back -->
+        <div class="mb-6">
+            <a href="pedidos.html"
+                class="inline-flex items-center text-gray-500 hover:text-primary transition-colors mb-4">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+                Volver a Mis Pedidos
+            </a>
+            <h1 class="text-3xl font-bold text-gray-900" id="order-title">Cargando pedido...</h1>
+            <p class="text-gray-500 mt-1" id="order-date"></p>
+        </div>
+
+        <div id="loading-skeleton" class="animate-pulse space-y-6">
+            <div class="h-40 bg-gray-200 rounded-2xl w-full"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="col-span-2 h-64 bg-gray-200 rounded-2xl"></div>
+                <div class="h-64 bg-gray-200 rounded-2xl"></div>
+            </div>
+        </div>
+
+        <div id="order-content" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left Column: Items & Shipping -->
+            <div class="lg:col-span-2 space-y-6">
+
+                <!-- Order Status Banner -->
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex items-center justify-between"
+                    id="status-card">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium uppercase tracking-wide">Estado del Pedido</p>
+                        <p class="text-xl font-bold mt-1" id="order-status-text">Pendiente</p>
+                    </div>
+                    <div id="status-icon-container"
+                        class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                        <i data-lucide="clock" class="w-6 h-6 text-gray-500"></i>
+                    </div>
+                </div>
+
+                <!-- Products List -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+                        <h3 class="font-bold text-gray-900">Productos</h3>
+                    </div>
+                    <div class="p-6 space-y-6" id="items-container">
+                        <!-- Items injected here -->
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i data-lucide="map-pin" class="w-5 h-5 text-gray-400"></i>
+                        Dirección de Envío
+                    </h3>
+                    <div class="text-gray-600 space-y-1" id="shipping-address">
+                        <!-- Address injected here -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Summary -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                    <h3 class="font-bold text-gray-900 mb-6 text-lg">Resumen de Pago</h3>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between text-gray-600">
+                            <span>Subtotal</span>
+                            <span class="font-medium" id="summary-subtotal">$0</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Envío</span>
+                            <span class="font-medium" id="summary-shipping">$0</span>
+                        </div>
+                        <div class="h-px bg-gray-100 my-2"></div>
+                        <div class="flex justify-between text-lg font-bold text-gray-900">
+                            <span>Total</span>
+                            <span class="text-xl" id="summary-total">$0</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                        <p class="text-xs text-blue-600 font-bold uppercase tracking-wide mb-1">Método de Pago</p>
+                        <p class="font-medium text-blue-900 flex items-center gap-2">
+                            <i data-lucide="credit-card" class="w-4 h-4"></i>
+                            Wompi
+                        </p>
+                    </div>
+
+                    <!-- Payment Button (only if pending) -->
+                    <div id="payment-action-container" class="mt-6 hidden">
+                        <button
+                            class="w-full bg-primary text-white font-bold py-3.5 px-6 rounded-xl hover:bg-primary-dark transition-all shadow-lg hover:shadow-xl">
+                            Pagar Ahora
+                        </button>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+                        <a href="#"
+                            class="text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-2">
+                            <i data-lucide="help-circle" class="w-4 h-4"></i>
+                            ¿Necesitas ayuda con este pedido?
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/utils/constants.js"></script>
+    <script src="../assets/js/utils/helpers.js"></script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/orders.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/ceveco-core.js?v=rename3"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <script src="../assets/js/pages/pedidos-detalle.js"></script>
+</body>
+
+</html>

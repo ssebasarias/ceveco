@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Servicio de Aplicación (Backend + Frontend)
+  app:
+    container_name: ceveco-app
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      # Conexión a BD usando el nombre del servicio 'db'
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-admin123}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-ceveco_db}
+      # JWT Secrets (Deberían cambiarse en producción real via .env)
+      - JWT_SECRET=${JWT_SECRET:-ceveco_secret_key_prod}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - ceveco-network
+
+  # Servicio de Base de Datos PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: ceveco-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin123}
+      POSTGRES_DB: ${DB_NAME:-ceveco_db}
+    ports:
+      - "5432:5432" # Expuesto para herramientas locales de admin DB (DBeaver, PGAdmin)
+    volume_from:
+      - pgdata:/var/lib/postgresql/data
+      # Script de inicialización: carga bd.sql automáticamente al crear el contenedor por primera vez
+      - ./bd.sql:/docker-entrypoint-initdb.d/init_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-ceveco_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ceveco-network
+
+volumes:
+  pgdata:
+
+networks:
+  ceveco-network:
+    driver: bridge
