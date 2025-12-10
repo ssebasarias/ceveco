@@ -54,7 +54,18 @@ window.loginWithGoogle = async () => {
 async function init() {
     UI.initGlobalListeners();
     await authManager.init(); // Verifies token and updates session state
-    window.updateAuthUI();    // Updates UI based on new state
+
+    // Try to update UI. If navbar isn't ready, wait for event.
+    const container = document.getElementById('user-menu-container') || document.querySelector('[data-auth-button]');
+    if (container) {
+        window.updateAuthUI();
+    } else {
+        console.log('Auth: Navbar not ready, waiting for components:loaded event...');
+        document.addEventListener('components:loaded', () => {
+            console.log('Auth: components:loaded event received, updating UI');
+            window.updateAuthUI();
+        });
+    }
 }
 
 // Run initialization

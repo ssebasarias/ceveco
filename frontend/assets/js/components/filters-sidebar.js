@@ -61,13 +61,13 @@ export class FiltersSidebar {
         container.innerHTML = '<div class="filter-loading"><div class="filter-loading-spinner"></div></div>';
 
         try {
-            // Check if ProductosAPI is available
-            if (typeof ProductosAPI === 'undefined') {
-                console.error('ProductosAPI is not defined');
+            // Check if ProductService is available
+            if (typeof window.ProductService === 'undefined') {
+                console.error('ProductService is not defined');
                 return;
             }
 
-            const response = await ProductosAPI.getFilters(categoria);
+            const response = await window.ProductService.getFilters(categoria);
             if (response.success && response.data) {
                 const { subcategorias, atributos } = response.data;
                 let html = '';

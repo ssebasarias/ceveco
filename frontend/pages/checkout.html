@@ -433,6 +433,7 @@
 
     <!-- Scripts -->
     <!-- Modern Core Services -->
+    <!-- Modern Core Services -->
     <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
     <script src="../assets/js/utils/storage.js"></script>
@@ -444,17 +445,13 @@
     <script src="../assets/js/services/orders.service.js"></script>
     <script src="../assets/js/core.js"></script>
 
-    <!-- Legacy Bridge -->
-    <script>
-        window.Utils = window.Helpers;
-        window.formatPrice = window.Helpers.formatPrice;
-    </script>
+    <!-- UI Logic -->
+    <script src="../assets/js/ceveco-core.js?v=rename3"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
-    <script src="../assets/js/components/cart-sidebar.js"></script>
-    <script type="module">
-        // Already loaded globally
-    </script>
-    <script src="../assets/js/main-app.js" defer></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
     <script>
         lucide.createIcons();
 
@@ -516,14 +513,14 @@
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-semibold text-gray-900 line-clamp-2 mb-1">${item.name}</h4>
                             <p class="text-xs text-gray-500">Cantidad: ${item.quantity}</p>
-                            <p class="text-sm font-bold text-primary mt-1">${Utils.formatPrice(itemTotal)}</p>
+                            <p class="text-sm font-bold text-primary mt-1">${window.formatPrice(itemTotal)}</p>
                         </div>
                     </div>
                 `;
             }).join('');
 
-            document.getElementById('checkout-subtotal').textContent = Utils.formatPrice(total);
-            document.getElementById('checkout-total').textContent = Utils.formatPrice(total);
+            document.getElementById('checkout-subtotal').textContent = window.formatPrice(total);
+            document.getElementById('checkout-total').textContent = window.formatPrice(total);
         }
 
         function goToStep(step) {

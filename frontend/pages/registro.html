@@ -19,60 +19,76 @@
 
 
     <!-- Scripts -->
-    <script src="../assets/js/config.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
-    <script>window.Utils = window.Helpers;</script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
 
-    <script src="../assets/js/components/cart-sidebar.js"></script>
+    <!-- UI Logic -->
+    <script src="../assets/js/ceveco-core.js?v=rename3"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
-    <script src="../assets/js/main-app.js" defer></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
+
     <script src="../assets/js/pages/registro.js"></script> <!-- Page specific logic -->
-    </body>
 
-</html>
-<style>
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #c1c1c1;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #a8a8a8;
-    }
-
-    /* Animaciones */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
+    <script>
+        // Inicializar iconos Lucide
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
         }
-    }
 
-    .animate-fade-in-up {
-        animation: fadeInUp 0.6s ease-out;
-    }
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
 
-    /* Efecto glassmorphism */
-    .glass-effect {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-    }
-</style>
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Efecto glassmorphism */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 via-white to-blue-50 min-h-screen font-sans antialiased">

@@ -73,7 +73,6 @@
     <div id="footer-root"></div>
 
     <!-- Scripts -->
-    <script src="../assets/js/config.js"></script>
     <!-- Modern Core Services -->
     <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
@@ -85,14 +84,13 @@
     <script src="../assets/js/services/favorites.service.js"></script>
     <script src="../assets/js/core.js"></script>
 
-    <!-- Legacy Bridge -->
-    <script>
-        window.Utils = window.Helpers;
-        window.formatPrice = window.Helpers.formatPrice;
-    </script>
+    <!-- UI Logic -->
+    <script src="../assets/js/ceveco-core.js?v=rename3"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
-    <script src="../assets/js/components/cart-sidebar.js"></script>
-    <script src="../assets/js/main-app.js" defer></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
 
     <script type="module">
         // Already loaded via global services

@@ -12,16 +12,25 @@ let productCardTemplateCache = null;
 // GLOBAL HELPERS EXPORTADOS INMEDIATAMENTE
 // Esto asegura que estén disponibles aunque falle algo más abajo
 window.renderProductCard = renderProductCard;
-window.formatPrice = formatPrice;
 
-// Helper global para precio
-function formatPrice(price) {
+// Helper para evitar conflictos con helpers.js
+const coreFormatPrice = function (price) {
     if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
     return new Intl.NumberFormat('es-CO', {
         style: 'currency',
         currency: 'COP',
         maximumFractionDigits: 0
     }).format(price);
+};
+
+// Exponer en window de forma segura
+if (typeof window.formatPrice === 'undefined') {
+    // Si ya existe formatPrice en el scope (de helpers.js), úsalo
+    if (typeof formatPrice !== 'undefined') {
+        window.formatPrice = formatPrice;
+    } else {
+        window.formatPrice = coreFormatPrice;
+    }
 }
 
 /**
@@ -60,6 +69,8 @@ async function getProductCardTemplate() {
  */
 async function renderProductCard(product) {
     const template = await getProductCardTemplate();
+    const formatter = window.formatPrice || coreFormatPrice;
+
     // Si falla el template, usar un fallback simple en código
     if (!template) {
         console.warn('Using fallback card render due to missing template');
@@ -87,7 +98,7 @@ async function renderProductCard(product) {
         : '';
 
     const oldPriceBlock = precioAnterior && precioAnterior > precio
-        ? `<span class="text-sm text-gray-400 line-through">${formatPrice(precioAnterior)}</span>`
+        ? `<span class="text-sm text-gray-400 line-through">${formatter(precioAnterior)}</span>`
         : '';
 
     // Ensure strings for manipulation
@@ -118,7 +129,7 @@ async function renderProductCard(product) {
         .replace(/{{name_attr}}/g, nombreAttr)
         .replace(/{{category}}/g, safeCategoria)
         .replace(/{{category_attr}}/g, categoryAttr)
-        .replace(/{{price}}/g, formatPrice(precio))
+        .replace(/{{price}}/g, formatter(precio))
         .replace(/{{price_raw}}/g, precio)
         .replace(/{{image_escaped}}/g, imagenEscaped)
         .replace(/{{badge_block}}/g, badgeBlock)
@@ -157,12 +168,47 @@ async function loadSharedComponents() {
 
     try {
         // 1. Fetch all components in parallel
+        console.log('Fetching shared components...');
+
+        // Robust fetch function with multiple path strategies
+        const robustFetch = async (path) => {
+            // Ensure extension
+            if (!path.endsWith('.html')) path += '.html';
+
+            console.log(`Fetching: ${path}`);
+
+            // Strategy 1: Absolute path (good for server root)
+            let resp = await fetchText(path);
+            if (resp) return resp;
+
+            // Strategy 2: Relative parent path (good for /pages/ directory)
+            if (path.startsWith('/')) {
+                const relPath = '..' + path;
+                console.log(`Retrying ${path} with ${relPath}`);
+                resp = await fetchText(relPath);
+                if (resp) return resp;
+            }
+
+            // Strategy 3: Hard fallback for specific known structures
+            if (path.includes('components')) {
+                const retryPath = `../frontend${path}`;
+                console.log(`Retrying ${path} with ${retryPath}`);
+                resp = await fetchText(retryPath);
+                if (resp) return resp;
+            }
+
+            return null;
+        };
+
         const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
-            fetchText('/components/navbar.html'),
-            fetchText('/components/footer.html'),
-            fetchText('/components/cart-sidebar.html'),
+            robustFetch('/components/navbar.html'),
+            robustFetch('/components/footer.html'),
+            robustFetch('/components/cart.html'),
             getProductCardTemplate() // Preload card template
         ]);
+
+        if (!navbarHtml) console.error('FAILED TO LOAD NAVBAR HTML');
+        if (!navbarRoot) console.error('NAVBAR ROOT ELEMENT NOT FOUND');
 
         // 2. Inject Components
         if (navbarRoot && navbarHtml) {
@@ -194,11 +240,14 @@ async function loadSharedComponents() {
         // Lucide Icons
         if (window.lucide) window.lucide.createIcons();
 
-        // Authentication UI
-        if (typeof setupUserMenu === 'function') {
-            setupUserMenu();
-        } else if (typeof updateAuthUI === 'function') {
-            updateAuthUI();
+        // Dispatch event that components are ready
+        document.dispatchEvent(new CustomEvent('components:loaded'));
+
+        // Authentication UI: Try to update immediately if function exists
+        if (typeof window.updateAuthUI === 'function') {
+            window.updateAuthUI();
+        } else if (typeof window.setupUserMenu === 'function') {
+            window.setupUserMenu();
         }
 
         // Cart Logic Initialization

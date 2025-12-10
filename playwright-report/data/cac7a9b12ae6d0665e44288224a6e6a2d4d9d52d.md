@@ -1,0 +1,189 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - link "Ceveco" [ref=e6] [cursor=pointer]:
+          - /url: index.html
+          - img "Ceveco" [ref=e7]
+        - generic [ref=e8]:
+          - textbox "Buscar neveras, muebles, motos..." [ref=e9]
+          - button [ref=e10] [cursor=pointer]:
+            - img [ref=e11]
+        - generic [ref=e14]:
+          - link "Más vendidos" [ref=e15] [cursor=pointer]:
+            - /url: productos.html?destacado=true
+          - link "Contáctanos" [ref=e16] [cursor=pointer]:
+            - /url: contacto.html
+          - link "Nuestras sedes" [ref=e17] [cursor=pointer]:
+            - /url: sedes.html
+        - generic [ref=e18]:
+          - button "Cuenta" [ref=e20] [cursor=pointer]:
+            - img [ref=e21]
+            - generic [ref=e24]: Cuenta
+          - link "Favoritos" [ref=e25] [cursor=pointer]:
+            - /url: favoritos.html
+            - img [ref=e26]
+            - generic [ref=e28]: Favoritos
+          - button "0 Carrito" [ref=e29] [cursor=pointer]:
+            - img
+            - generic: "0"
+            - generic: Carrito
+      - navigation [ref=e30]:
+        - list [ref=e31]:
+          - listitem [ref=e32]:
+            - link "Electro Hogar" [ref=e33] [cursor=pointer]:
+              - /url: productos.html?categoria=electro-hogar
+          - listitem [ref=e34]:
+            - link "Muebles y Organización" [ref=e35] [cursor=pointer]:
+              - /url: productos.html?categoria=muebles
+          - listitem [ref=e36]:
+            - link "Motos" [ref=e37] [cursor=pointer]:
+              - /url: productos.html?categoria=motos
+          - listitem [ref=e38]:
+            - link "Herramientas STIHL" [ref=e39] [cursor=pointer]:
+              - /url: productos.html?categoria=herramientas
+          - listitem [ref=e40]:
+            - link "Ofertas del Dia" [ref=e41] [cursor=pointer]:
+              - /url: "#"
+    - complementary [ref=e42]:
+      - generic [ref=e43]:
+        - img "Ceveco" [ref=e44]
+        - button [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+      - generic [ref=e49]:
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - img [ref=e54]
+            - generic [ref=e57]:
+              - paragraph [ref=e58]: Bienvenido
+              - paragraph [ref=e59]: Ingresa para ver tus compras
+          - generic [ref=e60]:
+            - link "Iniciar sesión" [ref=e61] [cursor=pointer]:
+              - /url: login.html
+            - link "Registrarse" [ref=e62] [cursor=pointer]:
+              - /url: registro.html
+        - generic [ref=e63]:
+          - textbox "Buscar productos..." [ref=e64]
+          - button [ref=e65] [cursor=pointer]:
+            - img [ref=e66]
+        - navigation [ref=e69]:
+          - heading "Categorías" [level=3] [ref=e70]
+          - link "Electro Hogar" [ref=e71] [cursor=pointer]:
+            - /url: productos.html?categoria=electro-hogar
+          - link "Muebles y Organización" [ref=e72] [cursor=pointer]:
+            - /url: productos.html?categoria=muebles
+          - link "Motos" [ref=e73] [cursor=pointer]:
+            - /url: productos.html?categoria=motos
+          - link "Herramientas STIHL" [ref=e74] [cursor=pointer]:
+            - /url: productos.html?categoria=herramientas
+          - link "Ofertas del Día" [ref=e75] [cursor=pointer]:
+            - /url: productos.html?destacado=true
+            - img [ref=e76]
+            - text: Ofertas del Día
+        - generic [ref=e78]:
+          - link "Mis Favoritos" [ref=e79] [cursor=pointer]:
+            - /url: favoritos.html
+            - img [ref=e80]
+            - text: Mis Favoritos
+          - link "Más vendidos" [ref=e82] [cursor=pointer]:
+            - /url: productos.html?destacado=true
+            - img [ref=e83]
+            - text: Más vendidos
+          - link "Contáctanos" [ref=e85] [cursor=pointer]:
+            - /url: contacto.html
+            - img [ref=e86]
+            - text: Contáctanos
+          - link "Nuestras sedes" [ref=e88] [cursor=pointer]:
+            - /url: sedes.html
+            - img [ref=e89]
+            - text: Nuestras sedes
+  - main [ref=e92]:
+    - generic [ref=e93]:
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - img [ref=e97]
+          - heading "Bienvenido" [level=1] [ref=e100]
+          - paragraph [ref=e101]: Inicia sesión en tu cuenta
+        - button "Continuar con Google" [ref=e102] [cursor=pointer]:
+          - img [ref=e103]
+          - text: Continuar con Google
+        - generic [ref=e112]: O inicia sesión con email
+        - generic [ref=e113]:
+          - generic [ref=e114]:
+            - generic [ref=e115]: Correo Electrónico
+            - generic [ref=e116]:
+              - generic:
+                - img
+              - textbox "Correo Electrónico" [ref=e117]:
+                - /placeholder: tu@email.com
+                - text: usuario_test@ejemplo.com
+          - generic [ref=e118]:
+            - generic [ref=e119]: Contraseña
+            - generic [ref=e120]:
+              - generic:
+                - img
+              - textbox "Contraseña" [ref=e121]:
+                - /placeholder: ••••••••
+                - text: password123
+              - button [active] [ref=e122] [cursor=pointer]:
+                - img [ref=e123]
+          - generic [ref=e126]:
+            - generic [ref=e127]:
+              - checkbox "Recordarme" [ref=e128]
+              - generic [ref=e129]: Recordarme
+            - link "¿Olvidaste tu contraseña?" [ref=e130] [cursor=pointer]:
+              - /url: "#"
+          - button "Iniciar Sesión" [ref=e131] [cursor=pointer]
+        - paragraph [ref=e133]:
+          - text: ¿No tienes cuenta?
+          - link "Regístrate gratis" [ref=e134] [cursor=pointer]:
+            - /url: registro.html
+      - link "Volver al inicio" [ref=e136] [cursor=pointer]:
+        - /url: index.html
+        - img [ref=e137]
+        - text: Volver al inicio
+  - contentinfo [ref=e140]:
+    - generic [ref=e141]:
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - img "Ceveco - 50 años" [ref=e145]
+          - paragraph [ref=e146]: Tu aliado experto en electrodomésticos y hogar. Calidad, garantía y respaldo en cada compra.
+        - generic [ref=e147]:
+          - heading "Enlaces Rápidos" [level=4] [ref=e148]
+          - list [ref=e149]:
+            - listitem [ref=e150]:
+              - link "Nuestras Sedes" [ref=e151] [cursor=pointer]:
+                - /url: sedes.html
+            - listitem [ref=e152]:
+              - link "Políticas de Garantía" [ref=e153] [cursor=pointer]:
+                - /url: "#"
+            - listitem [ref=e154]:
+              - link "Contacto" [ref=e155] [cursor=pointer]:
+                - /url: contacto.html
+        - generic [ref=e156]:
+          - heading "Contacto" [level=4] [ref=e157]
+          - list [ref=e158]:
+            - listitem [ref=e159]:
+              - img [ref=e160]
+              - generic [ref=e163]:
+                - text: "Carrera 5 # 9-45"
+                - text: Riosucio, Caldas
+            - listitem [ref=e164]:
+              - img [ref=e165]
+              - link "+57 300 000 0000" [ref=e167] [cursor=pointer]:
+                - /url: https://wa.me/573000000000
+            - listitem [ref=e168]:
+              - img [ref=e169]
+              - link "contacto@ceveco.com.co" [ref=e172] [cursor=pointer]:
+                - /url: mailto:contacto@ceveco.com.co
+        - generic [ref=e173]:
+          - heading "Métodos de Pago" [level=4] [ref=e174]
+          - generic [ref=e175]:
+            - img [ref=e177]
+            - generic [ref=e180]: VISA
+            - generic [ref=e182]: PSE
+      - paragraph [ref=e184]: © 2025 Ceveco S.A.S. Todos los derechos reservados.
+```

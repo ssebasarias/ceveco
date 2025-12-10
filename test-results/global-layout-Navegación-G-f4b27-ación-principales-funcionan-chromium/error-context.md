@@ -1,0 +1,59 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - img "Hero Banner" [ref=e4]
+    - generic [ref=e7]:
+      - heading "Renueva tu hogar con la mejor tecnología" [level=1] [ref=e8]
+      - paragraph [ref=e9]: Descubre electrodomésticos eficientes y muebles de diseño para transformar tus espacios.
+      - generic [ref=e10]:
+        - link "Ver Ofertas" [ref=e11] [cursor=pointer]:
+          - /url: productos.html
+        - link "Más vendidos" [ref=e12] [cursor=pointer]:
+          - /url: productos.html?destacado=true
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - heading "Explora Nuestras Categorías" [level=2] [ref=e15]
+      - paragraph [ref=e16]: Encuentra todo lo que necesitas para tu hogar
+    - generic [ref=e17]:
+      - link "Electro Hogar Electro Hogar Neveras, lavadoras, estufas y más" [ref=e18] [cursor=pointer]:
+        - /url: productos.html?categoria=electro-hogar
+        - generic [ref=e19]:
+          - img "Electro Hogar" [ref=e21]
+          - generic [ref=e23]:
+            - heading "Electro Hogar" [level=3] [ref=e24]
+            - paragraph [ref=e25]: Neveras, lavadoras, estufas y más
+      - link "Muebles Muebles Escritorios, sillas, estanterías" [ref=e26] [cursor=pointer]:
+        - /url: productos.html?categoria=muebles
+        - generic [ref=e27]:
+          - img "Muebles" [ref=e29]
+          - generic [ref=e31]:
+            - heading "Muebles" [level=3] [ref=e32]
+            - paragraph [ref=e33]: Escritorios, sillas, estanterías
+      - link "Motos Motos Motos urbanas y deportivas" [ref=e34] [cursor=pointer]:
+        - /url: productos.html?categoria=motos
+        - generic [ref=e35]:
+          - img "Motos" [ref=e37]
+          - generic [ref=e39]:
+            - heading "Motos" [level=3] [ref=e40]
+            - paragraph [ref=e41]: Motos urbanas y deportivas
+      - link "Herramientas STIHL Motosierras, guadañas y más" [ref=e42] [cursor=pointer]:
+        - /url: productos.html?categoria=herramientas
+        - generic [ref=e43]:
+          - img "Herramientas" [ref=e45]
+          - generic [ref=e47]:
+            - heading "STIHL" [level=3] [ref=e48]
+            - paragraph [ref=e49]: Motosierras, guadañas y más
+    - generic [ref=e50]:
+      - heading "Nuestras Marcas Aliadas" [level=3] [ref=e52]
+      - generic [ref=e55]: Cargando marcas...
+    - generic [ref=e57]:
+      - heading "Productos Destacados" [level=2] [ref=e58]
+      - generic [ref=e59]:
+        - button [ref=e60] [cursor=pointer]
+        - button [ref=e61] [cursor=pointer]
+        - link "Ver todos" [ref=e62] [cursor=pointer]:
+          - /url: productos.html?destacado=true
+          - text: Ver todos
+```

@@ -118,7 +118,6 @@
     <!-- Cart Sidebar (Injected by main.js) -->
 
     <!-- Scripts -->
-    <script src="../assets/js/config.js"></script>
     <!-- Modern Core Services -->
     <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
@@ -130,87 +129,16 @@
     <script src="../assets/js/services/favorites.service.js"></script>
     <script src="../assets/js/core.js"></script>
 
-    <!-- Legacy Compatibility Bridge -->
-    <script>
-        window.Utils = window.Helpers;
-        window.formatPrice = window.Helpers.formatPrice;
-    </script>
+    <!-- UI Logic -->
+    <script src="../assets/js/ceveco-core.js?v=rename3"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules for Auth and Favorites (Required for Navbar Logic) -->
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
-    <script src="../assets/js/components/cart-sidebar.js"></script>
-    <script src="../assets/js/main-app.js" defer></script>
 
     <script type="module">
         import { FiltersSidebar } from '../assets/js/components/filters-sidebar.js';
-
-        // --- INJECTED DEPENDENCY (Fix for renderProductCard missing) ---
-        let productCardTemplateCache = null;
-
-        function formatPrice(price) {
-            if (typeof Utils !== 'undefined' && Utils.formatPrice) return Utils.formatPrice(price);
-            return new Intl.NumberFormat('es-CO', {
-                style: 'currency',
-                currency: 'COP',
-                maximumFractionDigits: 0
-            }).format(price);
-        }
-
-        async function getProductCardTemplate() {
-            if (productCardTemplateCache) return productCardTemplateCache;
-            try {
-                const response = await fetch('../components/card-producto.html'); // Relative to pages/
-                if (response.ok) {
-                    productCardTemplateCache = await response.text();
-                    return productCardTemplateCache;
-                }
-                return null;
-            } catch (e) { return null; }
-        }
-
-        async function renderProductCard(product) {
-            const template = await getProductCardTemplate();
-            if (!template) return `<div class="p-4 border">Error: ${product.nombre}</div>`;
-
-            const id = product.id_producto || product.id || '';
-            const precio = product.precio_actual || product.price || 0;
-            const precioAnterior = product.precio_anterior || product.oldPrice || 0;
-            const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23eee' width='100' height='100'/%3E%3Ctext fill='%23999' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ESin img%3C/text%3E%3C/svg%3E";
-
-            let imagenUrl = product.imagen_principal || product.image;
-            if (!imagenUrl || imagenUrl.includes('via.placeholder.com')) imagenUrl = fallbackImage;
-
-            const nombre = product.nombre || 'Producto';
-            const categoria = product.categoria || '';
-
-            const badgeBlock = product.badge ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">${product.badge}</span>` : '';
-            const oldPriceBlock = precioAnterior && precioAnterior > precio ? `<span class="text-sm text-gray-400 line-through">${formatPrice(precioAnterior)}</span>` : '';
-
-            const safeNombre = String(nombre);
-            const safeImagen = String(imagenUrl);
-            const safeCategoria = String(categoria);
-            // Simple escape for attributes
-            const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-            const escapeJs = (str) => str.replace(/'/g, "\\'").replace(/"/g, '\\"');
-
-            return template
-                .replace(/{{id}}/g, id)
-                .replace(/{{image}}/g, safeImagen)
-                .replace(/{{image_attr}}/g, escapeHtml(safeImagen))
-                .replace(/{{name}}/g, safeNombre)
-                .replace(/{{name_escaped}}/g, escapeJs(safeNombre))
-                .replace(/{{name_attr}}/g, escapeHtml(safeNombre))
-                .replace(/{{category}}/g, safeCategoria)
-                .replace(/{{category_attr}}/g, escapeHtml(safeCategoria))
-                .replace(/{{price}}/g, formatPrice(precio))
-                .replace(/{{price_raw}}/g, precio)
-                .replace(/{{image_escaped}}/g, escapeJs(safeImagen))
-                .replace(/{{badge_block}}/g, badgeBlock)
-                .replace(/{{old_price_block}}/g, oldPriceBlock);
-        }
-        // Expose to window just in case
-        window.renderProductCard = renderProductCard;
-        // --- END INJECTED ---
-
 
         // Inicializar iconos Lucide
         if (window.lucide) lucide.createIcons();
@@ -260,11 +188,6 @@
 
             // Load filters via component if needed
             if (params.categoria && filtersSidebar) {
-                // We check if the container is empty, or better, let the component handle logic.
-                // However, component.loadDynamicFilters checks internally if it should render?
-                // Actually the current component.loadDynamicFilters just renders.
-                // To avoid re-fetching on every page load (pagination), we should check.
-                // But for now, let's just checking if the container has content is a good proxy.
                 const dynamicContainer = document.getElementById('dynamic-filters-container');
                 if (dynamicContainer && !dynamicContainer.querySelector('.filter-group')) {
                     await filtersSidebar.loadDynamicFilters(params.categoria);
@@ -281,8 +204,7 @@
             if (params.q) filters.busqueda = params.q;
             if (params.destacado) filters.destacado = true;
 
-            // Get values from component (using DOM directly for now as per refactor plan to match previous logic)
-            // Or better, use the new method if available.
+            // Get values from component
             if (filtersSidebar) {
                 const values = filtersSidebar.getFilterValues();
                 if (values.precioMin !== null) filters.precioMin = values.precioMin;
@@ -290,7 +212,7 @@
                 if (values.subcategoria) filters.subcategoria = values.subcategoria;
                 if (values.atributos) filters.atributos = values.atributos;
             } else {
-                // Fallback if component not ready (unlikely)
+                // Fallback if component not ready
                 const minInput = document.getElementById('price-min');
                 const maxInput = document.getElementById('price-max');
                 if (minInput && minInput.value) filters.precioMin = Number(minInput.value);
@@ -312,6 +234,12 @@
 
                 let response;
 
+                // Wait for ProductService if needed (should be loaded by core)
+                if (!window.ProductService) {
+                    console.warn('ProductService not ready, waiting...');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+
                 // Si hay búsqueda, usar endpoint de búsqueda
                 if (params.q) {
                     response = await window.ProductService.search(params.q, filters);
@@ -321,8 +249,14 @@
                 }
 
                 if (response.success && response.data.length > 0) {
-                    // Renderizar productos usando la función global de main.js
-                    const cardsHtml = (await Promise.all(response.data.map(product => renderProductCard(product)))).join('');
+                    // Renderizar productos usando la función global de main.js/ceveco-core.js
+                    // Ensure renderProductCard is available
+                    if (!window.renderProductCard) {
+                        console.warn('renderProductCard not ready yet');
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                    }
+
+                    const cardsHtml = (await Promise.all(response.data.map(product => window.renderProductCard(product)))).join('');
                     grid.innerHTML = cardsHtml;
 
                     // Actualizar paginación
@@ -331,7 +265,7 @@
                     pagination.classList.remove('hidden');
 
                     // Re-init iconos
-                    lucide.createIcons();
+                    if (window.lucide) lucide.createIcons();
                 } else {
                     empty.classList.remove('hidden');
                     if (params.q) {
@@ -428,69 +362,11 @@
 
         function applyFilters() {
             currentPage = 1;
-            // Clear Filters button update is handled by component internally? 
-            // The component updates its own button.
             loadProducts();
         }
 
-        // --- SHARED COMPONENTS (Injected fix) ---
-        async function loadSharedComponents() {
-            const navbarRoot = document.getElementById('navbar-root');
-            const footerRoot = document.getElementById('footer-root');
-            if (!navbarRoot && !footerRoot) return;
-
-            const fetchText = async (url) => {
-                try {
-                    let response = await fetch(url);
-                    if (!response.ok) response = await fetch('../' + url);
-                    return response.ok ? await response.text() : null;
-                } catch (e) { return null; }
-            };
-
-            const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
-                fetchText('../components/navbar.html'),
-                fetchText('../components/footer.html'),
-                fetchText('../components/cart-sidebar.html')
-            ]);
-
-            if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
-            if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
-            if (cartHtml && !document.getElementById('cart-sidebar')) {
-                const div = document.createElement('div');
-                div.innerHTML = cartHtml;
-                while (div.firstChild) document.body.appendChild(div.firstChild);
-            }
-            // Mobile toggle (simple version)
-            window.toggleMobileMenu = function () {
-                const backdrop = document.getElementById('mobile-menu-backdrop');
-                const drawer = document.getElementById('mobile-menu-drawer');
-                if (backdrop && drawer) {
-                    if (backdrop.classList.contains('hidden')) {
-                        backdrop.classList.remove('hidden');
-                        setTimeout(() => { backdrop.classList.remove('opacity-0'); drawer.classList.remove('-translate-x-full'); }, 10);
-                    } else {
-                        backdrop.classList.add('opacity-0'); drawer.classList.add('-translate-x-full');
-                        setTimeout(() => backdrop.classList.add('hidden'), 300);
-                    }
-                }
-            };
-            // Bind events if elements exist immediately (or wait for user interaction, but button is in navbarHtml)
-            setTimeout(() => {
-                const btn = document.getElementById('mobile-menu-toggle');
-                if (btn) btn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
-                const close = document.getElementById('mobile-menu-close');
-                if (close) close.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
-            }, 500);
-
-            if (window.lucide) lucide.createIcons();
-        }
-        // --- END SHARED ---
-
         // Init
         document.addEventListener('DOMContentLoaded', async () => {
-            // Load shared first
-            await loadSharedComponents();
-
             // Initialize Filter Component
             filtersSidebar = new FiltersSidebar('filters-sidebar-root', {
                 onFilterChange: () => {
@@ -512,6 +388,7 @@
             // Load initial products
             loadProducts();
         });
+
     </script>
 </body>
 

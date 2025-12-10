@@ -10,31 +10,44 @@ const UserMenuTemplates = {
 async function loadUserMenuTemplates() {
     if (UserMenuTemplates.guest && UserMenuTemplates.auth) return;
 
-    // Determine base path based on current location
-    const isPagesDir = window.location.pathname.includes('/pages/');
-    const basePath = isPagesDir ? '../components/' : './components/';
+    console.log('UI.js: Loading User Menu Templates...');
 
-    // If we are in the root frontend folder (e.g. /frontend/index.html), it might be ./components/
-    // If we are served from root (e.g. localhost:3000/index.html mapping to frontend/index.html), it depends on server config.
-    // Safest strategy: Try relative, if fail, try absolute or adjust.
-    // For now, let's assume standard structure:
-    // /frontend/pages/x.html -> ../components/
-    // /frontend/index.html -> ./components/
+    // Helper to try multiple paths
+    const fetchTemplate = async (filename) => {
+        const pathsToTry = [
+            // Relative (Context dependent)
+            `./components/${filename}`,
+            `../components/${filename}`,
+            // Absolute (Server root)
+            `/components/${filename}`,
+            // Explicit Project Structure
+            `/frontend/components/${filename}`,
+            `../frontend/components/${filename}`
+        ];
 
-    const getPath = (file) => `${basePath}${file}`;
+        for (const path of pathsToTry) {
+            try {
+                // Determine if we need to adjust relative paths based on location
+                // But simplified: just try them.
+                // Note: Fetch relative paths are resolved against current page URL.
+                let res = await fetch(path);
+                if (res.ok) {
+                    console.log(`UI.js: Successfully loaded ${filename} from ${path}`);
+                    return await res.text();
+                }
+            } catch (e) {
+                // Ignore error, continue to next path
+            }
+        }
+        console.error(`UI.js: Failed to load ${filename} after trying all paths`);
+        return null;
+    };
 
     try {
         const [guest, auth] = await Promise.all([
-            fetch(getPath('user-menu-guest.html')).then(r => r.ok ? r.text() : null),
-            fetch(getPath('user-menu-auth.html')).then(r => r.ok ? r.text() : null)
+            fetchTemplate('user-menu-guest.html'),
+            fetchTemplate('user-menu-auth.html')
         ]);
-
-        // Retry with alternative path if null (simple fallback)
-        if (!guest && !isPagesDir) {
-            // Maybe we are in /frontend/ but components are in ./components
-            // Or maybe we are in root and need frontend/components
-            // Not overcomplicating now, assuming the proposed fix covers the reported context (sedes.html is in pages/)
-        }
 
         UserMenuTemplates.guest = guest;
         UserMenuTemplates.auth = auth;

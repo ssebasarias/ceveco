@@ -205,58 +205,28 @@
     <div id="footer-root"></div>
 
     <!-- Scripts -->
-    <script src="../assets/js/config.js"></script>
+    <!-- Modern Core Services -->
+    <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
-    <script>window.Utils = window.Helpers;</script>
+    <script src="../assets/js/utils/storage.js"></script>
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api/client.js"></script>
+    <script src="../assets/js/services/auth.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
+    <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/core.js"></script>
 
-    <script src="../assets/js/components/cart-sidebar.js"></script>
+    <!-- UI Logic -->
+    <script src="../assets/js/ceveco-core.js?v=rename3"></script>
+    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
-    <script src="../assets/js/main-app.js" defer></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
+
     <script>
-        // --- SHARED COMPONENTS LOADER (Injected Fix) ---
-        async function loadSharedComponents() {
-            const navbarRoot = document.getElementById('navbar-root');
-            const footerRoot = document.getElementById('footer-root');
-            if (!navbarRoot && !footerRoot) return;
-
-            const fetchText = async (url) => {
-                try {
-                    let r = await fetch(url);
-                    if (!r.ok) r = await fetch('../' + url);
-                    return r.ok ? await r.text() : null;
-                } catch (e) { return null; }
-            };
-
-            const [navbarHtml, footerHtml] = await Promise.all([
-                fetchText('../components/navbar.html'),
-                fetchText('../components/footer.html')
-            ]);
-
-            if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
-            if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
-
-            // Simple mobile toggle
-            window.toggleMobileMenu = function () {
-                const backdrop = document.getElementById('mobile-menu-backdrop');
-                const drawer = document.getElementById('mobile-menu-drawer');
-                if (backdrop && drawer) {
-                    backdrop.classList.toggle('hidden');
-                    backdrop.classList.toggle('opacity-0');
-                    drawer.classList.toggle('-translate-x-full');
-                }
-            };
-            setTimeout(() => {
-                const btn = document.getElementById('mobile-menu-toggle');
-                if (btn) btn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
-            }, 500);
-
-            if (window.lucide) lucide.createIcons();
-        }
-        // --- END SHARED ---
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadSharedComponents();
+        // Inicializar iconos Lucide
+        document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) lucide.createIcons();
         });
 
