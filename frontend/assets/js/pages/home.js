@@ -101,7 +101,7 @@ async function loadBrands() {
         if (response.success && response.data.length > 0) {
             const brands = response.data;
             const brandElements = brands.map(marca =>
-                `<span class="text-2xl font-bold text-gray-400 uppercase whitespace-nowrap px-8">${marca.nombre}</span>`
+                `<span class="text-base md:text-2xl font-bold text-gray-400 uppercase whitespace-nowrap px-4 md:px-8">${marca.nombre}</span>`
             ).join('');
             container.innerHTML = brandElements + brandElements;
         } else {
