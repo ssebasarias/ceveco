@@ -11,25 +11,7 @@
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
 
     <link rel="stylesheet" href="../assets/css/main.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: 'var(--brand-red)', dark: '#d91b10', light: '#ff4d4d' },
-                        secondary: { DEFAULT: 'var(--brand-blue-royal)', dark: '#002a5c', light: '#3366cc' },
-                        accent: { DEFAULT: '#FFD23F', dark: '#E6BD38' },
-                        dark: 'var(--brand-navy)',
-                        white: 'var(--surface-white)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="../assets/js/theme.config.js"></script>
 </head>
 
 <body class="bg-gray-50 min-h-screen font-sans flex flex-col">
@@ -85,114 +67,7 @@
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
 
-    <script type="module">
-        // Global services already loaded
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const loadingState = document.getElementById('loading-state');
-            const emptyState = document.getElementById('empty-state');
-            const ordersList = document.getElementById('orders-list');
-
-            // Check auth (AuthService)
-            // Note: Since we use type=module script (to keep using existing logic if any), we can use global window.AuthService.
-            // Wait for core (DOMContentLoaded runs after scripts)
-
-            const isAuth = window.AuthService?.isAuthenticated() ||
-                (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
-
-            if (!isAuth) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            try {
-                const orders = await window.OrdersService.getUserOrders();
-
-                loadingState.classList.add('hidden');
-
-                if (orders.length === 0) {
-                    emptyState.classList.remove('hidden');
-                } else {
-                    ordersList.classList.remove('hidden');
-                    renderOrders(orders);
-                }
-            } catch (error) {
-                console.error(error);
-                loadingState.innerHTML = `<p class="text-red-500">Error al cargar pedidos. Intenta de nuevo.</p>`;
-            }
-        });
-
-        function renderOrders(orders) {
-            const container = document.getElementById('orders-list');
-
-            container.innerHTML = orders.map(order => `
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
-                    <div class="p-6 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4 bg-gray-50">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Pedido realizado</p>
-                            <p class="font-semibold text-gray-900">${new Date(order.fecha_pedido).toLocaleDateString()}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Total</p>
-                            <p class="font-semibold text-gray-900">${window.formatPrice(order.total)}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Pedido #</p>
-                            <p class="font-semibold text-gray-900">${order.numero_pedido}</p>
-                        </div>
-                        <div class="ml-auto">
-                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.estado)}">
-                                ${formatStatus(order.estado)}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex items-center gap-6">
-                            <div class="w-24 h-24 bg-gray-100 rounded-lg flex-shrink-0 border border-gray-200 p-2">
-                                <img src="${order.imagen_preview || 'https://via.placeholder.com/100'}" 
-                                     alt="Producto" 
-                                     class="w-full h-full object-contain">
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-semibold text-lg text-gray-900 mb-2">
-                                    Compuesto por ${order.items_count} producto(s)
-                                </h3>
-                                <p class="text-gray-500 text-sm mb-4">
-                                    Enviado a través de Coordinadora. Llegada estimada: Pronto
-                                </p>
-                                <div class="flex gap-3">
-                                    <button class="text-primary font-medium hover:text-blue-700 text-sm">
-                                        Ver detalles del pedido
-                                    </button>
-                                    <span class="text-gray-300">|</span>
-                                    <button class="text-primary font-medium hover:text-blue-700 text-sm">
-                                        Ver factura
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-             `).join('');
-
-            lucide.createIcons();
-        }
-
-        function getStatusColor(status) {
-            const colors = {
-                'pendiente': 'bg-yellow-100 text-yellow-800',
-                'procesando': 'bg-blue-100 text-blue-800',
-                'enviado': 'bg-purple-100 text-purple-800',
-                'entregado': 'bg-green-100 text-green-800',
-                'cancelado': 'bg-red-100 text-red-800'
-            };
-            return colors[status] || 'bg-gray-100 text-gray-800';
-        }
-
-        function formatStatus(status) {
-            return status.charAt(0).toUpperCase() + status.slice(1);
-        }
-    </script>
+    <script src="../assets/js/pages/pedidos.js" defer></script>
 </body>
 
 </html>

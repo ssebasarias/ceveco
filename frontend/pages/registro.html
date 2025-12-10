@@ -38,57 +38,8 @@
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
 
-    <script src="../assets/js/pages/registro.js"></script> <!-- Page specific logic -->
 
-    <script>
-        // Inicializar iconos Lucide
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) lucide.createIcons();
-        });
-    </script>
-    <style>
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        /* Animaciones */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
-        /* Efecto glassmorphism */
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/css/pages/registro.css">
 </head>
 
 <body class="bg-gradient-to-br from-blue-50 via-white to-blue-50 min-h-screen font-sans antialiased">
@@ -267,62 +218,7 @@
     <div id="footer-root"></div>
 
     <!-- Scripts -->
-    <script src="../assets/js/config.js"></script>
-
-
-    <script src="../assets/js/components/cart-sidebar.js"></script>
-    <script type="module" src="../assets/js/auth/index.js"></script>
-
-    <script src="../assets/js/pages/registro.js"></script> <!-- Page specific logic -->
-
-    <script>
-        // --- SHARED COMPONENTS LOADER (Injected Fix) ---
-        async function loadSharedComponents() {
-            const navbarRoot = document.getElementById('navbar-root');
-            const footerRoot = document.getElementById('footer-root');
-            if (!navbarRoot && !footerRoot) return;
-
-            const fetchText = async (url) => {
-                try {
-                    let r = await fetch(url);
-                    if (!r.ok) r = await fetch('../' + url);
-                    return r.ok ? await r.text() : null;
-                } catch (e) { return null; }
-            };
-
-            const [navbarHtml, footerHtml] = await Promise.all([
-                fetchText('../components/navbar.html'),
-                fetchText('../components/footer.html')
-            ]);
-
-            if (navbarRoot && navbarHtml) navbarRoot.innerHTML = navbarHtml;
-            if (footerRoot && footerHtml) footerRoot.innerHTML = footerHtml;
-
-            // Simple mobile toggle
-            window.toggleMobileMenu = function () {
-                const backdrop = document.getElementById('mobile-menu-backdrop');
-                const drawer = document.getElementById('mobile-menu-drawer');
-                if (backdrop && drawer) {
-                    backdrop.classList.toggle('hidden');
-                    backdrop.classList.toggle('opacity-0');
-                    drawer.classList.toggle('-translate-x-full');
-                }
-            };
-            setTimeout(() => {
-                const btn = document.getElementById('mobile-menu-toggle');
-                if (btn) btn.onclick = (e) => { e.preventDefault(); window.toggleMobileMenu(); }
-            }, 500);
-
-            if (window.lucide) lucide.createIcons();
-        }
-        // --- END SHARED ---
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadSharedComponents();
-            // registro.js likely handles its own logic, but we ensure layout is ready
-            if (window.lucide) lucide.createIcons();
-        });
-    </script>
+    <script src="../assets/js/pages/registro.js" defer></script>
 
 
 </body>

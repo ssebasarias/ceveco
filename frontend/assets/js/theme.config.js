@@ -8,6 +8,13 @@ tailwind.config = {
                 accent: { DEFAULT: '#FFD23F', dark: '#E6BD38' },
                 dark: 'var(--brand-navy)',
                 white: 'var(--surface-white)',
+                gray: {
+                    50: 'var(--surface-off-white)',
+                    100: '#f1f5f9',
+                    200: 'var(--border-color)',
+                    800: 'var(--text-primary)',
+                    900: 'var(--brand-navy)',
+                },
             },
             fontFamily: {
                 sans: ['Inter', 'sans-serif'],

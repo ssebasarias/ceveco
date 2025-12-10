@@ -11,25 +11,7 @@
     <!-- ✨ Sistema CSS Centralizado Profesional ✨ -->
     <link rel="stylesheet" href="../assets/css/main.css">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: 'var(--brand-red)', dark: '#d91b10', light: '#ff4d4d' },
-                        secondary: { DEFAULT: 'var(--brand-blue-royal)', dark: '#002a5c', light: '#3366cc' },
-                        accent: { DEFAULT: '#FFD23F', dark: '#E6BD38' },
-                        dark: 'var(--brand-navy)',
-                        white: 'var(--surface-white)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="../assets/js/theme.config.js"></script>
 </head>
 
 <body class="bg-white text-gray-800 font-sans antialiased">
@@ -250,82 +232,10 @@
     <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
-    <script>
-        // Inicializar iconos Lucide se hace en main.js tras cargar la navbar, pero aquí también para el contenido
-        document.addEventListener('DOMContentLoaded', () => {
-            // Ya main.js lo hace, pero por si acaso hay iconos en el body principal
-            if (window.lucide) window.lucide.createIcons();
-        });
-    </script>
-    <!-- Cart Overlay -->
-    <div id="cart-overlay" onclick="closeCart()" class="hidden fixed inset-0 bg-black/50 z-40 transition-opacity"></div>
+    <script src="../assets/js/pages/sedes.js" defer></script>
 
-    <!-- Cart Sidebar -->
-    <div id="cart-sidebar"
-        class="fixed top-0 right-0 h-full w-full md:w-96 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 flex flex-col">
-        <!-- Cart Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
-                <i data-lucide="shopping-cart" class="w-6 h-6"></i>
-                Mi Carrito
-            </h2>
-            <button onclick="closeCart()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
 
-        <!-- Cart Items -->
-        <div class="flex-1 overflow-y-auto p-6">
-            <!-- Empty Cart State -->
-            <div id="empty-cart" class="flex flex-col items-center justify-center h-full text-center">
-                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                    <i data-lucide="shopping-bag" class="w-12 h-12 text-gray-400"></i>
-                </div>
-                <h3 class="text-lg font-semibold text-gray-900 mb-2">Tu carrito está vacío</h3>
-                <p class="text-gray-500 mb-6">Agrega productos para comenzar tu compra</p>
-                <button onclick="closeCart()"
-                    class="px-6 py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">
-                    Continuar Comprando
-                </button>
-            </div>
 
-            <!-- Cart Items List -->
-            <div id="cart-items" class="space-y-4">
-                <!-- Items will be dynamically inserted here -->
-            </div>
-        </div>
-
-        <!-- Cart Footer -->
-        <div id="cart-footer" class="hidden border-t border-gray-200 p-6 space-y-4 bg-gray-50">
-            <!-- Subtotal -->
-            <div class="flex items-center justify-between text-lg">
-                <span class="font-semibold text-gray-700">Subtotal:</span>
-                <span id="cart-total" class="font-bold text-gray-900">$0</span>
-            </div>
-
-            <!-- Shipping Info -->
-            <div class="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
-                <i data-lucide="truck" class="w-4 h-4"></i>
-                <span>Envío gratis en compras superiores a $500.000</span>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="space-y-2">
-                <a href="#"
-                    class="block w-full bg-primary text-white font-bold py-4 px-6 rounded-lg hover:bg-primary-dark transition-all text-center">
-                    Proceder al Pago
-                </a>
-                <button onclick="closeCart()"
-                    class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all">
-                    Continuar Comprando
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        lucide.createIcons();
-    </script>
 </body>
 
 </html>

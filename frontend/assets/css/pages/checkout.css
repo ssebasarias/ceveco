@@ -1,0 +1,45 @@
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Progress Steps Animation */
+.step-active {
+    background: linear-gradient(135deg, #0056b3 0%, #0070dd 100%);
+    color: white;
+}
+
+.step-completed {
+    background: #10b981;
+    color: white;
+}
+
+/* Pulse animation for payment button */
+@keyframes pulse-glow {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(0, 86, 179, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 10px rgba(0, 86, 179, 0);
+    }
+}
+
+.pulse-glow {
+    animation: pulse-glow 2s infinite;
+}

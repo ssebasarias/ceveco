@@ -13,25 +13,7 @@
     <!-- ✨ Sistema CSS Centralizado Profesional ✨ -->
     <link rel="stylesheet" href="../assets/css/main.css">
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: 'var(--brand-red)', dark: '#d91b10', light: '#ff4d4d' },
-                        secondary: { DEFAULT: 'var(--brand-blue-royal)', dark: '#002a5c', light: '#3366cc' },
-                        accent: { DEFAULT: '#FFD23F', dark: '#E6BD38' },
-                        dark: 'var(--brand-navy)',
-                        white: 'var(--surface-white)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="../assets/js/theme.config.js"></script>
 </head>
 
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
@@ -284,33 +266,7 @@
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
 
-    <script>
-        // Form handling only
-        document.addEventListener('DOMContentLoaded', () => {
-            // Form handling
-            const contactForm = document.getElementById('contact-form');
-            if (contactForm) {
-                contactForm.addEventListener('submit', async function (e) {
-                    e.preventDefault();
-
-                    const formData = {
-                        name: document.getElementById('name').value,
-                        email: document.getElementById('email').value,
-                        phone: document.getElementById('phone').value,
-                        subject: document.getElementById('subject').value,
-                        message: document.getElementById('message').value,
-                        timestamp: new Date().toISOString()
-                    };
-
-                    console.log('Formulario enviado:', formData);
-
-                    // Simulate success
-                    alert('¡Mensaje enviado exitosamente! Nos pondremos en contacto contigo pronto.');
-                    this.reset();
-                });
-            }
-        });
-    </script>
+    <script src="../assets/js/pages/contacto.js" defer></script>
 </body>
 
 </html>

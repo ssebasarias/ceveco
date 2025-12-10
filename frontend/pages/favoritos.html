@@ -11,25 +11,7 @@
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
     <!-- ✨ Sistema CSS Centralizado Profesional ✨ -->
     <link rel="stylesheet" href="../assets/css/main.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: { DEFAULT: 'var(--brand-red)', dark: '#d91b10', light: '#ff4d4d' },
-                        secondary: { DEFAULT: 'var(--brand-blue-royal)', dark: '#002a5c', light: '#3366cc' },
-                        accent: { DEFAULT: '#FFD23F', dark: '#E6BD38' },
-                        dark: 'var(--brand-navy)',
-                        white: 'var(--surface-white)',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Montserrat', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="../assets/js/theme.config.js"></script>
 </head>
 
 <body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
@@ -92,94 +74,7 @@
     <script type="module" src="../assets/js/auth/index.js"></script>
     <script type="module" src="../assets/js/favorites/index.js"></script>
 
-    <script type="module">
-        // Already loaded via global services
-        async function loadFavorites() {
-            const container = document.getElementById('favorites-grid');
-            const loading = document.getElementById('loading-state');
-            const empty = document.getElementById('empty-state');
-            const counter = document.getElementById('fav-count');
-
-            try {
-                // Verificar auth (Compatibilidad con sistema nuevo y viejo)
-                const isAuth = window.AuthService?.isAuthenticated() ||
-                    (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
-
-                if (!isAuth) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-
-                // Usar nuevo servicio
-                const data = await window.FavoritesService.getAll();
-                // Nota: getAll devuelve array data directamente según mi Service implementation? No, getAll retorna response.
-                // Revisemos FavoritesService implementation en paso 156.
-                // "if (response.success) { return response.data; } return [];"
-                // Así que retorna el ARRAY directamente.
-
-                // Adaptar lógica que espera { success: true, data: [] }
-                // O ajustar FavoritesService.
-                // Ajustaré aquí asuminedo data es el array.
-                const favorites = data;
-
-                if (favorites && favorites.length > 0) {
-                    container.classList.remove('hidden');
-                    empty.classList.add('hidden');
-
-                    // Update counter
-                    counter.textContent = `${favorites.length} producto${favorites.length !== 1 ? 's' : ''}`;
-
-                    // Render cards
-                    const cardsHtml = (await Promise.all(favorites.map(async (p) => {
-                        return await renderProductCard(p);
-                    }))).join('');
-
-                    container.innerHTML = cardsHtml;
-                    lucide.createIcons();
-                } else {
-                    container.classList.add('hidden');
-                    empty.classList.remove('hidden');
-                    counter.textContent = '0 productos';
-                }
-
-            } catch (error) {
-                console.error('Error al cargar favoritos:', error);
-                // Mostrar error genérico o empty
-                empty.classList.remove('hidden');
-            } finally {
-                if (loading) {
-                    loading.classList.remove('flex');
-                    loading.classList.add('hidden');
-                }
-            }
-        }
-
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            await loadFavorites();
-            // Import and init logic to ensure global state matches
-            import('../assets/js/favorites/index.js').then(module => {
-                setTimeout(() => {
-                    if (window.updateFavoritesUI) window.updateFavoritesUI();
-                }, 100);
-            });
-        });
-
-        // Solución para navegar Atrás/Adelante y recargar datos (BFCache)
-        window.addEventListener('pageshow', async (event) => {
-            // Si la página se restaura desde la caché (bfcache)
-            if (event.persisted) {
-                console.log('Restaurado desde caché, recargando favoritos...');
-                await loadFavorites();
-
-                // Recargar el estado global de favoritos (IDs) para mantener sincronía
-                if (window.initFavorites) await window.initFavorites();
-
-                // Actualizar UI global si es necesario
-                if (window.updateFavoritesUI) window.updateFavoritesUI();
-            }
-        });
-    </script>
+    <script src="../assets/js/pages/favoritos.js" defer></script>
 </body>
 
 </html>
