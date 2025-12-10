@@ -135,10 +135,8 @@ async function loadProducts() {
             }
         }
 
-        // Update Favorites State
-        if (typeof window.updateFavoritesUI === 'function') {
-            window.updateFavoritesUI();
-        }
+        // Notificar que se renderizaron productos para que el módulo de favoritos se sincronice
+        document.dispatchEvent(new CustomEvent('productsRendered'));
 
     } catch (error) {
         console.error('Error loading products:', error);

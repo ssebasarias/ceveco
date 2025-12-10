@@ -124,17 +124,27 @@
     <div id="footer-root"></div>
 
     <!-- Scripts -->
+    <!-- Config Load First -->
+    <script src="../assets/js/config.js"></script>
+
+    <!-- Modern Core Services -->
     <script src="../assets/js/utils/constants.js"></script>
     <script src="../assets/js/utils/helpers.js"></script>
     <script src="../assets/js/utils/storage.js"></script>
-    <script src="../assets/js/config.js"></script>
     <script src="../assets/js/api/client.js"></script>
     <script src="../assets/js/services/auth.service.js"></script>
-    <script src="../assets/js/services/orders.service.js"></script>
+    <script src="../assets/js/services/products.service.js"></script>
     <script src="../assets/js/services/favorites.service.js"></script>
+    <script src="../assets/js/services/orders.service.js"></script>
     <script src="../assets/js/core.js"></script>
+
+    <!-- UI Logic -->
     <script src="../assets/js/ceveco-core.js?v=rename3"></script>
     <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
+    <!-- Modules -->
+    <script type="module" src="../assets/js/auth/index.js"></script>
+    <script type="module" src="../assets/js/favorites/index.js"></script>
 
     <!-- Page Specific Script -->
     <script src="../assets/js/pages/pedidos.js"></script>

@@ -67,9 +67,15 @@ class ApiClient {
         const url = `${this.baseURL}${endpoint}${queryString}`;
 
         try {
+            const headers = this.getHeaders();
+            // Evitar caché de navegador para llamadas API
+            headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+            headers['Pragma'] = 'no-cache';
+            headers['Expires'] = '0';
+
             const response = await fetch(url, {
                 method: 'GET',
-                headers: this.getHeaders()
+                headers: headers
             });
             return this.handleResponse(response);
         } catch (error) {

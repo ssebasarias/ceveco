@@ -5,14 +5,14 @@ const FavoritosController = {
      * Alternar estado de favorito (Agregar/Eliminar)
      */
     toggle: async (req, res) => {
-        const userId = req.user.id; // Del middleware de auth
-        const { productId } = req.body;
-
-        if (!productId) {
-            return res.status(400).json({ success: false, message: 'ID de producto requerido' });
-        }
-
         try {
+            const userId = parseInt(req.user.id); // Asegurar entero
+            const productId = parseInt(req.body.productId); // Asegurar entero
+
+            if (!productId || isNaN(productId)) {
+                return res.status(400).json({ success: false, message: 'ID de producto inválido' });
+            }
+
             // Verificar que el producto exista
             const productCheck = await pool.query('SELECT id_producto FROM productos WHERE id_producto = $1', [productId]);
             if (productCheck.rows.length === 0) {
@@ -34,6 +34,8 @@ const FavoritosController = {
                 await pool.query('INSERT INTO favoritos (id_usuario, id_producto) VALUES ($1, $2)', [userId, productId]);
                 action = 'added';
             }
+
+            // console.log(`Favorito ${action}: User ${userId}, Product ${productId}`);
 
             res.json({
                 success: true,

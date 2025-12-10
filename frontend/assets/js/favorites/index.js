@@ -19,7 +19,8 @@ window.initFavorites = async () => {
 
     try {
         const ids = await window.FavoritesService.getIds();
-        favoriteIds = new Set(ids);
+        // Asegurar que guardamos enteros para comparación consistente
+        favoriteIds = new Set(ids.map(id => parseInt(id)));
         updateFavoritesUI();
     } catch (error) {
         console.error('Failed to init favorites', error);
@@ -69,6 +70,9 @@ window.handleToggleFavorite = async (btn, productId, event) => {
         e.stopPropagation();
     }
 
+    if (btn.dataset.processing === 'true') return;
+    btn.dataset.processing = 'true';
+
     const isAuth = window.AuthService?.isAuthenticated() ||
         (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
 
@@ -116,6 +120,8 @@ window.handleToggleFavorite = async (btn, productId, event) => {
         if (isFav) favoriteIds.add(id); else favoriteIds.delete(id);
         updateFavoritesUI();
         showFavoriteNotification('Error al actualizar favoritos', 'error');
+    } finally {
+        setTimeout(() => { btn.dataset.processing = 'false'; }, 500); // Pequeño delay extra de seguridad
     }
 };
 

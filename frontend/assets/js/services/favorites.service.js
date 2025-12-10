@@ -33,7 +33,7 @@ const FavoritesService = {
         try {
             const response = await window.API.get(window.CONSTANTS.API_PATHS.FAVORITES.IDS);
             if (response.success) {
-                return response.data;
+                return response.ids || response.data;
             }
             return [];
         } catch (error) {

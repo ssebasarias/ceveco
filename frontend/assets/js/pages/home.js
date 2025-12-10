@@ -64,9 +64,8 @@ async function loadFeaturedProducts() {
         }
 
         // Update Favorites State
-        if (typeof window.updateFavoritesUI === 'function') {
-            setTimeout(window.updateFavoritesUI, 100);
-        }
+        // Notificar al sistema de favoritos
+        document.dispatchEvent(new CustomEvent('productsRendered'));
     } catch (error) {
         console.error('Error:', error);
         container.innerHTML = `<p class="text-center text-red-500 py-8 w-full">Error al cargar productos.</p>`;

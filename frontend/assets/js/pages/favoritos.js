@@ -1,87 +1,157 @@
+/**
+ * Lógica para la página de Favoritos
+ */
 
-// Already loaded via global services
-async function loadFavorites() {
-    const container = document.getElementById('favorites-grid');
-    const loading = document.getElementById('loading-state');
-    const empty = document.getElementById('empty-state');
-    const counter = document.getElementById('fav-count');
+document.addEventListener('DOMContentLoaded', async () => {
+    // Inicializar iconos
+    if (window.lucide) window.lucide.createIcons();
 
-    try {
-        // Verificar auth (Compatibilidad con sistema nuevo y viejo)
-        const isAuth = window.AuthService?.isAuthenticated() ||
-            (typeof window.isUserAuthenticated === 'function' && window.isUserAuthenticated());
+    // Configurar Sidebar (Usuario)
+    setupSidebar();
 
-        if (!isAuth) {
-            window.location.href = 'login.html';
-            return;
-        }
+    // Cargar Favoritos
+    await loadFavoritesPage();
+});
 
-        // Usar nuevo servicio
-        const data = await window.FavoritesService.getAll();
-        // Nota: getAll devuelve array data directamente según mi Service implementation? No, getAll retorna response.
-        // Revisemos FavoritesService implementation en paso 156.
-        // "if (response.success) { return response.data; } return [];"
-        // Así que retorna el ARRAY directamente.
+/**
+ * Carga información básica del usuario en el sidebar
+ */
+function setupSidebar() {
+    const user = AuthService.getCurrentUser();
 
-        // Adaptar lógica que espera { success: true, data: [] }
-        // O ajustar FavoritesService.
-        // Ajustaré aquí asuminedo data es el array.
-        const favorites = data;
+    // Si no hay usuario, redirigir al login
+    if (!user) {
+        window.location.href = 'login.html';
+        return;
+    }
 
-        if (favorites && favorites.length > 0) {
-            container.classList.remove('hidden');
-            empty.classList.add('hidden');
+    const nameEl = document.getElementById('sidebar-name');
+    const emailEl = document.getElementById('sidebar-email');
+    const avatarImg = document.getElementById('profile-avatar');
+    const defaultAvatar = document.getElementById('default-avatar');
 
-            // Update counter
-            counter.textContent = `${favorites.length} producto${favorites.length !== 1 ? 's' : ''}`;
+    if (nameEl) nameEl.textContent = `${user.nombre} ${user.apellido || ''}`;
+    if (emailEl) emailEl.textContent = user.email;
 
-            // Render cards
-            const cardsHtml = (await Promise.all(favorites.map(async (p) => {
-                return await renderProductCard(p);
-            }))).join('');
-
-            container.innerHTML = cardsHtml;
-            lucide.createIcons();
-        } else {
-            container.classList.add('hidden');
-            empty.classList.remove('hidden');
-            counter.textContent = '0 productos';
-        }
-
-    } catch (error) {
-        console.error('Error al cargar favoritos:', error);
-        // Mostrar error genérico o empty
-        empty.classList.remove('hidden');
-    } finally {
-        if (loading) {
-            loading.classList.remove('flex');
-            loading.classList.add('hidden');
-        }
+    if (user.avatar_url && avatarImg && defaultAvatar) {
+        avatarImg.src = user.avatar_url;
+        avatarImg.classList.remove('hidden');
+        defaultAvatar.classList.add('hidden');
     }
 }
 
+/**
+ * Cargar y renderizar la lista de favoritos
+ */
+async function loadFavoritesPage() {
+    const loadingState = document.getElementById('loading-state');
+    const emptyState = document.getElementById('empty-state');
+    const grid = document.getElementById('favorites-grid');
+    const countBadge = document.getElementById('fav-count');
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await loadFavorites();
-    // Import and init logic to ensure global state matches
-    import('../favorites/index.js').then(module => {
-        setTimeout(() => {
-            if (window.updateFavoritesUI) window.updateFavoritesUI();
-        }, 100);
-    });
-});
+    try {
+        // Obtener favoritos usando el servicio centralizado
+        const favorites = await FavoritesService.getAll();
 
-// Solución para navegar Atrás/Adelante y recargar datos (BFCache)
-window.addEventListener('pageshow', async (event) => {
-    // Si la página se restaura desde la caché (bfcache)
-    if (event.persisted) {
-        console.log('Restaurado desde caché, recargando favoritos...');
-        await loadFavorites();
+        // Limpiar animaciones de carga agresivamente
+        if (loadingState) {
+            loadingState.style.display = 'none';
+            loadingState.classList.remove('flex'); // Remover flex para evitar conflictos
+            loadingState.classList.add('hidden');
+        }
 
-        // Recargar el estado global de favoritos (IDs) para mantener sincronía
-        if (window.initFavorites) await window.initFavorites();
+        // Actualizar contador
+        if (countBadge) countBadge.textContent = favorites.length;
 
-        // Actualizar UI global si es necesario
-        if (window.updateFavoritesUI) window.updateFavoritesUI();
+        if (!favorites || favorites.length === 0) {
+            if (emptyState) emptyState.classList.remove('hidden');
+            if (grid) grid.classList.add('hidden');
+            return;
+        }
+
+        // Renderizar Grid con Card Estándar
+        if (grid && window.renderProductCard) {
+            grid.classList.remove('hidden');
+
+            // Generar HTML de todas las cards en paralelo
+            const cardsHtmlPromises = favorites.map(product => window.renderProductCard(product));
+            const cardsHtml = await Promise.all(cardsHtmlPromises);
+
+            grid.innerHTML = cardsHtml.join('');
+
+            // Re-ejecutar listeners globales
+            if (window.lucide) window.lucide.createIcons();
+
+            // Forzar estado activo en los corazones (ya que son favoritos)
+            const favoriteBtns = grid.querySelectorAll('.btn-favorite');
+            favoriteBtns.forEach(btn => {
+                btn.classList.add('active');
+                const icon = btn.querySelector('[data-lucide="heart"]') || btn.querySelector('svg');
+                if (icon) {
+                    icon.classList.add('text-red-500', 'fill-current');
+                    icon.classList.remove('text-gray-400');
+                }
+            });
+
+            // Notificar al sistema global que se renderizaron productos
+            document.dispatchEvent(new CustomEvent('productsRendered'));
+        }
+
+    } catch (error) {
+        console.error('Error cargando favoritos:', error);
+        if (loadingState) {
+            loadingState.style.display = 'none';
+            loadingState.classList.remove('flex');
+            loadingState.classList.add('hidden');
+        }
+        if (emptyState) emptyState.classList.remove('hidden');
     }
-});
+}
+// La función renderFavoriteCard manual se elimina porque usamos window.renderProductCard
+
+// Exponer funciones globales para los botones onclick
+window.removeFavoritePage = async (productId) => {
+    if (!confirm('¿Quitar este producto de tus favoritos?')) return;
+
+    try {
+        await FavoritesService.toggle(productId);
+        // Recargar la lista
+        loadFavoritesPage();
+
+        // Actualizar header si es necesario
+        document.dispatchEvent(new CustomEvent('favorites-updated'));
+
+    } catch (e) {
+        console.error('Error removing favorite:', e);
+        alert('Error al quitar de favoritos');
+    }
+};
+
+window.addToCartPage = async (productId) => {
+    try {
+        // Usar CartService si existe, o lógica manual
+        // Asumo que existe Cart logic global en ceveco-core.js o similar
+        // Si no, implemento básico:
+
+        // Buscar producto completo (necesitamos info para carrito)
+        const favorites = await FavoritesService.getAll();
+        const product = favorites.find(p => p.id_producto == productId); // Loose equations just in case string/int
+
+        if (product) {
+            window.addToCart({
+                id: product.id_producto,
+                name: product.nombre,
+                price: product.precio,
+                image: product.imagen_url || product.imagen,
+                quantity: 1
+            });
+        }
+    } catch (e) {
+        console.error('Error adding to cart:', e);
+    }
+};
+
+// Función Logout (Reutilizada del sidebar)
+window.handleLogout = () => {
+    AuthService.logout();
+};
