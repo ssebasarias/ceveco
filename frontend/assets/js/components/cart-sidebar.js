@@ -18,7 +18,7 @@ function saveCart() {
 
 // Add item to cart
 // Acepta: (productId, nombre, precio, imagen) o (productObject)
-function addToCart(productId, nombre = null, precio = null, imagen = null) {
+async function addToCart(productId, nombre = null, precio = null, imagen = null) {
     let product;
 
     // Si se pasan los parámetros individuales
@@ -45,19 +45,37 @@ function addToCart(productId, nombre = null, precio = null, imagen = null) {
     }
 
     const existingItem = cart.find(item => String(item.id) === String(product.id));
+    const newQuantity = existingItem ? existingItem.quantity + 1 : 1;
 
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({
-            ...product,
-            id: String(product.id), // Ensure ID is string
-            quantity: 1
-        });
+    try {
+        // Validación de Stock con el Backend
+        if (window.ProductService) {
+            const stockResponse = await window.ProductService.checkStock(product.id, newQuantity);
+            // Asumimos que la API retorna { available: true/false } o lanza error si no hay stock
+            // Si la respuesta es un booleano directo o un objeto con flag
+            if (stockResponse === false || (stockResponse.available === false)) {
+                alert(`No hay suficiente stock disponible (Máximo: ${stockResponse.stock || '?'})`);
+                return;
+            }
+        }
+
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({
+                ...product,
+                id: String(product.id), // Ensure ID is string
+                quantity: 1
+            });
+        }
+
+        saveCart();
+        showCartNotification(product.name);
+
+    } catch (error) {
+        console.error('Error verificando stock:', error);
+        alert('Error al verificar disponibilidad del producto');
     }
-
-    saveCart();
-    showCartNotification(product.name);
 }
 
 // Remove item from cart
@@ -67,10 +85,27 @@ function removeFromCart(productId) {
 }
 
 // Update item quantity
-function updateQuantity(productId, quantity) {
+async function updateQuantity(productId, quantity) {
     const item = cart.find(item => String(item.id) === String(productId));
     if (item) {
-        item.quantity = Math.max(1, quantity);
+        if (quantity < 1) return; // Prevent 0 or negative via udpateQuantity (use remove instead)
+
+        // Validar Stock si se está aumentando la cantidad
+        if (window.ProductService && quantity > item.quantity) {
+            try {
+                const stockResponse = await window.ProductService.checkStock(productId, quantity);
+                if (stockResponse === false || (stockResponse.available === false)) {
+                    alert(`No hay suficiente stock disponible (Máximo: ${stockResponse.stock || '?'})`);
+                    return;
+                }
+            } catch (e) {
+                console.error('Error validando stock:', e);
+                alert('Error verificando disponibilidad');
+                return;
+            }
+        }
+
+        item.quantity = quantity;
         saveCart();
     }
 }

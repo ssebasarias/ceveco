@@ -21,14 +21,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function setupListeners() {
-    // Navegación Tabs (Solo frontend visual por ahora)
-    const tabs = document.querySelectorAll('.profile-nav-item');
-    tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-            // e.preventDefault();
-            // Lógica de navegación entre secciones si fuera SPA
+    // Buttons (Edit Profile)
+    const editBtn = document.getElementById('btn-edit');
+    if (editBtn) editBtn.addEventListener('click', toggleEditMode);
+
+    const cancelEditBtn = document.getElementById('btn-cancel-edit');
+    if (cancelEditBtn) cancelEditBtn.addEventListener('click', cancelEdit);
+
+    // Logout
+    const logoutBtn = document.getElementById('btn-logout');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            handleLogout();
         });
-    });
+    }
 
     // Formulario Perfil
     const profileForm = document.getElementById('profile-form');
@@ -77,6 +84,18 @@ function setupListeners() {
             e.preventDefault();
             await handleCreateAddress(new FormData(addressForm));
             closeModal();
+        });
+    }
+
+    // Event Delegation for Address Deletion (Dynamic Elements)
+    const addressesList = document.getElementById('addresses-list');
+    if (addressesList) {
+        addressesList.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.btn-delete-address');
+            if (deleteBtn) {
+                const id = deleteBtn.dataset.id;
+                if (id) deleteAddress(id);
+            }
         });
     }
 }
@@ -132,7 +151,8 @@ async function loadAddresses() {
     if (!container) return;
 
     try {
-        const response = await window.API.get('/api/v1/direcciones'); // O usar CONSTANTS si actualizas theme.config
+        // Fix: Use relative endpoint since API Client appends base URL
+        const response = await window.API.get('/direcciones');
         const addresses = response.data || [];
 
         if (addresses.length === 0) {
@@ -160,7 +180,7 @@ async function loadAddresses() {
                         <p><span class="font-medium">Tel:</span> ${addr.telefono_contacto}</p> 
                     </div>
                     <div class="border-t border-gray-100 pt-3 flex justify-end">
-                        <button onclick="deleteAddress(${addr.id_direccion})" class="text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1">
+                        <button type="button" class="btn-delete-address text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1" data-id="${addr.id_direccion}">
                             <i data-lucide="trash-2" class="w-3 h-3"></i> Eliminar
                         </button>
                     </div>
@@ -185,7 +205,7 @@ async function handleCreateAddress(formData) {
     data.es_principal = formData.get('es_principal') === 'on';
 
     try {
-        const response = await window.API.post('/api/v1/direcciones', data);
+        const response = await window.API.post('/direcciones', data);
         if (response.success) {
             alert('Dirección agregada correctamente.');
             await loadAddresses();
@@ -201,11 +221,11 @@ async function handleCreateAddress(formData) {
 /**
  * Eliminar Dirección
  */
-window.deleteAddress = async function (id) {
+async function deleteAddress(id) {
     if (!confirm('¿Estás seguro de eliminar esta dirección?')) return;
 
     try {
-        const response = await window.API.delete(`/api/v1/direcciones/${id}`);
+        const response = await window.API.delete(`/direcciones/${id}`);
         if (response.success) {
             await loadAddresses();
         } else {
@@ -216,44 +236,74 @@ window.deleteAddress = async function (id) {
     }
 };
 
-// ... (Resto de funciones de perfil: toggleEditMode, cancelEdit, handleProfileUpdate, handlePasswordChange - Mismas que antes)
-// Copiar las funciones existentes de toggleEditMode, cancelEdit, handleProfileUpdate, handlePasswordChange aquí abajo
-// Para brevedad en esta respuesta, asumo que se mantienen igual, solo agregando la lógica de direcciones arriba.
 
-window.toggleEditMode = function () { /* ... código anterior ... */
+function toggleEditMode() {
+    console.log('✏️ toggleEditMode called');
     const inputs = ['nombre', 'apellido', 'telefono'];
-    const isDisabled = document.getElementById('nombre').disabled;
+    const nameInput = document.getElementById('nombre');
+    const isDisabled = nameInput.disabled;
+
+    console.log('Current disabled state:', isDisabled);
+
     inputs.forEach(id => {
         const el = document.getElementById(id);
-        if (isDisabled) {
-            el.removeAttribute('disabled');
-            el.classList.remove('border-transparent'); el.classList.add('border-gray-200');
-        } else {
-            el.setAttribute('disabled', 'true');
-            el.classList.add('border-transparent'); el.classList.remove('border-gray-200');
+        if (el) {
+            if (isDisabled) {
+                el.removeAttribute('disabled');
+                el.classList.remove('border-transparent');
+                el.classList.remove('border-gray-50'); // Remove bg helper if any
+                el.classList.add('border-gray-200');
+            } else {
+                el.setAttribute('disabled', 'true');
+                el.classList.add('border-transparent');
+                el.classList.add('border-gray-50');
+                el.classList.remove('border-gray-200');
+            }
         }
     });
+
     const editBtn = document.getElementById('btn-edit');
     const actions = document.getElementById('edit-actions');
-    if (isDisabled) {
-        editBtn.classList.add('hidden');
-        actions.classList.remove('hidden'); actions.classList.add('flex');
+
+    if (editBtn && actions) {
+        if (isDisabled) {
+            editBtn.classList.add('hidden');
+            actions.classList.remove('hidden');
+            actions.classList.add('flex');
+            nameInput.focus();
+        } else {
+            cancelEdit();
+        }
     } else {
-        cancelEdit();
+        console.error('Botones de edición no encontrados');
     }
 };
 
-window.cancelEdit = function () { /* ... código anterior ... */
+function cancelEdit() {
     const actions = document.getElementById('edit-actions');
     const editBtn = document.getElementById('btn-edit');
-    actions.classList.add('hidden'); actions.classList.remove('flex');
-    editBtn.classList.remove('hidden');
+
+    if (actions) {
+        actions.classList.add('hidden');
+        actions.classList.remove('flex');
+    }
+
+    if (editBtn) {
+        editBtn.classList.remove('hidden');
+    }
+
     const inputs = ['nombre', 'apellido', 'telefono'];
     inputs.forEach(id => {
         const el = document.getElementById(id);
-        el.setAttribute('disabled', 'true');
-        el.classList.add('border-transparent'); el.classList.remove('border-gray-200');
+        if (el) {
+            el.setAttribute('disabled', 'true');
+            el.classList.add('border-transparent');
+            el.classList.add('border-gray-50');
+            el.classList.remove('border-gray-200');
+        }
     });
+
+    // Restore original values
     const user = AuthService.getCurrentUser();
     if (user) {
         setInputValue('nombre', user.nombre);
@@ -262,25 +312,62 @@ window.cancelEdit = function () { /* ... código anterior ... */
     }
 };
 
-window.handleLogout = function () {
+function handleLogout() {
     if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
         AuthService.logout();
     }
 };
 
-async function handleProfileUpdate(e) { /* ... código anterior ... */
-    e.preventDefault();
+async function handleProfileUpdate(e) {
+    if (e) e.preventDefault();
+
     const nombre = document.getElementById('nombre').value;
     const apellido = document.getElementById('apellido').value;
     const telefono = document.getElementById('telefono').value;
-    if (!nombre) { alert('El nombre es obligatorio.'); return; }
+
+    if (!nombre) {
+        alert('El nombre es obligatorio.');
+        return;
+    }
+
     try {
-        const updatedData = { nombre, apellido, celular: telefono };
+        const updatedData = {
+            nombre,
+            apellido,
+            celular: telefono
+        };
+
         const response = await window.API.put(window.CONSTANTS.API_PATHS.AUTH.PROFILE, updatedData);
+
         if (response.success) {
+            // Update local storage explicitly to ensure UI reflects changes immediately
+            // The API returns data in response.data.user
+            const updatedUser = response.data && response.data.user ? response.data.user : response.user;
+
+            if (updatedUser) {
+                const currentSession = window.StorageUtils.getUser() || {};
+
+                // Ensure we keep the token and expiration, just update user data
+                const newSession = {
+                    ...currentSession,
+                    user: updatedUser
+                };
+
+                // If the current session format is just the user (legacy), wrap it
+                if (!newSession.user && !newSession.expiresAt) {
+                    // This handles case where getUser just returned the user object directly
+                    window.StorageUtils.setUser({ user: updatedUser });
+                } else {
+                    window.StorageUtils.setUser(newSession);
+                }
+
+                renderUserData(updatedUser);
+            } else {
+                await loadUserProfile();
+            }
+
             alert('Perfil actualizado correctamente.');
-            window.cancelEdit();
-            await loadUserProfile();
+            cancelEdit();
         } else {
             alert(response.message || 'Error al actualizar perfil');
         }
@@ -291,14 +378,28 @@ async function handleProfileUpdate(e) { /* ... código anterior ... */
 }
 
 async function handlePasswordChange(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
+
     const currentPassword = document.getElementById('current_password').value;
     const newPassword = document.getElementById('new_password').value;
-    if (!newPassword || newPassword.length < 6) { alert('La nueva contraseña debe tener al menos 6 caracteres.'); return; }
+
+    if (!newPassword || newPassword.length < 6) {
+        alert('La nueva contraseña debe tener al menos 6 caracteres.');
+        return;
+    }
+
     try {
-        const response = await window.API.post(window.CONSTANTS.API_PATHS.AUTH.CHANGE_PASSWORD, { currentPassword, newPassword });
-        if (response.success) { alert('Contraseña actualizada correctamente.'); e.target.reset(); }
-        else { alert(response.message || 'Error al cambiar contraseña'); }
+        const response = await window.API.post(window.CONSTANTS.API_PATHS.AUTH.CHANGE_PASSWORD, {
+            currentPassword,
+            newPassword
+        });
+
+        if (response.success) {
+            alert('Contraseña actualizada correctamente.');
+            e.target.reset();
+        } else {
+            alert(response.message || 'Error al cambiar contraseña');
+        }
     } catch (error) {
         console.error('Error changing password:', error);
         alert('Error al cambiar la contraseña. Verifica tus datos.');

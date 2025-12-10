@@ -5,11 +5,23 @@
 // Inicializar iconos Lucide
 if (window.lucide) window.lucide.createIcons();
 
+console.log('✅ Checkout JS Loaded');
+
 let currentStep = 1;
 
 // Load cart items on page load
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('✅ Checkout DOM Ready');
     loadCheckoutItems();
+
+    // Button Event Listeners
+    document.getElementById('btn-step1-next')?.addEventListener('click', () => goToStep(2));
+
+    document.getElementById('btn-step2-prev')?.addEventListener('click', () => goToStep(1));
+    document.getElementById('btn-step2-next')?.addEventListener('click', () => goToStep(3));
+
+    document.getElementById('btn-step3-prev')?.addEventListener('click', () => goToStep(2));
+    document.getElementById('btn-pay-now')?.addEventListener('click', initiatePayment);
 
     // Restore form data if returning from login
     const savedFormData = sessionStorage.getItem('checkout_form_data');
@@ -41,6 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
         phoneInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') goToStep(2);
         });
+    }
+
+    // Attempt to auto-fill user data
+    if (window.AuthService && window.AuthService.isAuthenticated()) {
+        loadUserData();
     }
 });
 
@@ -97,21 +114,27 @@ function loadCheckoutItems() {
 // Given previous step refactored listeners to be clean, I should try to do the same or expose to window.
 // The previous refactor (Step 314) KEPT inline HTML structure but removed the script block. Wait, I replaced inline scripts with logic in JS file.
 // But did I remove `onclick` in `checkout.html`? No, I haven't edited `checkout.html` yet.
-// In `detalle-producto.html`, I removed `onclick` in previous steps (Step 297).
+// In `detalle - producto.html`, I removed `onclick` in previous steps (Step 297).
 // For `checkout.html`, I haven't removed `onclick` yet.
 // So I will expose these functions to `window` for now to minimize risk of breaking static HTML bindings unless I do a massive search/replace on HTML too.
-// Actually, `checkout.html` has `onclick="goToStep(2)"` etc.
+// Actually, `checkout.html` has `onclick = "goToStep(2)"` etc.
 // I will expose them to `window`.
 
 window.goToStep = function (step) {
+    console.log('👣 goToStep called:', step, 'Current:', currentStep);
     // Validate current step before proceeding
     if (step > currentStep) {
         if (currentStep === 1) {
-            const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
+            const emailEl = document.getElementById('email');
+            const phoneEl = document.getElementById('phone');
+
+            const email = emailEl ? emailEl.value.trim() : '';
+            const phone = phoneEl ? phoneEl.value.trim() : '';
+
+            console.log('Checking Contact Info:', { email, phone });
 
             if (!email || !phone) {
-                alert('Por favor completa la información de contacto.');
+                alert('Por favor completa la información de contacto (Email y Teléfono).');
                 return;
             }
 
@@ -139,8 +162,8 @@ window.goToStep = function (step) {
 
     // Update step indicators
     for (let i = 1; i <= 3; i++) {
-        const stepEl = document.getElementById(`step-${i}`);
-        const sectionEl = document.getElementById(`section-${i === 1 ? 'contact' : i === 2 ? 'shipping' : 'payment'}`);
+        const stepEl = document.getElementById(`step - ${i}`);
+        const sectionEl = document.getElementById(`section - ${i === 1 ? 'contact' : i === 2 ? 'shipping' : 'payment'} `);
 
         if (i < step) {
             stepEl.className = 'w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg step-completed mb-2 transition-all duration-300';
@@ -168,7 +191,7 @@ window.goToStep = function (step) {
 
     // Update step labels
     for (let i = 1; i <= 3; i++) {
-        const label = document.querySelector(`#step-${i} + span`);
+        const label = document.querySelector(`#step - ${i} + span`);
         if (label) {
             if (i <= step) {
                 label.classList.remove('text-gray-500');
@@ -251,7 +274,7 @@ window.initiatePayment = async function () {
             redirectUrl: window.location.origin + '/frontend/pages/index.html',
             customerData: {
                 email: email,
-                fullName: `${firstName} ${lastName}`,
+                fullName: `${firstName} ${lastName} `,
                 phoneNumber: phone,
                 phoneNumberPrefix: '+57'
             }
@@ -347,5 +370,60 @@ async function createOrderBackend(cart, shippingData, total, reference) {
     } catch (error) {
         console.error('Error creando pedido:', error);
         alert('Error al guardar el pedido: ' + error.message);
+    }
+}
+
+async function loadUserData() {
+    try {
+        console.log('🔄 Attempting to load user data for checkout...');
+
+        // 1. Get User Profile
+        let user = window.AuthService.getCurrentUser();
+
+        try {
+            // Try to refresh profile to ensure latest data
+            const refreshedUser = await window.AuthService.refreshProfile();
+            if (refreshedUser) user = refreshedUser;
+        } catch (e) {
+            console.warn('Could not refresh profile, using cached data');
+        }
+
+        if (user) {
+            console.log('👤 User found, auto-filling basic info...');
+            fillFieldIfEmpty('email', user.email);
+            fillFieldIfEmpty('phone', user.celular || user.telefono);
+            fillFieldIfEmpty('firstName', user.nombre);
+            fillFieldIfEmpty('lastName', user.apellido);
+        }
+
+        // 2. Get User Addresses
+        const response = await window.API.get('/direcciones');
+        if (response.success && response.data && response.data.length > 0) {
+            // Find principal address or take the first one
+            const principalAddress = response.data.find(a => a.es_principal) || response.data[0];
+
+            console.log('📍 Address found, auto-filling shipping info...', principalAddress);
+            if (principalAddress) {
+                fillFieldIfEmpty('address', principalAddress.direccion_linea1);
+                fillFieldIfEmpty('department', principalAddress.departamento);
+                fillFieldIfEmpty('city', principalAddress.ciudad);
+                fillFieldIfEmpty('zip', principalAddress.codigo_postal);
+            }
+        } else {
+            console.log('ℹ️ No saved addresses found.');
+        }
+    } catch (error) {
+        console.error('Error loading user data for checkout:', error);
+    }
+}
+
+function fillFieldIfEmpty(id, value) {
+    if (!value) return;
+    const el = document.getElementById(id);
+    if (el && !el.value) {
+        el.value = value;
+        // Trigger change event just in case
+        el.dispatchEvent(new Event('change'));
+        el.dispatchEvent(new Event('input'));
     }
 }
