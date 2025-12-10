@@ -200,14 +200,14 @@ class AuthController {
     }
 
     /**
-     * Login/Registro con OAuth (Google, Facebook, etc.)
-     * El frontend envía los datos del usuario después de autenticar con el proveedor
+     * Login/Registro con OAuth (SOLO Google)
+     * El frontend envía los datos del usuario después de autenticar con Google
      */
     static async oauthLogin(req, res) {
         try {
             const { provider, providerUid, email, nombre, apellido, avatarUrl, rawData, idToken } = req.body;
 
-            // Validaciones
+            // 1. Validaciones básicas
             if (!provider || !providerUid || !email) {
                 return res.status(400).json({
                     success: false,
@@ -215,61 +215,66 @@ class AuthController {
                 });
             }
 
-            // Validar proveedor
-            const validProviders = ['google', 'facebook', 'github', 'apple', 'microsoft'];
-            if (!validProviders.includes(provider)) {
+            // 2. Restricción estricta: SOLO Google
+            if (provider !== 'google') {
                 return res.status(400).json({
                     success: false,
-                    message: 'Proveedor de autenticación no válido'
+                    message: 'Solo se admite autenticación con Google'
                 });
             }
 
-            // SEGURIDAD: Verificar token de Google
-            if (provider === 'google') {
-                if (!idToken) {
-                    // Si estamos en desarrollo y el frontend envió un mock (ver AuthManager), lo permitimos SOLO si es explícitamente un mock
-                    // Idealmente esto debería deshabilitarse en producción
-                    if (!process.env.GOOGLE_CLIENT_ID && idToken === undefined) {
-                        // Fallback suave para entornos sin configurar, pero logueando el riesgo
-                        console.warn('⚠️ ALERTA DE SEGURIDAD: Login con Google sin verificación de token (Falta CLIENT_ID)');
-                    } else {
-                        return res.status(401).json({
+            // 3. Verificación de Seguridad del Token
+            if (!idToken) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Falta el token de seguridad (idToken)'
+                });
+            }
+
+            const googleClientId = process.env.GOOGLE_CLIENT_ID;
+
+            if (googleClientId) {
+                // --- MODO SEGURO (Producción/Dev con llaves) ---
+                try {
+                    const client = new OAuth2Client(googleClientId);
+                    const ticket = await client.verifyIdToken({
+                        idToken: idToken,
+                        audience: googleClientId
+                    });
+                    const payload = ticket.getPayload();
+
+                    // Verificar consistencia del email
+                    // Nota: payload.email viene verificado por Google
+                    if (payload.email !== email) {
+                        return res.status(403).json({
                             success: false,
-                            message: 'Falta el token de seguridad (idToken)'
+                            message: 'Inconsistencia de identidad: El email no coincide con el token verificado'
                         });
                     }
+                } catch (verifyError) {
+                    console.error('❌ Fallo verificación Google:', verifyError.message);
+                    return res.status(401).json({
+                        success: false,
+                        message: 'Token de Google inválido o expirado'
+                    });
                 }
-
-                // Verificar Token Real (si existe)
-                if (idToken && !idToken.startsWith('mock_')) {
-                    try {
-                        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-                        const ticket = await client.verifyIdToken({
-                            idToken: idToken,
-                            audience: process.env.GOOGLE_CLIENT_ID
-                        });
-                        const payload = ticket.getPayload();
-
-                        // Verificar que el email coincida (evita spoofing enviando token de Pepito pero email de Juan)
-                        if (payload.email !== email) {
-                            return res.status(403).json({
-                                success: false,
-                                message: 'Inconsistencia de identidad: El token no pertenece al email indicado'
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Fallo verificación Google:', error.message);
-                        return res.status(401).json({
-                            success: false,
-                            message: 'Token de Google inválido o manipulado'
-                        });
-                    }
+            } else {
+                // --- MODO SIN LLAVES (Solo Desarrollo) ---
+                if (process.env.NODE_ENV === 'production') {
+                    console.error('❌ CRITICAL: GOOGLE_CLIENT_ID no configurado en producción.');
+                    return res.status(503).json({
+                        success: false,
+                        message: 'Servicio de autenticación no configurado'
+                    });
+                } else {
+                    console.warn('⚠️ ADVERTENCIA (DEV): Saltando verificación de Google por falta de GOOGLE_CLIENT_ID. Configure su .env para seguridad completa.');
+                    // Permitimos continuar solo para no bloquear el desarrollo, pero la arquitectura ya es segura.
                 }
             }
 
-            // Buscar o crear usuario usando la función de BD
+            // 4. Buscar o crear usuario
             const result = await AuthProviderModel.findOrCreateUser({
-                provider,
+                provider, // Será siempre 'google'
                 providerUid,
                 email,
                 nombre,
@@ -288,14 +293,14 @@ class AuthController {
                 });
             }
 
-            // Generar token
+            // Generar token JWT propio del sistema
             const token = AuthController.generateToken(user);
 
             res.cookie(COOKIE_NAME, token, cookieOptions);
 
             res.json({
                 success: true,
-                message: result.is_new_user ? 'Cuenta creada exitosamente' : 'Login exitoso',
+                message: result.is_new_user ? 'Cuenta creada exitosamente con Google' : 'Login exitoso con Google',
                 data: {
                     user: {
                         id: user.id_usuario,

@@ -76,8 +76,8 @@ router.post(
     '/oauth',
     [
         body('provider')
-            .isIn(['google', 'facebook', 'github', 'apple', 'microsoft'])
-            .withMessage('Proveedor no soportado'),
+            .isIn(['google'])
+            .withMessage('Proveedor no soportado, solo se permite Google'),
         body('providerUid').notEmpty().withMessage('providerUid es requerido'),
         body('email').isEmail().withMessage('Email debe ser válido'),
         body('nombre').optional().isString()
