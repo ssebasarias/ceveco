@@ -194,7 +194,7 @@ window.applyPromoCode = function () {
     alert('Funcionalidad de códigos promocionales próximamente disponible.');
 };
 
-window.initiatePayment = function () {
+window.initiatePayment = async function () {
     // Check authentication first
     const token = localStorage.getItem('ceveco_auth_token');
     if (!token) {
@@ -245,11 +245,18 @@ window.initiatePayment = function () {
             throw new Error('Wompi Widget not loaded');
         }
 
+        // Fetch config from backend
+        const configResponse = await fetch('/api/v1/config');
+        const configData = await configResponse.json();
+        const publicKey = (configData.success && configData.data.wompiPublicKey)
+            ? configData.data.wompiPublicKey
+            : 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf'; // Fallback
+
         var checkout = new WidgetCheckout({
             currency: 'COP',
             amountInCents: totalInCents,
             reference: reference,
-            publicKey: 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf',
+            publicKey: publicKey,
             redirectUrl: window.location.origin + '/frontend/pages/index.html',
             customerData: {
                 email: email,

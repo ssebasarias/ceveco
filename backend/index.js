@@ -103,7 +103,26 @@ app.get('/health', (req, res) => {
     });
 });
 
-// Rutas de la API
+// Endpoint de Configuración Pública (Para frontend)
+app.get(`${API_PREFIX}/config`, (req, res) => {
+    res.json({
+        success: true,
+        data: {
+            wompiPublicKey: process.env.WOMPI_PUBLIC_KEY || 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf',
+            googleClientId: process.env.GOOGLE_CLIENT_ID || 'PENDING_GOOGLE_CLIENT_ID'
+        }
+    });
+});
+
+app.get('/health', (req, res) => {
+    res.json({
+        success: true,
+        message: 'API Ceveco funcionando correctamente',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
 // Rutas de la API
 app.use(`${API_PREFIX}/productos`, productosRoutes);
 app.use(`${API_PREFIX}/auth`, authRoutes);
@@ -112,6 +131,7 @@ app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
 app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
 app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
+app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {
