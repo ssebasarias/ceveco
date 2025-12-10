@@ -26,6 +26,11 @@
         }
 
         if (!userButton) {
+            // Check if it was already replaced
+            if (document.querySelector('[data-auth-button]')) {
+                updateAuthUI();
+                return;
+            }
             console.warn('No se encontró el botón de usuario en el navbar');
             return;
         }
@@ -40,7 +45,17 @@
     }
 
     function updateAuthUI() {
-        const user = getCurrentUser();
+        // Use AuthService if available, otherwise fallback to safe storage check
+        let user = null;
+        if (window.AuthService && typeof window.AuthService.getCurrentUser === 'function') {
+            user = window.AuthService.getCurrentUser();
+        } else if (window.StorageUtils) {
+            const session = window.StorageUtils.getUser();
+            // Handle session logic if AuthService isn't loaded yet
+            if (session && session.user) user = session.user;
+            else if (session && session.id) user = session;
+        }
+
         const authButton = document.querySelector('[data-auth-button]');
 
         if (!authButton) return;
@@ -61,16 +76,16 @@
                             <p class="text-sm font-semibold text-gray-900">${escapeHtml(user.nombre)}</p>
                             <p class="text-xs text-gray-500">${escapeHtml(user.email)}</p>
                         </div>
-                        <a href="perfil.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <a href="/pages/perfil.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                             <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>
                             Mi Perfil
                         </a>
-                        <a href="pedidos.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                        <a href="/pages/pedidos.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
                             <i data-lucide="package" class="w-4 h-4 inline mr-2"></i>
                             Mis Pedidos
                         </a>
                         <hr class="my-2 border-gray-100">
-                        <button id="logout-btn" onclick="handleLogout()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                        <button id="logout-btn" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
                             <i data-lucide="log-out" class="w-4 h-4 inline mr-2"></i>
                             Cerrar Sesión
                         </button>
@@ -83,13 +98,12 @@
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (window.handleLogout) {
+                    if (window.AuthService && window.AuthService.logout) {
+                        window.AuthService.logout();
+                    } else if (window.handleLogout) {
                         window.handleLogout();
-                    } else if (window.authManager) {
-                        window.authManager.logout();
                     } else {
-                        // Fallback fallback
-                        window.location.href = 'login.html';
+                        window.location.href = '/pages/login.html';
                     }
                 });
             }
@@ -97,7 +111,7 @@
         } else {
             // Usuario no autenticado - mostrar botón de login
             authButton.innerHTML = `
-                <a href="login.html" class="hover:text-primary transition-colors" title="Iniciar Sesión">
+                <a href="/pages/login.html" class="hover:text-primary transition-colors" title="Iniciar Sesión">
                     <i data-lucide="user" class="w-6 h-6"></i>
                 </a>
             `;
@@ -109,26 +123,8 @@
         }
     }
 
-    function getCurrentUser() {
-        try {
-            const sessionData = localStorage.getItem('ceveco_user_session');
-            if (!sessionData) return null;
-
-            const session = JSON.parse(sessionData);
-
-            // Verificar si la sesión ha expirado
-            if (new Date(session.expiresAt) < new Date()) {
-                return null;
-            }
-
-            return session.user;
-        } catch (error) {
-            console.error('Error cargando sesión:', error);
-            return null;
-        }
-    }
-
     function escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
@@ -137,3 +133,4 @@
     // Exponer función globalmente para que pueda ser llamada desde auth.js
     window.updateAuthUI = updateAuthUI;
 })();
+

@@ -14,9 +14,15 @@ const AuthService = {
                 { email, password, remember }
             );
 
-            if (response.success) {
-                // Guardar usuario en storage
-                window.StorageUtils.setUser(response.user);
+            if (response.success && response.user) {
+                // Crear sesión con expiración
+                const session = {
+                    user: response.user,
+                    expiresAt: new Date(Date.now() + (remember ? 30 : 1) * 24 * 60 * 60 * 1000).toISOString() // 30 días o 24h
+                };
+
+                // Guardar sesión en storage
+                window.StorageUtils.setUser(session);
 
                 // Disparar evento de login
                 document.dispatchEvent(new CustomEvent(
@@ -40,8 +46,13 @@ const AuthService = {
                 userData
             );
 
-            if (response.success) {
-                window.StorageUtils.setUser(response.user);
+            if (response.success && response.user) {
+                const session = {
+                    user: response.user,
+                    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                };
+
+                window.StorageUtils.setUser(session);
                 document.dispatchEvent(new CustomEvent(
                     window.CONSTANTS.CUSTOM_EVENTS.USER_LOGGED_IN,
                     { detail: response.user }
@@ -63,7 +74,7 @@ const AuthService = {
 
             // Limpiar datos locales
             window.StorageUtils.removeUser();
-            window.StorageUtils.remove('jwt_token'); // Por si acaso
+            window.StorageUtils.remove('jwt_token');
 
             // Disparar evento
             document.dispatchEvent(new CustomEvent(
@@ -87,8 +98,13 @@ const AuthService = {
                 { provider, ...payload }
             );
 
-            if (response.success) {
-                window.StorageUtils.setUser(response.user);
+            if (response.success && response.user) {
+                const session = {
+                    user: response.user,
+                    expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                };
+
+                window.StorageUtils.setUser(session);
                 document.dispatchEvent(new CustomEvent(
                     window.CONSTANTS.CUSTOM_EVENTS.USER_LOGGED_IN,
                     { detail: response.user }
@@ -102,16 +118,30 @@ const AuthService = {
 
     /**
      * Obtener usuario actual (sincronizado)
+     * Retorna solo el objeto usuario, extrayéndolo de la sesión si es necesario
      */
     getCurrentUser: () => {
-        return window.StorageUtils.getUser();
+        const session = window.StorageUtils.getUser();
+        if (!session) return null;
+
+        // Si tiene estructura de sesión, validar y retornar user
+        if (session.user && session.expiresAt) {
+            if (new Date(session.expiresAt) < new Date()) {
+                window.StorageUtils.removeUser();
+                return null;
+            }
+            return session.user;
+        }
+
+        // Si es el objeto usuario antiguo directo
+        return session;
     },
 
     /**
      * Verificar si está autenticado
      */
     isAuthenticated: () => {
-        return !!window.StorageUtils.getUser();
+        return !!AuthService.getCurrentUser();
     },
 
     /**
@@ -120,8 +150,17 @@ const AuthService = {
     refreshProfile: async () => {
         try {
             const response = await window.API.get(window.CONSTANTS.API_PATHS.AUTH.PROFILE);
-            if (response.success) {
-                window.StorageUtils.setUser(response.user);
+            if (response.success && response.user) {
+                // Mantener expiración actual si existe, o crear nueva
+                const currentSession = window.StorageUtils.getUser();
+                const session = {
+                    user: response.user,
+                    expiresAt: (currentSession && currentSession.expiresAt)
+                        ? currentSession.expiresAt
+                        : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+                };
+
+                window.StorageUtils.setUser(session);
                 document.dispatchEvent(new CustomEvent(
                     window.CONSTANTS.CUSTOM_EVENTS.PROFILE_UPDATED,
                     { detail: response.user }
