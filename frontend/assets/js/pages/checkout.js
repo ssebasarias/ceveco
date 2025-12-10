@@ -264,7 +264,7 @@ window.initiatePayment = function () {
             if (transaction.status === 'APPROVED') {
                 await createOrderBackend(cart, {
                     firstName, lastName, address, department, city, zip, email, phone
-                }, total);
+                }, total, reference); // Pass reference
             }
         });
 
@@ -294,12 +294,15 @@ window.simulateOrder = async function () {
     const city = document.getElementById('city').value;
     const zip = document.getElementById('zip').value;
 
+    // Generate simulation reference
+    const reference = 'SIM-' + Date.now();
+
     await createOrderBackend(cart, {
         firstName, lastName, address, department, city, zip, email, phone
-    }, total);
+    }, total, reference);
 };
 
-async function createOrderBackend(cart, shippingData, total) {
+async function createOrderBackend(cart, shippingData, total, reference) {
     try {
         const orderData = {
             items: cart,
@@ -312,7 +315,8 @@ async function createOrderBackend(cart, shippingData, total) {
                 subtotal: total,
                 total: total,
                 shipping: 0
-            }
+            },
+            reference: reference // Include reference for Webhook/Wompi matching
         };
 
         if (window.OrdersService) {

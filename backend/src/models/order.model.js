@@ -78,7 +78,8 @@ class OrderModel {
       const addressId = addressResult.rows[0].id_direccion;
 
       // 3. Crear Pedido con los totales calculados
-      const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      // Si el frontend envía una referencia (ej: para Wompi), la usamos. Si no, generamos una.
+      const orderNumber = orderData.reference || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       const orderQuery = `
                 INSERT INTO pedidos (

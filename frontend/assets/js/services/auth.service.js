@@ -171,6 +171,31 @@ const AuthService = {
             console.error('Profile refresh failed:', error);
             return null;
         }
+    },
+
+    /**
+     * Solicitar recuperación de contraseña
+     */
+    forgotPassword: async (email) => {
+        try {
+            return await window.API.post('/api/v1/auth/forgot-password', { email });
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    /**
+     * Restablecer contraseña con token
+     */
+    resetPassword: async (token, newPassword) => {
+        try {
+            return await window.API.post('/api/v1/auth/reset-password', {
+                token,
+                newPassword
+            });
+        } catch (error) {
+            throw error;
+        }
     }
 };
 

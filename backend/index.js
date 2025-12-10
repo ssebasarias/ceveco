@@ -110,6 +110,8 @@ app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
 app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
+app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
+app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {
