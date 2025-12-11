@@ -2,6 +2,44 @@ const { query, getClient } = require('../config/db');
 
 class OrderModel {
   /**
+   * Buscar o crear usuario invitado (Guest Checkout)
+   */
+  static async findOrCreateGuestUser(contact, shippingAddress) {
+    const client = await getClient();
+    try {
+      // 1. Check if exists
+      const checkQuery = 'SELECT id_usuario FROM usuarios WHERE email = $1';
+      const checkResult = await client.query(checkQuery, [contact.email]);
+
+      if (checkResult.rows.length > 0) {
+        return checkResult.rows[0].id_usuario;
+      }
+
+      // 2. Create guest user
+      const insertQuery = `
+            INSERT INTO usuarios (
+                email, nombre, apellido, telefono,
+                rol, activo, auth_method, password_hash
+            ) VALUES ($1, $2, $3, $4, 'cliente', TRUE, 'local', '$2b$10$GUEST_PLACEHOLDER_HASH_DO_NOT_USE')
+            RETURNING id_usuario
+          `;
+
+      const values = [
+        contact.email,
+        shippingAddress.firstName || 'Invitado',
+        shippingAddress.lastName || '',
+        contact.phone
+      ];
+
+      const insertResult = await client.query(insertQuery, values);
+      return insertResult.rows[0].id_usuario;
+
+    } finally {
+      client.release();
+    }
+  }
+
+  /**
    * Crear un nuevo pedido con transacción
    * @param {number} userId - ID del usuario
    * @param {Object} orderData - Datos del pedido (items, direccion, contacto)

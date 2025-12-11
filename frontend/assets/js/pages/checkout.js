@@ -245,27 +245,8 @@ window.initiatePayment = async function () {
 
     // Check authentication first or guest checkout logic
     const isAuthenticated = window.AuthService ? window.AuthService.isAuthenticated() : false;
-    if (!isAuthenticated) {
-        alert('Para completar tu compra, por favor inicia sesión o regístrate.');
+    // Guest mode enabled: No redirection to login.
 
-        // Save form data
-        const formData = {
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
-            address: document.getElementById('address').value,
-            department: document.getElementById('department').value,
-            city: document.getElementById('city').value,
-            zip: document.getElementById('zip').value,
-            notes: document.getElementById('notes').value
-        };
-        sessionStorage.setItem('checkout_form_data', JSON.stringify(formData));
-        sessionStorage.setItem('redirect_after_login', window.location.href);
-
-        window.location.href = 'login.html';
-        return;
-    }
 
     // 🔧 DEV MODE: Allow instant simulation bypass
     // This allows testing the order creation flow without opening the Wompi widget
@@ -407,22 +388,39 @@ async function createOrderBackend(cart, shippingData, total, reference) {
         };
 
         if (window.OrdersService) {
-            await window.OrdersService.createOrder(orderData);
+            const response = await window.OrdersService.createOrder(orderData);
+
+            if (response.success) {
+                // Auto-login for Guest Checkout
+                if (response.auth && response.auth.token) {
+                    console.log('🔌 Auto-logging in guest user...');
+                    if (window.StorageUtils) {
+                        window.StorageUtils.setToken(response.auth.token);
+                        window.StorageUtils.setUser(response.auth.user);
+                    }
+                }
+
+                // Clear the correct storage
+                if (sessionStorage.getItem('ceveco_direct_buy')) {
+                    sessionStorage.removeItem('ceveco_direct_buy');
+                } else {
+                    localStorage.removeItem('cevecoCart');
+                }
+
+                alert('¡Pedido Creado Exitosamente!');
+
+                // Redirect to Order Details
+                const orderId = response.data.id_pedido;
+                window.location.href = `pedidos-detalle.html?id=${orderId}`;
+            } else {
+                throw new Error(response.message || 'Error desconocido al crear pedido');
+            }
+
         } else {
             console.error('OrdersService not found');
             alert('Error interno: Servicio de órdenes no disponible.');
             return;
         }
-
-        // Clear the correct storage
-        if (sessionStorage.getItem('ceveco_direct_buy')) {
-            sessionStorage.removeItem('ceveco_direct_buy');
-        } else {
-            localStorage.removeItem('cevecoCart');
-        }
-
-        alert('¡Pedido Creado Exitosamente (Simulación)!');
-        window.location.href = 'pedidos.html';
 
     } catch (error) {
         console.error('Error creando pedido:', error);

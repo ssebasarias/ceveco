@@ -1,21 +1,27 @@
 const OrderModel = require('../models/order.model');
+const AuthController = require('./auth.controller');
 
 class OrdersController {
 
     // Crear un nuevo pedido
     static async createOrder(req, res) {
         try {
-            const userId = req.user ? req.user.id : null; // Asumiendo middleware de auth
-
-            // Si el usuario es null (ej: compra como invitado), el sistema actual requiere login.
-            if (!userId) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Usuario no autenticado'
-                });
-            }
+            let userId = req.user ? req.user.id : null;
+            const isGuest = !userId;
 
             const orderData = req.body;
+
+            // Guest Checkout Logic: Auto-register or find user
+            if (isGuest) {
+                if (!orderData.contact?.email) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'El email es requerido para continuar.'
+                    });
+                }
+                // Helper method to find or create user
+                userId = await OrderModel.findOrCreateGuestUser(orderData.contact, orderData.shippingAddress);
+            }
 
             // Validación básica
             if (!orderData.items || orderData.items.length === 0) {
@@ -27,10 +33,25 @@ class OrdersController {
 
             const newOrder = await OrderModel.create(userId, orderData);
 
+            // Auto-login for guest users
+            let authResponse = null;
+            if (isGuest) {
+                const user = {
+                    id_usuario: userId,
+                    email: orderData.contact.email,
+                    rol: 'cliente',
+                    nombre: orderData.shippingAddress.firstName,
+                    apellido: orderData.shippingAddress.lastName
+                };
+                const token = AuthController.generateToken(user);
+                authResponse = { token, user };
+            }
+
             res.status(201).json({
                 success: true,
                 message: 'Pedido creado exitosamente',
-                data: newOrder
+                data: newOrder,
+                auth: authResponse
             });
 
         } catch (error) {

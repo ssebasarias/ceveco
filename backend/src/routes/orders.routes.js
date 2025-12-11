@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const OrdersController = require('../controllers/orders.controller');
-const { authMiddleware, requireAdmin } = require('../middleware');
+const { authMiddleware, requireAdmin, optionalAuth } = require('../middleware');
 
 // ============================================
 // RUTAS DE USUARIO (Requieren Auth)
@@ -10,9 +10,9 @@ const { authMiddleware, requireAdmin } = require('../middleware');
 /**
  * @route   POST /api/v1/orders
  * @desc    Crear un nuevo pedido
- * @access  Private
+ * @access  Public (Guest allowed)
  */
-router.post('/', authMiddleware, OrdersController.createOrder);
+router.post('/', optionalAuth, OrdersController.createOrder);
 
 /**
  * @route   GET /api/v1/orders

@@ -88,6 +88,13 @@ const Storage = {
         return Storage.get('jwt_token');
     },
 
+    setToken: (token) => {
+        // Set cookie manually for basic frontend access
+        document.cookie = `jwt_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; samesite=lax`;
+        return Storage.set('jwt_token', token);
+    },
+
+
     // User Data
     getUser: () => {
         return Storage.get(window.CONSTANTS?.STORAGE_KEYS?.USER_SESSION || 'ceveco_user');
