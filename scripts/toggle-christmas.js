@@ -74,9 +74,9 @@ function disableChristmas(content) {
 
     // 2. Disable Santa Climber
     newContent = newContent.replace(
-        /<!-- 🎅 Climbing Santa 🎅 -->\s*<img src="\.\.\/theme\/christmas\/santa\.svg" class="santa-climber" alt="Santa Climbing">/,
+        /<!-- 🎅 Climbing Santa 🎅 -->\s*<img src="\.\.\/theme\/christmas\/santa-hanging\.png" class="santa-climber" alt="Santa Hanging">/,
         `<!-- 🎅 Climbing Santa DISABLED 🎅 -->
-    <!-- <img src="../theme/christmas/santa.svg" class="santa-climber" alt="Santa Climbing"> -->`
+    <!-- <img src="../theme/christmas/santa-hanging.png" class="santa-climber" alt="Santa Hanging"> -->`
     );
 
     // 3. Disable Garland
@@ -114,7 +114,7 @@ function enableChristmas(content) {
 
     // 2. Enable Santa
     newContent = newContent.replace(
-        /<!-- 🎅 Climbing Santa DISABLED 🎅 -->\s*<!-- (<img src="\.\.\/theme\/christmas\/santa\.svg" class="santa-climber" alt="Santa Climbing">) -->/,
+        /<!-- 🎅 Climbing Santa DISABLED 🎅 -->\s*<!-- (<img src="\.\.\/theme\/christmas\/santa-hanging\.png" class="santa-climber" alt="Santa Hanging">) -->/,
         `<!-- 🎅 Climbing Santa 🎅 -->
     $1`
     );
