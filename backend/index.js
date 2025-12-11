@@ -20,7 +20,7 @@ const API_PREFIX = process.env.API_PREFIX || '/api/v1';
 // ============================================
 
 // Seguridad con Helmet
-// Seguridad con Helmet
+
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
@@ -37,7 +37,7 @@ app.use(helmet({
 }));
 
 // CORS - Configuración para permitir peticiones desde el frontend
-// CORS - Configuración para permitir peticiones desde el frontend
+
 const corsOptions = {
     origin: function (origin, callback) {
         // Permitir requests sin origen (como apps móviles, curl o postman)
@@ -111,15 +111,6 @@ app.get(`${API_PREFIX}/config`, (req, res) => {
             wompiPublicKey: process.env.WOMPI_PUBLIC_KEY || 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf',
             googleClientId: process.env.GOOGLE_CLIENT_ID || 'PENDING_GOOGLE_CLIENT_ID'
         }
-    });
-});
-
-app.get('/health', (req, res) => {
-    res.json({
-        success: true,
-        message: 'API Ceveco funcionando correctamente',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
     });
 });
 
