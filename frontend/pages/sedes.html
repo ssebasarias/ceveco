@@ -28,186 +28,21 @@
                 Estamos listos para asesorarte y brindarte la mejor experiencia.</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <!-- Sede Riosucio (Principal) -->
-            <div
-                class="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100 lg:col-span-2">
-                <div class="grid grid-cols-1 lg:grid-cols-2">
-                    <div class="relative h-48 md:h-64 lg:h-auto">
-                        <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.6!2d-75.7!3d5.4!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMjUnMDAuMCJOIDc1wrA0MicwMC4wIlc!5e0!3m2!1ses!2sco!4v1620000000000!5m2!1ses!2sco"
-                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                            class="absolute inset-0 w-full h-full">
-                        </iframe>
-                    </div>
-                    <div class="p-5 md:p-8 flex flex-col justify-center">
-                        <div class="mb-3 md:mb-4">
-                            <span
-                                class="inline-block px-3 py-1 bg-blue-100 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-2">Sede
-                                Principal</span>
-                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Riosucio - Caldas</h2>
-                        </div>
-                        <div class="space-y-3 md:space-y-4 text-gray-600 text-sm md:text-base">
-                            <div class="flex items-start gap-3">
-                                <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-1"></i>
-                                <p>Dirección Provisional # 123<br>Riosucio, Caldas</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
-                                <p>+57 (606) 859 1234</p>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
-                                <p>Lunes a Sábado: 8:00 AM - 7:00 PM<br>Domingos: 9:00 AM - 1:00 PM</p>
-                            </div>
-                        </div>
-                        <div class="mt-6 md:mt-8">
-                            <a href="https://www.google.com/maps/dir/?api=1&destination=Riosucio,Caldas" target="_blank"
-                                class="inline-flex items-center justify-center px-6 md:px-8 py-2.5 md:py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors w-full sm:w-auto">
-                                Cómo llegar
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Sedes Container -->
+        <div id="loading-state" class="flex justify-center py-20">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
 
-            <!-- Sede Supia -->
-            <div class="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                <div class="relative h-48 md:h-64">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.5!2d-75.65!3d5.45!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMjcnMDAuMCJOIDc1wrAzOScwMC4wIlc!5e0!3m2!1ses!2sco!4v1620000000000!5m2!1ses!2sco"
-                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                        class="absolute inset-0 w-full h-full">
-                    </iframe>
-                </div>
-                <div class="p-5 md:p-8">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Supía - Caldas</h2>
-                    <div class="space-y-3 md:space-y-4 text-gray-600 text-sm md:text-base">
-                        <div class="flex items-start gap-3">
-                            <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-1"></i>
-                            <p>Dirección Provisional # 123<br>Supía, Caldas</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
-                            <p>+57 (606) 856 5678</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
-                            <p>Lunes a Sábado: 8:00 AM - 6:30 PM</p>
-                        </div>
-                    </div>
-                    <div class="mt-5 md:mt-6">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=Supia,Caldas" target="_blank"
-                            class="inline-flex items-center justify-center w-full px-6 py-2.5 md:py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">
-                            Cómo llegar
-                        </a>
-                    </div>
-                </div>
+        <div id="error-state" class="hidden text-center py-20">
+            <div class="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
             </div>
+            <h3 class="text-lg font-medium text-gray-900">No se pudieron cargar las sedes</h3>
+            <p class="text-gray-500">Por favor intenta nuevamente más tarde.</p>
+        </div>
 
-            <!-- Sede La Virginia -->
-            <div class="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                <div class="relative h-48 md:h-64">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.5!2d-75.88!3d4.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNMKwNTQnMDAuMCJOIDc1wrA1Mic0OC4wIlc!5e0!3m2!1ses!2sco!4v1620000000000!5m2!1ses!2sco"
-                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                        class="absolute inset-0 w-full h-full">
-                    </iframe>
-                </div>
-                <div class="p-5 md:p-8">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">La Virginia - Risaralda</h2>
-                    <div class="space-y-3 md:space-y-4 text-gray-600 text-sm md:text-base">
-                        <div class="flex items-start gap-3">
-                            <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-1"></i>
-                            <p>Dirección Provisional # 123<br>La Virginia, Risaralda</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
-                            <p>+57 (606) 368 9012</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
-                            <p>Lunes a Sábado: 8:00 AM - 7:00 PM</p>
-                        </div>
-                    </div>
-                    <div class="mt-5 md:mt-6">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=La+Virginia,Risaralda"
-                            target="_blank"
-                            class="inline-flex items-center justify-center w-full px-6 py-2.5 md:py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">
-                            Cómo llegar
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sede La Pintada -->
-            <div class="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                <div class="relative h-48 md:h-64">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3971.0!2d-75.6!3d5.75!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwNDUnMDAuMCJOIDc1wrAzNicwMC4wIlc!5e0!3m2!1ses!2sco!4v1620000000000!5m2!1ses!2sco"
-                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                        class="absolute inset-0 w-full h-full">
-                    </iframe>
-                </div>
-                <div class="p-5 md:p-8">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">La Pintada - Antioquia</h2>
-                    <div class="space-y-3 md:space-y-4 text-gray-600 text-sm md:text-base">
-                        <div class="flex items-start gap-3">
-                            <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-1"></i>
-                            <p>Dirección Provisional # 123<br>La Pintada, Antioquia</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
-                            <p>+57 (604) 845 3456</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
-                            <p>Lunes a Domingo: 9:00 AM - 8:00 PM</p>
-                        </div>
-                    </div>
-                    <div class="mt-5 md:mt-6">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=La+Pintada,Antioquia"
-                            target="_blank"
-                            class="inline-flex items-center justify-center w-full px-6 py-2.5 md:py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">
-                            Cómo llegar
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sede Anserma -->
-            <div class="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                <div class="relative h-48 md:h-64">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.5!2d-75.78!3d5.23!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMTMnNDguMCJOIDc1wrA0NicyNC4wIlc!5e0!3m2!1ses!2sco!4v1620000000000!5m2!1ses!2sco"
-                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-                        class="absolute inset-0 w-full h-full">
-                    </iframe>
-                </div>
-                <div class="p-5 md:p-8">
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900 mb-3 md:mb-4">Anserma - Caldas</h2>
-                    <div class="space-y-3 md:space-y-4 text-gray-600 text-sm md:text-base">
-                        <div class="flex items-start gap-3">
-                            <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-1"></i>
-                            <p>Dirección Provisional # 123<br>Anserma, Caldas</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="phone" class="w-5 h-5 text-primary"></i>
-                            <p>+57 (606) 853 7890</p>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="clock" class="w-5 h-5 text-primary"></i>
-                            <p>Lunes a Sábado: 8:00 AM - 6:00 PM</p>
-                        </div>
-                    </div>
-                    <div class="mt-5 md:mt-6">
-                        <a href="https://www.google.com/maps/dir/?api=1&destination=Anserma,Caldas" target="_blank"
-                            class="inline-flex items-center justify-center w-full px-6 py-2.5 md:py-3 bg-primary text-white font-semibold rounded-lg hover:bg-primary-dark transition-colors">
-                            Cómo llegar
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div id="sedes-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-12 hidden">
+            <!-- Dynamic Content -->
         </div>
     </main>
 

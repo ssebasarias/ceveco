@@ -29,8 +29,8 @@ app.use(helmet({
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Keeping unsafe-inline for styles is often necessary for frameworks unless using strict nonce/hash
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com"], // Added Google for avatars
-            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com"], // Allow connecting to Google OAuth
-            frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com"],
+            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://unpkg.com", "https://*.google.com", "https://maps.googleapis.com"], // Allow connecting to Google OAuth & Maps & Unpkg
+            frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
             upgradeInsecureRequests: null
         },
     },
@@ -132,6 +132,7 @@ app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
 app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
+app.use(`${API_PREFIX}/sedes`, require('./src/routes/sedes.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {
