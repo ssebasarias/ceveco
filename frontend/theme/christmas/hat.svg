@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 80" fill="none">
+    <!-- Style: Thick dark outline, flat colors -->
+    <g stroke="#0f392b" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        
+        <!-- Red Body -->
+        <!-- Starts from top of brim, curves right and down to pom-pom -->
+        <path d="M25 35 
+                 C 30 15, 60 15, 80 45 
+                 L 85 55
+                 L 70 50
+                 C 65 30, 45 30, 25 35" 
+              fill="#cf3026" />
+        
+        <!-- The crease/fold in the red part -->
+        <path d="M58 35 Q 65 42 75 48" stroke="#0f392b" stroke-width="3" fill="none" />
+
+        <!-- White Brim (Band) -->
+        <!-- A curved shape that wraps around the bottom left -->
+        <path d="M10 40 
+                 Q 25 25 55 52 
+                 L 48 60 
+                 Q 25 40 10 50 
+                 Q 2 45 10 40 Z" 
+              fill="#f9f4ec" />
+
+        <!-- Pom Pom -->
+        <circle cx="85" cy="58" r="8" fill="#f9f4ec" />
+        
+    </g>
+</svg>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 30" fill="none">
+    <!-- Runners -->
+    <path d="M5 25 L 45 25 Q 50 15 40 15" stroke="#9ca3af" stroke-width="2" fill="none" />
+    <path d="M10 25 L 10 18" stroke="#9ca3af" stroke-width="2" />
+    <path d="M40 25 L 40 18" stroke="#9ca3af" stroke-width="2" />
+    
+    <!-- Sled Body -->
+    <path d="M5 18 L 45 18 L 40 12 L 10 12 Q 5 12 5 18 Z" fill="#ef4444" />
+    
+    <!-- Gift Box -->
+    <rect x="15" y="2" width="10" height="10" fill="#facc15" />
+    <rect x="19" y="2" width="2" height="10" fill="#ef4444" /> <!-- Ribbon V -->
+    <rect x="15" y="6" width="10" height="2" fill="#ef4444" /> <!-- Ribbon H -->
+    
+    <!-- Santa/Person Hint -->
+    <circle cx="35" cy="8" r="4" fill="#fca5a5" /> <!-- Head -->
+    <path d="M35 8 Q 28 8 30 14 L 40 14 Q 42 8 35 8" fill="#ef4444" /> <!-- Hat/Shoulders -->
+</svg>

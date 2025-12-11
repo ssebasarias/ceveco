@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="snow-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f1f5f9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Wave Layer 1 (Back) -->
+  <path fill="#e2e8f0" d="M0,60 C 240,100 480,20 720,60 C 960,100 1200,20 1440,60 V 120 H 0 Z" opacity="0.6"/>
+  
+  <!-- Wave Layer 2 (Front - The main track) -->
+  <!-- This path matches the CSS motion path we will use -->
+  <path fill="url(#snow-gradient)" d="M0,40 C 300,90 600,10 900,50 C 1200,90 1440,30 1440,30 V 120 H 0 Z" />
+</svg>

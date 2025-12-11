@@ -98,6 +98,7 @@ Comandos para tareas de mantenimiento, optimización y configuración de datos.
 | `node backend/seed_sedes.js` | Raíz del proyecto | **Semilla de Datos (Sedes)**. Inserta o actualiza la información de las sedes (tiendas) en la base de datos. | Si la tabla `sedes` está vacía o si necesitas resetear la información de las tiendas a los valores por defecto. |
 | `python -m http.server 5500` | Carpeta `frontend/` | Inicia un servidor web simple con Python en el puerto 5500. | Si no tienes VS Code con Live Server y quieres probar el frontend localmente. |
 | `npx http-server frontend -p 5500`| Raíz del proyecto | Inicia un servidor web simple con Node.js en el puerto 5500. | Alternativa a Python/Live Server para servir el frontend. |
+| `node scripts/toggle-christmas.js` | Raíz del proyecto | **Interruptor de Navidad**. Activa o desactiva TODA la decoración navideña (Nieve, Santa, Guirnaldas, Separadores del footer). | Úsalo para encender la festividad en Diciembre o apagarla rápidamente con un solo comando. |
 
 ## ⚠️ Solución de Problemas Comunes
 
