@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
 
     // Validar Auth
-    if (!AuthService.checkAuth()) {
+    if (!AuthService.isAuthenticated()) {
         window.location.href = 'login.html';
         return;
     }
@@ -22,16 +22,19 @@ async function loadOrders() {
     const container = document.getElementById('orders-container');
     const emptyState = document.getElementById('empty-orders');
 
+    console.log('📦 Loading orders...');
     try {
-        const response = await OrdersService.getMyOrders();
+        const orders = await OrdersService.getUserOrders();
+        console.log('📦 Orders fetched:', orders);
 
-        if (!response.success || !response.data || response.data.length === 0) {
+        if (!orders || orders.length === 0) {
+            console.log('📦 No orders found. Showing empty state.');
             container.classList.add('hidden');
             emptyState.classList.remove('hidden');
             return;
         }
 
-        const orders = response.data;
+        // Remove response.data mapping, orders IS the array
         container.innerHTML = orders.map(renderOrderCard).join('');
         lucide.createIcons();
 

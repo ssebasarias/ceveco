@@ -50,6 +50,31 @@ class AddressController {
             res.status(500).json({ success: false, message: 'Error eliminando dirección' });
         }
     }
+
+    static async updateAddress(req, res) {
+        try {
+            const userId = req.user.id;
+            const { id } = req.params;
+            const addressData = req.body;
+
+            // Validaciones básicas
+            if (!addressData.nombre_destinatario || !addressData.telefono_contacto || !addressData.direccion_linea1) {
+                return res.status(400).json({ success: false, message: 'Faltan campos obligatorios' });
+            }
+
+            const updatedAddress = await AddressModel.update(userId, id, addressData);
+
+            if (updatedAddress) {
+                res.json({ success: true, data: updatedAddress, message: 'Dirección actualizada' });
+            } else {
+                res.status(404).json({ success: false, message: 'Dirección no encontrada o no pertenece al usuario' });
+            }
+
+        } catch (error) {
+            console.error('Error updating address:', error);
+            res.status(500).json({ success: false, message: 'Error actualizando dirección' });
+        }
+    }
 }
 
 module.exports = AddressController;

@@ -254,56 +254,133 @@
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <form id="address-form" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-xs font-semibold text-gray-700">Nombre Destinatario</label>
-                        <input type="text" name="nombre_destinatario" required
-                            class="w-full px-3 py-2 border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            <form id="address-form" class="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
+                <input type="hidden" name="id_direccion" id="address-id">
+
+                <!-- Structured Address Builder -->
+                <div class="space-y-3 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                    <label class="text-xs font-bold text-gray-700 uppercase tracking-wide block mb-2">Construir
+                        Dirección</label>
+
+                    <div class="grid grid-cols-12 gap-2 items-center">
+                        <!-- Via Type -->
+                        <div class="col-span-12 md:col-span-4">
+                            <select id="addr_via"
+                                class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                                <option value="Calle">Calle</option>
+                                <option value="Carrera">Carrera</option>
+                                <option value="Diagonal">Diagonal</option>
+                                <option value="Transversal">Transversal</option>
+                                <option value="Avenida">Avenida</option>
+                                <option value="Circular">Circular</option>
+                                <option value="Vereda">Vereda</option>
+                            </select>
+                        </div>
+
+                        <!-- Via Number -->
+                        <div class="col-span-4 md:col-span-2">
+                            <input type="text" id="addr_num_via" placeholder="123"
+                                class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-center focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="col-span-1 flex justify-center text-gray-400 font-bold">#</div>
+
+                        <!-- Crossing Number -->
+                        <div class="col-span-3 md:col-span-2">
+                            <input type="text" id="addr_num_cruce" placeholder="45"
+                                class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-center focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                        </div>
+
+                        <!-- Separator -->
+                        <div class="col-span-1 flex justify-center text-gray-400 font-bold">-</div>
+
+                        <!-- Plate Number -->
+                        <div class="col-span-4 md:col-span-2">
+                            <input type="text" id="addr_placa" placeholder="67"
+                                class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-center focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                        </div>
                     </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-semibold text-gray-700">Teléfono</label>
-                        <input type="tel" name="telefono_contacto" required
-                            class="w-full px-3 py-2 border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+
+                    <!-- Generated Preview -->
+                    <div class="mt-2 text-center">
+                        <p class="text-xs text-gray-500 mb-1">Vista Previa:</p>
+                        <div id="address-preview"
+                            class="font-mono text-sm font-semibold text-gray-800 bg-white border border-gray-200 px-3 py-2 rounded-lg">
+                            Calle 123 # 45 - 67
+                        </div>
                     </div>
                 </div>
 
-                <div class="space-y-1">
-                    <label class="text-xs font-semibold text-gray-700">Dirección</label>
-                    <input type="text" name="direccion_linea1" required placeholder="Ej: Calle 123 # 45-67"
-                        class="w-full px-3 py-2 border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-xs font-semibold text-gray-700">Departamento</label>
-                        <input type="text" name="departamento" required
-                            class="w-full px-3 py-2 border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-xs font-semibold text-gray-700">Ciudad</label>
-                        <input type="text" name="ciudad" required
-                            class="w-full px-3 py-2 border rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-xs font-semibold text-gray-700">Tipo</label>
+                <!-- Unit / Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-gray-700">Tipo de Inmueble</label>
                         <select name="tipo"
-                            class="w-full px-3 py-2 border rounded-lg text-sm bg-white focus:border-primary outline-none">
-                            <option value="casa">Casa</option>
-                            <option value="trabajo">Trabajo</option>
-                            <option value="otro">Otro</option>
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-primary outline-none">
+                            <option value="Casa">Casa</option>
+                            <option value="Apartamento">Apartamento</option>
+                            <option value="Edificio">Edificio</option>
+                            <option value="Oficina">Oficina</option>
+                            <option value="Conjunto">Conjunto Residencial</option>
+                            <option value="Local">Local</option>
+                            <option value="Otro">Otro</option>
                         </select>
                     </div>
-                    <div class="flex items-center pt-6">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" name="es_principal"
-                                class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
-                            <span class="text-xs font-medium text-gray-700">Marcar como principal</span>
-                        </label>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-gray-700">Interior / Apto / Unidad</label>
+                        <input type="text" id="addr_detail" placeholder="Ej: Apto 302, Torre B"
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
                     </div>
+                </div>
+
+                <!-- General Location -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-gray-700">Departamento <span
+                                class="text-red-500">*</span></label>
+                        <select name="departamento" required
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm bg-white focus:border-primary outline-none">
+                            <option value="">Seleccionar...</option>
+                            <option value="Caldas">Caldas</option>
+                            <option value="Antioquia">Antioquia</option>
+                            <option value="Risaralda">Risaralda</option>
+                            <option value="Quindío">Quindío</option>
+                            <option value="Valle del Cauca">Valle del Cauca</option>
+                            <option value="Cundinamarca">Cundinamarca</option>
+                            <option value="Bogotá D.C.">Bogotá D.C.</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-gray-700">Ciudad <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="ciudad" required
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-gray-700">Código Postal <span
+                                class="text-gray-400 font-normal">(Opcional)</span></label>
+                        <input type="text" name="codigo_postal"
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-semibold text-gray-700">Barrio / Referencias</label>
+                        <input type="text" name="referencias" placeholder="Ej: Frente al parque..."
+                            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none">
+                    </div>
+                </div>
+
+                <div class="flex items-center pt-2">
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        <input type="checkbox" name="es_principal"
+                            class="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary">
+                        <span class="text-sm text-gray-700 group-hover:text-primary transition-colors">Marcar como
+                            dirección principal</span>
+                    </label>
                 </div>
 
                 <div class="flex justify-end gap-3 pt-4">

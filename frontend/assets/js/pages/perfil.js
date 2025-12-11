@@ -65,6 +65,8 @@ function setupListeners() {
 
     if (addAddressBtn) {
         addAddressBtn.addEventListener('click', () => {
+            document.getElementById('address-id').value = ''; // Reset ID for create mode
+            addressForm.reset(); // Clear previous form data
             addressModal.classList.remove('hidden');
             addressModal.classList.add('flex');
         });
@@ -74,6 +76,7 @@ function setupListeners() {
         addressModal.classList.add('hidden');
         addressModal.classList.remove('flex');
         addressForm.reset();
+        document.getElementById('address-id').value = '';
     };
 
     if (closeAddressModal) closeAddressModal.addEventListener('click', closeModal);
@@ -82,22 +85,34 @@ function setupListeners() {
     if (addressForm) {
         addressForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            await handleCreateAddress(new FormData(addressForm));
+            await handleCreateAddress(new FormData(addressForm)); // Uses handleAddressSubmit wrapper
             closeModal();
         });
     }
 
-    // Event Delegation for Address Deletion (Dynamic Elements)
+    // Event Delegation for Address Deletion AND Editing
     const addressesList = document.getElementById('addresses-list');
     if (addressesList) {
         addressesList.addEventListener('click', (e) => {
+            // Delete
             const deleteBtn = e.target.closest('.btn-delete-address');
             if (deleteBtn) {
                 const id = deleteBtn.dataset.id;
                 if (id) deleteAddress(id);
+                return;
+            }
+
+            // Edit
+            const editBtn = e.target.closest('.btn-edit-address');
+            if (editBtn) {
+                const id = editBtn.dataset.id;
+                if (id) openEditAddressModal(id);
             }
         });
     }
+
+    // Initialize Address Preview Listeners
+    setupAddressPreview();
 }
 
 /**
@@ -146,14 +161,17 @@ function setInputValue(id, value) {
 /**
  * Cargar Direcciones
  */
+/**
+ * Cargar Direcciones
+ */
 async function loadAddresses() {
     const container = document.getElementById('addresses-list');
     if (!container) return;
 
     try {
-        // Fix: Use relative endpoint since API Client appends base URL
         const response = await window.API.get('/direcciones');
         const addresses = response.data || [];
+        window.currentAddresses = addresses; // Store for edit
 
         if (addresses.length === 0) {
             container.innerHTML = `
@@ -173,13 +191,18 @@ async function loadAddresses() {
                         <div>
                             <h4 class="font-bold text-gray-900 text-sm">${addr.direccion_linea1}</h4>
                             <p class="text-xs text-gray-500">${addr.ciudad}, ${addr.departamento}</p>
+                            ${addr.codigo_postal ? `<p class="text-xs text-gray-400">CP: ${addr.codigo_postal}</p>` : ''}
                         </div>
                     </div>
                     <div class="text-xs text-gray-600 space-y-1 mb-4">
                         <p><span class="font-medium">Recibe:</span> ${addr.nombre_destinatario}</p>
                         <p><span class="font-medium">Tel:</span> ${addr.telefono_contacto}</p> 
+                        ${addr.referencias ? `<p class="italic text-gray-500 mt-1">"${addr.referencias}"</p>` : ''}
                     </div>
-                    <div class="border-t border-gray-100 pt-3 flex justify-end">
+                    <div class="border-t border-gray-100 pt-3 flex justify-end gap-2">
+                        <button type="button" class="btn-edit-address text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1" data-id="${addr.id_direccion}">
+                            <i data-lucide="edit-2" class="w-3 h-3"></i> Editar
+                        </button>
                         <button type="button" class="btn-delete-address text-xs text-red-500 hover:text-red-700 font-medium flex items-center gap-1" data-id="${addr.id_direccion}">
                             <i data-lucide="trash-2" class="w-3 h-3"></i> Eliminar
                         </button>
@@ -196,26 +219,69 @@ async function loadAddresses() {
 }
 
 /**
- * Crear Dirección
+ * Handle Address Form Submit (Create or Update)
  */
-async function handleCreateAddress(formData) {
+async function handleAddressSubmit(formData) {
+    // 1. Get structured address components
+    const via = document.getElementById('addr_via').value;
+    const numVia = document.getElementById('addr_num_via').value;
+    const numCruce = document.getElementById('addr_num_cruce').value;
+    const placa = document.getElementById('addr_placa').value;
+    const detail = document.getElementById('addr_detail').value; // Interior/Apto
+
+    if (!via || !numVia || !numCruce || !placa) {
+        alert('Por favor completa todos los campos de la dirección (Vía, Número, #, -).');
+        return;
+    }
+
+    // 2. Construct Full Address String
+    const fullAddress = `${via} ${numVia} # ${numCruce} - ${placa}`;
+
+    // 3. Prepare Payload
     const data = Object.fromEntries(formData.entries());
+    const addressId = data.id_direccion;
+
+    // Inject Constructed Address
+    data.direccion_linea1 = fullAddress;
+
+    // Use line 2 for details/interior
+    data.direccion_linea2 = detail || '';
+
+    // Inject User Data (Name/Phone) automatically
+    const user = AuthService.getCurrentUser() || (await AuthService.refreshProfile());
+    if (user) {
+        data.nombre_destinatario = `${user.nombre} ${user.apellido || ''}`.trim();
+        data.telefono_contacto = user.celular || user.telefono || '';
+    } else {
+        alert('No se pudo verificar el usuario para asignar la dirección.');
+        return;
+    }
 
     // Convert checkbox to boolean
     data.es_principal = formData.get('es_principal') === 'on';
 
     try {
-        const response = await window.API.post('/direcciones', data);
+        let response;
+        if (addressId) {
+            response = await window.API.put(`/direcciones/${addressId}`, data);
+        } else {
+            response = await window.API.post('/direcciones', data);
+        }
+
         if (response.success) {
-            alert('Dirección agregada correctamente.');
+            alert(addressId ? 'Dirección actualizada.' : 'Dirección agregada.');
             await loadAddresses();
         } else {
             alert(response.message || 'Error al guardar dirección');
         }
     } catch (error) {
-        console.error('Error creating address:', error);
+        console.error('Error saving address:', error);
         alert('Error conectando con el servidor.');
     }
+}
+
+async function handleCreateAddress(formData) {
+    return handleAddressSubmit(formData);
 }
 
 /**
@@ -234,7 +300,76 @@ async function deleteAddress(id) {
     } catch (error) {
         console.error('Error deleting address:', error);
     }
-};
+}
+
+function openEditAddressModal(id) {
+    const address = window.currentAddresses?.find(a => a.id_direccion == id);
+    if (!address) return;
+
+    const modal = document.getElementById('address-modal');
+    const form = document.getElementById('address-form');
+
+    // Fill basic fields
+    document.getElementById('address-id').value = address.id_direccion;
+
+    if (form.elements['departamento']) form.elements['departamento'].value = address.departamento;
+    if (form.elements['ciudad']) form.elements['ciudad'].value = address.ciudad;
+    if (form.elements['codigo_postal']) form.elements['codigo_postal'].value = address.codigo_postal || '';
+    if (form.elements['referencias']) form.elements['referencias'].value = address.referencias || '';
+    if (form.elements['tipo']) form.elements['tipo'].value = address.tipo || 'Casa';
+    if (form.elements['es_principal']) form.elements['es_principal'].checked = address.es_principal;
+
+    // Parse Address String: "Calle 123 # 45 - 67"
+    const addrRegex = /^([a-zA-Z]+)\s+([0-9a-zA-Z]+)\s*#\s*([0-9a-zA-Z]+)\s*-\s*([0-9a-zA-Z]+)/i;
+    const match = address.direccion_linea1 ? address.direccion_linea1.match(addrRegex) : null;
+
+    if (match) {
+        const viaVal = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+        const viaSelect = document.getElementById('addr_via');
+        if ([...viaSelect.options].some(o => o.value === viaVal)) {
+            viaSelect.value = viaVal;
+        }
+
+        document.getElementById('addr_num_via').value = match[2];
+        document.getElementById('addr_num_cruce').value = match[3];
+        document.getElementById('addr_placa').value = match[4];
+        updateAddressPreview();
+    } else {
+        console.warn('Could not parse address format:', address.direccion_linea1);
+    }
+
+    // Detail field
+    if (document.getElementById('addr_detail')) {
+        document.getElementById('addr_detail').value = address.direccion_linea2 || '';
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+
+// Add real-time preview listener
+function setupAddressPreview() {
+    const inputs = ['addr_via', 'addr_num_via', 'addr_num_cruce', 'addr_placa'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updateAddressPreview);
+            el.addEventListener('change', updateAddressPreview);
+        }
+    });
+}
+
+function updateAddressPreview() {
+    const via = document.getElementById('addr_via').value || 'Calle';
+    const numVia = document.getElementById('addr_num_via').value || '...';
+    const numCruce = document.getElementById('addr_num_cruce').value || '...';
+    const placa = document.getElementById('addr_placa').value || '...';
+
+    const preview = document.getElementById('address-preview');
+    if (preview) {
+        preview.textContent = `${via} ${numVia} # ${numCruce} - ${placa}`;
+    }
+}
 
 
 function toggleEditMode() {

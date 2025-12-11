@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
 
-    if (!AuthService.checkAuth()) {
+    if (!AuthService.isAuthenticated()) {
         window.location.href = 'login.html';
         return;
     }
@@ -76,8 +76,8 @@ function renderOrderData(order) {
                 <p class="text-sm text-gray-500">Cantidad: ${item.cantidad}</p>
             </div>
             <div class="text-right">
-                <p class="font-bold text-gray-900">${formatCurrency(item.subtotal)}</p>
-                <p class="text-xs text-gray-400">${formatCurrency(item.precio_unitario)} c/u</p>
+                <p class="font-bold text-gray-900">${Helpers.formatPrice(item.subtotal)}</p>
+                <p class="text-xs text-gray-400">${Helpers.formatPrice(item.precio_unitario)} c/u</p>
             </div>
         </div>
     `).join('');
@@ -94,9 +94,9 @@ function renderOrderData(order) {
     }
 
     // Totals
-    document.getElementById('summary-subtotal').textContent = formatCurrency(order.subtotal);
-    document.getElementById('summary-shipping').textContent = formatCurrency(order.costo_envio);
-    document.getElementById('summary-total').textContent = formatCurrency(order.total);
+    document.getElementById('summary-subtotal').textContent = Helpers.formatPrice(order.subtotal);
+    document.getElementById('summary-shipping').textContent = Helpers.formatPrice(order.costo_envio);
+    document.getElementById('summary-total').textContent = Helpers.formatPrice(order.total);
 }
 
 function getStatusDetails(status) {
@@ -110,10 +110,4 @@ function getStatusDetails(status) {
     return map[status.toLowerCase()] || map['pendiente'];
 }
 
-function formatCurrency(value) {
-    return new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        maximumFractionDigits: 0
-    }).format(value);
-}
+

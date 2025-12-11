@@ -8,6 +8,7 @@ router.use(authMiddleware);
 
 router.get('/', AddressController.getAddresses);
 router.post('/', AddressController.createAddress);
+router.put('/:id', AddressController.updateAddress);
 router.delete('/:id', AddressController.deleteAddress);
 
 module.exports = router;

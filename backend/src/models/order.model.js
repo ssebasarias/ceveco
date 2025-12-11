@@ -56,30 +56,51 @@ class OrderModel {
       const shippingCost = parseFloat(orderData.totals.shipping) || 0;
       const calculatedTotal = calculatedSubtotal + shippingCost;
 
-      // 2. Crear o reutilizar dirección (Simplificado)
+      // 2. Crear o reutilizar dirección (Completo)
       const addressQuery = `
                 INSERT INTO direcciones (
                   id_usuario, nombre_destinatario, telefono_contacto,
-                  departamento, ciudad, direccion_linea1, codigo_postal, tipo
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'casa')
+                  departamento, ciudad, direccion_linea1, direccion_linea2, 
+                  codigo_postal, tipo, referencias
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                 RETURNING id_direccion
             `;
+
+      const rawType = (orderData.shippingAddress.type || 'casa').toLowerCase();
+      // ENUM Valid Values: 'casa', 'trabajo', 'otro'
+      let addrType = 'otro';
+      if (['casa', 'apartamento', 'edificio', 'conjunto', 'residential', 'unidad'].some(t => rawType.includes(t))) {
+        addrType = 'casa';
+      } else if (['oficina', 'local', 'trabajo', 'empresa', 'comercio'].some(t => rawType.includes(t))) {
+        addrType = 'trabajo';
+      }
+
+      console.log('Creating Order Address:', { ...orderData.shippingAddress, dbType: addrType });
+
       const addressValues = [
         userId,
         `${orderData.shippingAddress.firstName} ${orderData.shippingAddress.lastName}`,
         orderData.contact.phone,
         orderData.shippingAddress.department,
         orderData.shippingAddress.city,
-        orderData.shippingAddress.address,
-        orderData.shippingAddress.zip || null
+        orderData.shippingAddress.address, // Linea 1
+        orderData.shippingAddress.detail || null, // Linea 2
+        orderData.shippingAddress.zip || null,
+        addrType,
+        orderData.shippingAddress.notes || null
       ];
 
       const addressResult = await client.query(addressQuery, addressValues);
       const addressId = addressResult.rows[0].id_direccion;
+      console.log('✅ Address created with ID:', addressId);
 
       // 3. Crear Pedido con los totales calculados
       // Si el frontend envía una referencia (ej: para Wompi), la usamos. Si no, generamos una.
       const orderNumber = orderData.reference || `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+      // Valid payment methods from DB ENUM: 'efectivo', 'tarjeta_credito', 'tarjeta_debito', 'transferencia', 'pse', 'contraentrega'
+      // We map 'wompi' payment gateway to 'tarjeta_credito' as a generic online payment representation.
+      const paymentMethod = 'tarjeta_credito';
 
       const orderQuery = `
                 INSERT INTO pedidos (
@@ -88,7 +109,7 @@ class OrderModel {
                   subtotal, costo_envio, total,
                   metodo_pago, estado, estado_pago,
                   empresa_envio, fecha_entrega
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'wompi', 'pendiente', 'pendiente', NULL, NULL)
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'pendiente', 'pendiente', NULL, NULL)
                 RETURNING id_pedido, numero_pedido, fecha_pedido
             `;
 
@@ -100,8 +121,10 @@ class OrderModel {
         orderData.contact.phone,
         calculatedSubtotal, // Precio calculado del backend
         shippingCost,
-        calculatedTotal     // Total seguro
+        calculatedTotal,    // Total seguro
+        paymentMethod       // Valid ENUM value
       ];
+
 
       const orderResult = await client.query(orderQuery, orderValues);
       const newOrder = orderResult.rows[0];
@@ -166,6 +189,7 @@ class OrderModel {
     `;
 
     const result = await query(queryText, [userId]);
+    console.log(`🔍 OrderModel: Found ${result.rows.length} orders for user ${userId}`);
     return result.rows;
   }
 

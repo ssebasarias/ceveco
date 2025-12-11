@@ -71,6 +71,60 @@ class AddressModel {
         );
         return result.rowCount > 0;
     }
+
+    /**
+     * Actualizar dirección
+     */
+    static async update(userId, addressId, addressData) {
+        const {
+            nombre_destinatario,
+            telefono_contacto,
+            departamento,
+            ciudad,
+            direccion_linea1,
+            direccion_linea2,
+            codigo_postal,
+            barrio,
+            referencias,
+            es_principal,
+            tipo
+        } = addressData;
+
+        // Si se marca como principal, desmarcar otras
+        if (es_principal) {
+            await query(
+                'UPDATE direcciones SET es_principal = FALSE WHERE id_usuario = $1',
+                [userId]
+            );
+        }
+
+        const queryText = `
+            UPDATE direcciones SET
+                nombre_destinatario = $1,
+                telefono_contacto = $2,
+                departamento = $3,
+                ciudad = $4,
+                direccion_linea1 = $5,
+                direccion_linea2 = $6,
+                codigo_postal = $7,
+                barrio = $8,
+                referencias = $9,
+                es_principal = $10,
+                tipo = $11
+            WHERE id_direccion = $12 AND id_usuario = $13
+            RETURNING *
+        `;
+
+        const values = [
+            nombre_destinatario, telefono_contacto,
+            departamento, ciudad, direccion_linea1, direccion_linea2,
+            codigo_postal, barrio, referencias, es_principal || false, tipo || 'casa',
+            addressId, userId
+        ];
+
+        const result = await query(queryText, values);
+        return result.rows[0];
+    }
 }
 
 module.exports = AddressModel;

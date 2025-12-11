@@ -15,12 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCheckoutItems();
 
     // Button Event Listeners
-    document.getElementById('btn-step1-next')?.addEventListener('click', () => goToStep(2));
-
-    document.getElementById('btn-step2-prev')?.addEventListener('click', () => goToStep(1));
-    document.getElementById('btn-step2-next')?.addEventListener('click', () => goToStep(3));
-
-    document.getElementById('btn-step3-prev')?.addEventListener('click', () => goToStep(2));
     document.getElementById('btn-pay-now')?.addEventListener('click', initiatePayment);
 
     // Restore form data if returning from login
@@ -40,25 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Bind Enter key events
-    const emailInput = document.getElementById('email');
-    if (emailInput) {
-        emailInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') goToStep(2);
-        });
-    }
-
-    const phoneInput = document.getElementById('phone');
-    if (phoneInput) {
-        phoneInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') goToStep(2);
-        });
-    }
-
     // Attempt to auto-fill user data
     if (window.AuthService && window.AuthService.isAuthenticated()) {
         loadUserData();
     }
+
+    setupAddressPreview();
 });
 
 function loadCheckoutItems() {
@@ -147,39 +128,54 @@ window.goToStep = function (step) {
         if (currentStep === 2 && step === 3) {
             const firstName = document.getElementById('firstName').value;
             const lastName = document.getElementById('lastName').value;
-            const address = document.getElementById('address').value;
+            // Validate Structured Address Fields
+            const via = document.getElementById('addr_via').value;
+            const numVia = document.getElementById('addr_num_via').value;
+            const numCruce = document.getElementById('addr_num_cruce').value;
+            const placa = document.getElementById('addr_placa').value;
+
             const department = document.getElementById('department').value;
             const city = document.getElementById('city').value;
 
-            if (!firstName || !lastName || !address || !department || !city) {
+            if (!firstName || !lastName || !department || !city) {
                 alert('Por favor completa todos los campos obligatorios de envío.');
                 return;
             }
+
+            if (!via || !numVia || !numCruce || !placa) {
+                alert('Por favor completa todos los campos de la dirección (Vía, Número, #, -).');
+                return;
+            }
+
+            // Update hidden address field explicitly
+            updateAddressHiddenField();
         }
     }
 
     currentStep = step;
 
     // Update step indicators
+    // Update step indicators
     for (let i = 1; i <= 3; i++) {
-        const stepEl = document.getElementById(`step - ${i}`);
-        const sectionEl = document.getElementById(`section - ${i === 1 ? 'contact' : i === 2 ? 'shipping' : 'payment'} `);
+        const stepEl = document.getElementById(`step-${i}`);
+        const sectionEl = document.getElementById(`section-${i === 1 ? 'contact' : i === 2 ? 'shipping' : 'payment'}`);
 
         if (i < step) {
             stepEl.className = 'w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg step-completed mb-2 transition-all duration-300';
             stepEl.innerHTML = '<i data-lucide="check" class="w-6 h-6"></i>';
-            sectionEl.classList.add('opacity-50', 'pointer-events-none');
+            if (sectionEl) sectionEl.classList.remove('opacity-50', 'pointer-events-none');
         } else if (i === step) {
             stepEl.className = 'w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg step-active mb-2 transition-all duration-300';
             stepEl.textContent = i;
-            sectionEl.classList.remove('opacity-50', 'pointer-events-none');
-
-            // Scroll to section
-            sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (sectionEl) {
+                sectionEl.classList.remove('opacity-50', 'pointer-events-none');
+                sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         } else {
             stepEl.className = 'w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-gray-200 text-gray-500 mb-2 transition-all duration-300';
             stepEl.textContent = i;
-            sectionEl.classList.add('opacity-50', 'pointer-events-none');
+            // Ensure enabled even for future steps
+            if (sectionEl) sectionEl.classList.remove('opacity-50', 'pointer-events-none');
         }
     }
 
@@ -209,9 +205,47 @@ window.goToStep = function (step) {
 
 
 window.initiatePayment = async function () {
-    // Check authentication first
-    const token = localStorage.getItem('ceveco_auth_token');
-    if (!token) {
+    // 0. Update Hidden Fields logic (Address)
+    // We must ensure the hidden address field is up to date before submitting
+    updateAddressHiddenField();
+
+    // 1. Validate All Fields manually since we removed step-by-step validation
+    const emailVal = document.getElementById('email')?.value.trim();
+    const phoneVal = document.getElementById('phone')?.value.trim();
+    if (!emailVal || !phoneVal) {
+        alert('Por favor completa la información de contacto (Email y Teléfono).');
+        return;
+    }
+    if (!emailVal.includes('@')) {
+        alert('Por favor ingresa un correo electrónico válido.');
+        return;
+    }
+
+    const firstNameVal = document.getElementById('firstName')?.value.trim();
+    const lastNameVal = document.getElementById('lastName')?.value.trim();
+    const departmentVal = document.getElementById('department')?.value;
+    const cityVal = document.getElementById('city')?.value.trim();
+
+    // Structured Address Check
+    const via = document.getElementById('addr_via')?.value;
+    const numVia = document.getElementById('addr_num_via')?.value;
+    const numCruce = document.getElementById('addr_num_cruce')?.value;
+    const placa = document.getElementById('addr_placa')?.value;
+
+    if (!firstNameVal || !lastNameVal || !departmentVal || !cityVal) {
+        alert('Por favor completa todos los campos obligatorios de envío (Nombres, Apellidos, Departamento, Ciudad).');
+        return;
+    }
+
+    if (!via || !numVia || !numCruce || !placa) {
+        alert('Por favor completa correctamente la dirección (Vía, Número, #, -).');
+        return;
+    }
+
+
+    // Check authentication first or guest checkout logic
+    const isAuthenticated = window.AuthService ? window.AuthService.isAuthenticated() : false;
+    if (!isAuthenticated) {
         alert('Para completar tu compra, por favor inicia sesión o regístrate.');
 
         // Save form data
@@ -233,6 +267,19 @@ window.initiatePayment = async function () {
         return;
     }
 
+    // 🔧 DEV MODE: Allow instant simulation bypass
+    // This allows testing the order creation flow without opening the Wompi widget
+    if (window.CONFIG && window.CONFIG.IS_DEV) {
+        if (confirm('🔧 MODO DESARROLLO\n\n¿Quieres simular un pago exitoso inmediatamente sin abrir la pasarela de pagos?')) {
+            if (typeof window.simulateOrder === 'function') {
+                await window.simulateOrder();
+                return;
+            } else {
+                console.warn('simulateOrder function not found even though IS_DEV is true.');
+            }
+        }
+    }
+
     const directBuy = sessionStorage.getItem('ceveco_direct_buy');
     const savedCart = localStorage.getItem('cevecoCart');
     const cart = directBuy ? JSON.parse(directBuy) : JSON.parse(savedCart || '[]');
@@ -249,6 +296,10 @@ window.initiatePayment = async function () {
     const department = document.getElementById('department').value;
     const city = document.getElementById('city').value;
     const zip = document.getElementById('zip').value;
+    // New fields
+    const type = document.getElementById('addr_type').value;
+    const detail = document.getElementById('addr_detail').value;
+    const notes = document.getElementById('notes').value;
 
     // Generate a unique reference
     const reference = 'CEVECO-' + Date.now();
@@ -284,7 +335,8 @@ window.initiatePayment = async function () {
             var transaction = result.transaction;
             if (transaction.status === 'APPROVED') {
                 await createOrderBackend(cart, {
-                    firstName, lastName, address, department, city, zip, email, phone
+                    firstName, lastName, address, department, city, zip, email, phone,
+                    type, detail, notes
                 }, total, reference); // Pass reference
             }
         });
@@ -313,7 +365,7 @@ if (window.CONFIG && window.CONFIG.IS_DEV) {
 
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-        // Capture values again just in case
+        // Capture all values explicitly
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
         const firstName = document.getElementById('firstName').value;
@@ -322,12 +374,17 @@ if (window.CONFIG && window.CONFIG.IS_DEV) {
         const department = document.getElementById('department').value;
         const city = document.getElementById('city').value;
         const zip = document.getElementById('zip').value;
+        // New fields
+        const type = document.getElementById('addr_type').value;
+        const detail = document.getElementById('addr_detail').value;
+        const notes = document.getElementById('notes').value;
 
         // Generate simulation reference
         const reference = 'SIM-' + Date.now();
 
         await createOrderBackend(cart, {
-            firstName, lastName, address, department, city, zip, email, phone
+            firstName, lastName, address, department, city, zip, email, phone,
+            type, detail, notes
         }, total, reference);
     };
 }
@@ -404,10 +461,20 @@ async function loadUserData() {
 
             console.log('📍 Address found, auto-filling shipping info...', principalAddress);
             if (principalAddress) {
-                fillFieldIfEmpty('address', principalAddress.direccion_linea1);
+                // Parse full address to structured inputs
+                parseAddressToFields(principalAddress.direccion_linea1);
+
                 fillFieldIfEmpty('department', principalAddress.departamento);
                 fillFieldIfEmpty('city', principalAddress.ciudad);
                 fillFieldIfEmpty('zip', principalAddress.codigo_postal);
+
+                // Map new fields
+                fillFieldIfEmpty('addr_type', principalAddress.tipo);
+                fillFieldIfEmpty('addr_detail', principalAddress.direccion_linea2); // Explicitly map Detail
+                fillFieldIfEmpty('notes', principalAddress.referencias);
+
+                // Force update hidden field
+                updateAddressHiddenField();
             }
         } else {
             console.log('ℹ️ No saved addresses found.');
@@ -426,4 +493,82 @@ function fillFieldIfEmpty(id, value) {
         el.dispatchEvent(new Event('change'));
         el.dispatchEvent(new Event('input'));
     }
+}
+
+// -----------------------------------------------------
+// Address Builder Logic (Structured Address)
+// -----------------------------------------------------
+
+function setupAddressPreview() {
+    const inputs = ['addr_via', 'addr_num_via', 'addr_num_cruce', 'addr_placa', 'addr_type', 'addr_detail'];
+    inputs.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', updateAddressHiddenField);
+            el.addEventListener('change', updateAddressHiddenField);
+        }
+    });
+}
+
+function updateAddressHiddenField() {
+    const via = document.getElementById('addr_via').value || 'Calle';
+    const numVia = document.getElementById('addr_num_via').value || '...';
+    const numCruce = document.getElementById('addr_num_cruce').value || '...';
+    const placa = document.getElementById('addr_placa').value || '...';
+
+    // Preview
+    const preview = document.getElementById('address-preview');
+    if (preview) {
+        preview.textContent = `${via} ${numVia} # ${numCruce} - ${placa}`;
+    }
+
+    // Update Hidden Input (Important for submission)
+    const addressInput = document.getElementById('address');
+    if (addressInput) {
+        let fullAddr = `${via} ${numVia} # ${numCruce} - ${placa}`;
+
+        const type = document.getElementById('addr_type')?.value;
+        const detail = document.getElementById('addr_detail')?.value;
+
+        if (type && type !== 'Otro') fullAddr += ` (${type})`;
+        if (detail) fullAddr += ` ${detail}`;
+
+        addressInput.value = fullAddr;
+    }
+
+
+
+
+}
+
+function parseAddressToFields(fullAddress) {
+    console.log('📝 Parsing address:', fullAddress);
+    if (!fullAddress) return;
+
+    // Relaxed Regex: (Type) (NumVia) # (NumCruce) -? (Placa)
+    // Supports: "Calle 123 # 45 - 67", "Carrera 10 #20-30", etc.
+    const addrRegex = /^([a-zA-ZñÑ\.]+)\s+([a-zA-Z0-9]+)\s*#\s*([a-zA-Z0-9]+)[\s-]*([a-zA-Z0-9]+)?/i;
+    const match = fullAddress.match(addrRegex);
+
+    if (match) {
+        console.log('✅ Regex match:', match);
+        const viaVal = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+        const viaSelect = document.getElementById('addr_via');
+
+        // Check if value exists, if not default
+        if ([...viaSelect.options].some(o => o.value === viaVal)) {
+            viaSelect.value = viaVal;
+        } else {
+            console.warn('Unknown Via Type:', viaVal);
+        }
+
+        document.getElementById('addr_num_via').value = match[2] || '';
+        document.getElementById('addr_num_cruce').value = match[3] || '';
+        document.getElementById('addr_placa').value = match[4] || '';
+    } else {
+        console.warn('❌ Could not parse address format:', fullAddress);
+    }
+
+    // Force update hidden field to reflect parsed values
+    updateAddressHiddenField();
 }
