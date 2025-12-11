@@ -270,13 +270,78 @@
 
             console.log('✅ Shared Components Loaded');
 
+            // Init Navbar Interactions
+            if (window.setupNavbarInteractions) window.setupNavbarInteractions();
+
         } catch (error) {
             console.error('❌ Component Loading Error:', error);
         }
     }
 
     // ==========================================
-    // 5. GLOBAL EVENT LISTENERS
+    // 5. NAVBAR INTERACTIONS
+    // ==========================================
+    window.setupNavbarInteractions = function () {
+        const header = document.getElementById('main-header');
+        if (!header) return;
+
+        const currentPath = window.location.pathname;
+        const params = new URLSearchParams(window.location.search);
+        const currentCategory = params.get('categoria');
+
+        // 1. Highlight Active Link with Animation
+        const links = document.querySelectorAll('#main-header nav a, #main-header .hidden.lg\\:flex > a');
+        links.forEach(link => {
+            // Apply base animation class by default if not button
+            if (!link.classList.contains('nav-link-animated') && !link.classList.contains('border-primary')) {
+                link.classList.add('nav-link-animated');
+            }
+
+            const href = link.getAttribute('href');
+            if (!href) return;
+
+            let isActive = false;
+
+            // Check exact category match
+            if (href.includes('categoria=') && currentCategory) {
+                if (href.includes(`categoria=${currentCategory}`)) isActive = true;
+            }
+            // Check Page Match
+            else if (!href.includes('categoria=') && !href.startsWith('#')) {
+                const linkPath = href.split('?')[0];
+                // Special case for Home
+                if ((linkPath === 'index.html' || linkPath === './index.html') &&
+                    (currentPath.endsWith('index.html') || currentPath === '/')) {
+                    isActive = true;
+                }
+                // Other pages
+                else if (linkPath !== 'index.html' && linkPath !== './index.html' && currentPath.includes(linkPath.replace('./', '').replace('../', ''))) {
+                    isActive = true;
+                }
+            }
+
+            if (isActive) {
+                // Determine if it's a nav link or the special button
+                if (!link.classList.contains('border-primary')) {
+                    link.classList.add('active'); // Triggers the CSS sweep
+                    link.classList.remove('text-gray-600', 'font-medium');
+                }
+            }
+        });
+
+        // 2. Ensure Standard Sticky Header
+        // We removed the overlap logic so the navbar sits ABOVE the banner (creating the requested white space).
+        // Standard sticky behavior is handled by CSS in navbar.html (#navbar-root { position: sticky })
+
+        // Ensure consistent background
+        if (header) {
+            header.classList.remove('bg-transparent', 'bg-white/80');
+            header.classList.add('bg-white/95', 'backdrop-blur-sm', 'shadow-sm', 'border-b');
+        }
+    };
+
+    // ==========================================
+    // 6. GLOBAL EVENT LISTENERS
     // ==========================================
     function setupGlobalListeners() {
         // Search Inputs
@@ -329,4 +394,3 @@
     });
 
 })();
-

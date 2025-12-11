@@ -5,14 +5,46 @@
         z-index: 1000;
         width: 100%;
     }
+
+    /* Animated Underline Effect */
+    .nav-link-animated {
+        position: relative;
+        display: inline-block;
+    }
+
+    .nav-link-animated::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 3px;
+        bottom: -4px;
+        left: 0;
+        background-color: #ef4444;
+        /* Primary Red */
+        transition: width 0.3s ease-in-out;
+        border-radius: 2px;
+    }
+
+    .nav-link-animated:hover::after,
+    .nav-link-animated.active::after {
+        width: 100%;
+    }
+
+    /* Ensure specific active class visibility */
+    .nav-link-animated.active {
+        color: #ef4444;
+        /* Primary Red */
+        font-weight: 700;
+    }
 </style>
-<header class="w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm transition-all duration-300">
+<header id="main-header"
+    class="w-full z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm transition-all duration-300">
     <div class="container mx-auto px-4 lg:px-8">
         <div class="flex items-center justify-between h-20 gap-4 md:gap-8">
             <!-- Mobile Menu Toggle -->
             <!-- Mobile Menu Toggle -->
             <button id="mobile-menu-toggle" onclick="toggleMobileMenu()"
-                class="lg:hidden p-2 -ml-2 text-gray-600 hover:text-primary transition-colors">
+                class="lg:hidden p-2 -ml-2 text-gray-800 hover:text-primary transition-colors">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
 
@@ -31,14 +63,18 @@
 
             <div class="hidden lg:flex items-center gap-6">
                 <a href="productos.html?destacado=true"
-                    class="hover:text-primary transition-colors font-medium text-[15px]">Más vendidos</a>
+                    class="group flex items-center gap-2 px-5 py-2.5 text-primary font-bold border-2 border-primary rounded-full hover:bg-primary hover:text-white transition-all transform hover:scale-105 shadow-sm">
+                    <i data-lucide="flame"
+                        class="w-4 h-4 transition-transform group-hover:scale-110 group-hover:fill-white"></i>
+                    <span>Más vendidos</span>
+                </a>
                 <a href="contacto.html"
                     class="hover:text-primary transition-colors font-medium text-[15px]">Contáctanos</a>
                 <a href="sedes.html" class="hover:text-primary transition-colors font-medium text-[15px]">Nuestras
                     sedes</a>
             </div>
 
-            <div class="flex items-center gap-5 text-gray-600">
+            <div class="flex items-center gap-5 text-gray-800">
                 <!-- Contenedor del menú de usuario (inyectado por auth.js) -->
                 <div id="user-menu-container" data-auth-button>
                     <button class="flex flex-col items-center gap-1 hover:text-primary transition-colors group">
@@ -64,7 +100,7 @@
         </div>
 
         <nav class="hidden lg:block border-t border-gray-50">
-            <ul class="flex items-center gap-8 py-3 text-sm font-medium text-gray-600">
+            <ul class="flex items-center gap-8 py-3 text-sm font-medium text-gray-800">
                 <li><a href="productos.html?categoria=electro-hogar"
                         class="hover:text-primary transition-colors">Electro Hogar</a></li>
                 <li><a href="productos.html?categoria=muebles" class="hover:text-primary transition-colors">Muebles
