@@ -4,72 +4,68 @@
 .christmas-separator {
     position: relative;
     width: 100%;
-    height: 100px;
-    /* Adjusted height for the wave effect */
+    height: 180px;
+    /* Increased height significantly for more visibility */
     background-image: url('./snow-waves.svg');
     background-size: cover;
-    /* Cover width */
     background-position: center bottom;
     background-repeat: no-repeat;
-    margin-top: -50px;
-    /* Slight overlap with content to cover any line */
+    margin-top: -90px;
+    /* Increased negative margin to overlap more */
     margin-bottom: -5px;
-    /* Ensure it sits right on the footer */
     z-index: 10;
     pointer-events: none;
+    filter: drop-shadow(0 -5px 10px rgba(255, 255, 255, 0.4));
+    /* Add glow to make it stand out */
+    overflow: hidden;
+    /* Prevent horizontal scroll from flying sled */
 }
 
+/* Sled Sliding Animation */
 /* Sled Sliding Animation */
 .christmas-separator::before {
     content: '';
     position: absolute;
     bottom: 20px;
-    /* Sit on the snow waves */
-    left: -100px;
-    /* Start off-screen */
-    width: 50px;
-    height: 30px;
-    background-image: url('./sled.svg');
+    left: -300px;
+    /* Start further off-screen due to width */
+    width: 250px;
+    /* Much wider for Santa + Reindeer */
+    height: 80px;
+    background-image: url('./sled-new.png');
     background-size: contain;
     background-repeat: no-repeat;
-    animation: sledSlide 15s linear infinite;
+    animation: sledSlide 20s linear infinite;
+    /* Slower animation for larger object */
     z-index: 15;
 }
 
 @keyframes sledSlide {
     0% {
-        left: -100px;
-        transform: rotate(0deg);
-    }
-
-    10% {
-        transform: rotate(-5deg);
+        left: -300px;
+        transform: translateY(0) rotate(-5deg);
     }
 
     20% {
-        bottom: 40px;
-        transform: rotate(5deg);
+        transform: translateY(-20px) rotate(0deg);
     }
 
-    /* Following the wave roughly */
-    30% {
-        bottom: 20px;
-        transform: rotate(0deg);
+    40% {
+        transform: translateY(0) rotate(5deg);
     }
 
-    50% {
-        bottom: 50px;
-        transform: rotate(-2deg);
+    60% {
+        transform: translateY(-30px) rotate(-2deg);
     }
 
-    70% {
-        bottom: 25px;
-        transform: rotate(3deg);
+    80% {
+        transform: translateY(-10px) rotate(2deg);
     }
 
     100% {
         left: 110%;
-        transform: rotate(0deg);
+        /* Fly off the other side */
+        transform: translateY(0) rotate(0deg);
     }
 }
 
@@ -525,47 +521,42 @@
     animation-delay: -0.6s;
 }
 
-/* Climbing Santa */
-/* Climbing Santa */
+/* Climbing/Hanging Santa */
 .santa-climber {
     position: fixed;
-    top: 60px;
-    /* Slight adjustment for new SVG head size */
-    right: 5%;
-    width: 90px;
-    /* Increased size to show off the bigger head */
+    top: -20px;
+    left: 5px;
+    /* Almost touching the left edge */
+    width: 150px;
     height: auto;
     z-index: 10000;
     filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
     pointer-events: none;
-    transition: transform 0.3s ease;
+    transform-origin: top center;
+    animation: pendulumSwing 3s ease-in-out infinite alternate;
 }
 
+/* Navbar Garland Decoration */
 /* Navbar Garland Decoration */
 .navbar-garland {
     position: fixed;
     top: 120px;
-    /* Adjusted position */
+    /* Reverted to original position */
     left: 0;
     width: 100%;
     height: 20px;
-    /* Height of the garland strip */
+    /* Original height */
     background-image: url('./garland.svg');
+    /* Original SVG */
     background-repeat: repeat-x;
     background-size: 40px 20px;
-    /* Matches SVG viewbox ratio */
+    /* Original sizing */
     z-index: 9998;
-    /* Just behind Santa but on top of content */
     pointer-events: none;
     filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
 }
 
-/* Swing animation for both hanging legs */
-.santa-climber .swing-legs {
-    animation: swingLegs 3s ease-in-out infinite alternate;
-}
-
-@keyframes swingLegs {
+@keyframes pendulumSwing {
     0% {
         transform: rotate(-5deg);
     }
@@ -575,61 +566,30 @@
     }
 }
 
-/* Body wobble (Struggle effect) */
-.santa-climber {
-    animation: bodyWobble 3s ease-in-out infinite;
-}
-
-@keyframes bodyWobble {
-
-    0%,
-    100% {
-        transform: translateY(0) rotate(0deg);
-    }
-
-    50% {
-        transform: translateY(3px) rotate(-1deg);
-    }
-}
-
 /* 🎅 Product Card Santa Hats 🎅 */
-/* Targeting cards in Featured Products, Categories, and general grids */
-/* We target the card container usually identified by white bg and rounded corners inside grids */
+/* 🎅 Category Card Santa Hats 🎅 */
+/* Targeted specifically at Category Cards in the Grid */
 
-/* Index Page - Categories & Featured Products */
-.grid>a>div,
-/* Categories */
-#featured-products>div
-
-/* Featured Carousel Cards */
-    {
+.grid>a {
     position: relative !important;
-    /* Ensure we can position the hat absolute relative to card */
-    /* Remove overflow visible to keep rounded corners working */
+    /* Allow the hat to be positioned relative to the link container */
+    /* This avoids overflow:hidden clipping from the inner div */
+    display: block;
+    /* Ensure it behaves like a container */
 }
 
-/* We need to be careful with overflow:hidden on cards which clips the hat. 
-   Most cards have overflow-hidden for rounded corners. 
-   We will place the hat INSIDE the top right corner, on top of the image. */
-
-.grid>a>div::after,
-#featured-products>div::after,
-.product-card::after
-
-/* Future proofing if generic class is added, or if found in JS rendered cards */
-    {
+.grid>a::after {
     content: '';
     position: absolute;
-    top: 0;
-    right: 0;
-    width: 60px;
-    height: 48px;
-    /* Maintain aspect ratio of new SVG */
-    background-image: url('./hat.svg');
+    top: -45px;
+    right: -55px;
+    /* Shifted 10px left (total -55px) */
+    width: 100px;
+    height: 100px;
+    background-image: url('./santa-hat-new.png');
     background-size: contain;
     background-repeat: no-repeat;
     z-index: 50;
-    /* Above product image */
     pointer-events: none;
-    /* No rotation needed for new design */
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
 }
