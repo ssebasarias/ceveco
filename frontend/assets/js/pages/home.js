@@ -102,7 +102,7 @@ async function loadBrands() {
             const brandElements = brands.map(marca =>
                 `<span class="text-base md:text-2xl font-bold text-gray-400 uppercase whitespace-nowrap px-4 md:px-8">${marca.nombre}</span>`
             ).join('');
-            container.innerHTML = brandElements + brandElements;
+            container.innerHTML = brandElements.repeat(4);
         } else {
             container.innerHTML = '<span class="text-xl font-bold text-gray-400">No hay marcas disponibles</span>';
         }
