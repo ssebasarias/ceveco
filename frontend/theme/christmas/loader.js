@@ -26,7 +26,7 @@
     const snowContainer = document.createElement('div');
     snowContainer.className = 'global-snow-container';
     // Generate 50 snowflakes
-    for (let i = 0; i < 50; i++) {
+    for (let i = 0; i < 20; i++) {
         const flake = document.createElement('div');
         flake.className = 'snowflake';
         const symbols = ['❄', '❅', '❆'];

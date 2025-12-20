@@ -217,6 +217,13 @@ if (typeof window !== 'undefined') {
         TIMEOUTS,
         STORAGE_KEYS,
         CUSTOM_EVENTS,
-        API_PATHS
+        API_PATHS,
+        SEDES_CONTACT: [
+            { nombre: 'RIOSUCIO', telefono: '6068592032', whatsapp: '576068592032', ciudad: 'Riosucio, Caldas' },
+            { nombre: 'SUPIA', telefono: '3127449591', whatsapp: '573127449591', ciudad: 'Supía, Caldas' },
+            { nombre: 'ANSERMA', telefono: '3128859141', whatsapp: '573128859141', ciudad: 'Anserma, Caldas' },
+            { nombre: 'LA PINTADA', telefono: '3146302935', whatsapp: '573146302935', ciudad: 'La Pintada, Antioquia' },
+            { nombre: 'LA VIRGINIA', telefono: '3105348479', whatsapp: '573105348479', ciudad: 'La Virginia, Risaralda' }
+        ]
     };
 }

@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         const mapUrl = `https://maps.google.com/maps?q=${query}&hl=es&z=15&output=embed`;
-        const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${query}`;
+        const directionsUrl = sede.link_google_maps ? sede.link_google_maps : `https://www.google.com/maps/dir/?api=1&destination=${query}`;
 
         // Parse services if JSON string
         let services = [];
