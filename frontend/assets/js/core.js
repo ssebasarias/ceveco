@@ -382,6 +382,30 @@
             if (card && !e.target.closest('button') && !e.target.closest('a')) {
                 window.goToProduct(card.dataset.productId);
             }
+
+            // Quote Product (WhatsApp)
+            const quoteBtn = e.target.closest('.js-quote-product');
+            if (quoteBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const d = quoteBtn.dataset;
+                const name = d.name || 'Producto';
+                const id = d.id || '';
+                // Use absolute URL for the image if possible, otherwise just send the name
+                const image = d.image || '';
+
+                // Get global phone or fallback
+                let phone = '573001234567'; // Default fallback
+                if (window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.whatsapp) {
+                    phone = window.CONFIG.APP.whatsapp.replace(/\D/g, '');
+                }
+
+                const message = `Hola, me interesa cotizar este producto:\n\n*${name}*\nRef/ID: ${id}\n${window.location.origin}${image}`;
+                const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+                window.open(url, '_blank');
+            }
         });
     }
 
