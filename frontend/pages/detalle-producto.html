@@ -19,7 +19,6 @@
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
 
     <!-- Sticky Header -->
-    <!-- Sticky Header -->
     <div id="navbar-root"></div>
 
     <!-- Breadcrumb -->
@@ -58,7 +57,7 @@
             <div class="space-y-4">
                 <!-- Main Image -->
                 <div
-                    class="bg-white rounded-2xl border border-gray-200 p-8 aspect-square flex items-center justify-center relative overflow-hidden group">
+                    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 h-[600px] flex items-center justify-center relative overflow-hidden group">
                     <img id="main-image" src="" alt="Producto"
                         class="max-w-full max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
                     <div id="product-badge" class="absolute top-4 left-4"></div>
@@ -78,19 +77,19 @@
                         class="inline-block px-3 py-1 bg-blue-50 text-primary text-xs font-bold uppercase tracking-wider rounded-full mb-3">MARCA</span>
                     <h1 id="product-name" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Nombre del Producto
                     </h1>
-                    <p id="product-short-desc" class="text-gray-600">Descripción corta del producto</p>
+                    <!-- <p id="product-short-desc" class="text-gray-600">Descripción corta del producto</p> -->
                 </div>
 
                 <!-- Rating & Reviews -->
-                <div class="flex items-center gap-4 pb-4 border-b border-gray-200">
+                <!-- <div class="flex items-center gap-4 pb-4 border-b border-gray-200">
                     <div class="flex items-center gap-1" id="rating-stars">
-                        <!-- Stars injected by JS -->
+                         Stars injected by JS
                     </div>
                     <span id="reviews-count" class="text-sm text-gray-600">(0 reseñas)</span>
-                </div>
+                </div> -->
 
                 <!-- Price -->
-                <div class="py-4 border-b border-gray-200">
+                <!-- <div class="py-4 border-b border-gray-200">
                     <div class="flex items-baseline gap-3 mb-2">
                         <span id="product-price" class="text-4xl font-bold text-gray-900">$0</span>
                         <span id="product-old-price" class="text-xl text-gray-400 line-through hidden">$0</span>
@@ -99,20 +98,20 @@
                         <i data-lucide="check-circle" class="w-5 h-5"></i>
                         <span id="stock-status" class="font-medium">Disponible - Envío gratis</span>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Key Features -->
-                <div class="space-y-3">
+                <!-- <div class="space-y-3">
                     <h3 class="font-bold text-gray-900">Características principales:</h3>
                     <ul id="product-features" class="space-y-2">
-                        <!-- Features injected by JS -->
+                        
                     </ul>
-                </div>
+                </div> -->
 
                 <!-- Actions -->
                 <div class="space-y-3 pt-4">
                     <!-- Quantity & Add to Cart -->
-                    <div class="flex flex-col sm:flex-row gap-3">
+                    <!-- <div class="flex flex-col sm:flex-row gap-3">
                         <div
                             class="flex items-center justify-center border-2 border-gray-200 rounded-lg overflow-hidden w-full sm:w-auto">
                             <button id="qty-minus-btn"
@@ -132,25 +131,71 @@
                             <i data-lucide="shopping-cart" class="w-4 h-4 md:w-5 md:h-5"></i>
                             Agregar al Carrito
                         </button>
-                    </div>
+                    </div> -->
 
                     <!-- WhatsApp Contact -->
-                    <a id="whatsapp-btn" href="#" target="_blank"
-                        class="w-full bg-green-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2 text-sm md:text-base shadow-sm">
-                        <i data-lucide="message-circle" class="w-4 h-4 md:w-5 md:h-5"></i>
-                        Contactar Asesor por WhatsApp
-                    </a>
+
+                    <button id="whatsapp-btn" type="button"
+                        class="w-full bg-primary text-white font-bold py-3 px-6 rounded-full hover:bg-primary-dark transition-all flex items-center justify-center gap-2 text-sm md:text-base shadow-md transform active:scale-95 js-quote-product animate-bounce shadow-primary/30">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                        </svg>
+                        Cotizar producto
+                    </button>
 
                     <!-- Wishlist -->
                     <button id="detail-fav-btn"
-                        class="w-full border-2 border-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all flex items-center justify-center gap-2 btn-favorite text-sm md:text-base">
-                        <i data-lucide="heart" class="w-4 h-4 md:w-5 md:h-5 transition-colors"></i>
+                        class="w-full border-2 border-gray-100 bg-white text-gray-500 font-bold py-3 px-6 rounded-full hover:border-red-500 hover:text-red-500 hover:bg-red-50 transition-all duration-300 flex items-center justify-center gap-2 group btn-favorite text-sm md:text-base shadow-sm transform active:scale-95">
+                        <i data-lucide="heart"
+                            class="w-5 h-5 transition-all duration-300 group-hover:scale-110 group-hover:fill-current"></i>
                         <span id="fav-text">Agregar a Favoritos</span>
                     </button>
                 </div>
 
+                <!-- Tabs: Description & Specs -->
+                <div id="product-details-tabs" class="hidden mt-8">
+                    <!-- Nav Pills -->
+                    <div class="flex mb-6">
+                        <div class="inline-flex bg-gray-100 p-1.5 rounded-xl w-full">
+                            <button id="tab-description" data-tab="description"
+                                class="tab-button active flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-white text-primary shadow-sm ring-1 ring-black/5">
+                                <i data-lucide="align-left" class="w-4 h-4"></i>
+                                Descripción
+                            </button>
+                            <button id="tab-specs" data-tab="specs"
+                                class="tab-button flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900 transition-all duration-200">
+                                <i data-lucide="list" class="w-4 h-4"></i>
+                                Ficha Técnica
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <!-- Description Tab -->
+                        <div id="content-description" class="tab-content">
+                            <div class="prose prose-sm max-w-none text-gray-600 leading-relaxed" id="full-description">
+                                <!-- Description injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Specs Tab -->
+                        <div id="content-specs" class="tab-content hidden">
+                            <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                <i data-lucide="cpu" class="w-5 h-5 text-primary"></i>
+                                Especificaciones
+                            </h3>
+                            <div class="space-y-3" id="specs-container">
+                                <!-- Specs injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
                 <!-- Guarantees -->
-                <div class="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
+                <!-- <div class="grid grid-cols-3 gap-4 pt-6 border-t border-gray-200">
+
                     <div class="text-center">
                         <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-2">
                             <i data-lucide="truck" class="w-6 h-6 text-primary"></i>
@@ -169,40 +214,12 @@
                         </div>
                         <p class="text-xs font-medium text-gray-700">Devolución 30 días</p>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
         <!-- Tabs: Description & Specs -->
-        <div id="product-details-tabs" class="hidden mb-16 bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-            <div class="border-b border-gray-200 mb-8">
-                <nav class="flex gap-8">
-                    <button id="tab-description" data-tab="description"
-                        class="tab-button active pb-4 px-2 font-semibold text-primary border-b-2 border-primary transition-colors">
-                        Descripción
-                    </button>
-                    <button id="tab-specs" data-tab="specs"
-                        class="tab-button pb-4 px-2 font-semibold text-gray-600 border-b-2 border-transparent hover:text-primary transition-colors">
-                        Ficha Técnica
-                    </button>
-                </nav>
-            </div>
 
-            <!-- Description Tab -->
-            <div id="content-description" class="tab-content">
-                <div class="prose max-w-none text-gray-700" id="full-description">
-                    <!-- Description injected by JS -->
-                </div>
-            </div>
-
-            <!-- Specs Tab -->
-            <div id="content-specs" class="tab-content hidden">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">Especificaciones Técnicas</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="specs-container">
-                    <!-- Specs injected by JS -->
-                </div>
-            </div>
-        </div>
 
         <!-- Related Products -->
         <div id="related-products-section" class="hidden">
@@ -218,7 +235,6 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <!-- Footer -->
     <div id="footer-root"></div>
 

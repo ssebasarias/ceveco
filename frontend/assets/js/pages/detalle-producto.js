@@ -157,8 +157,11 @@ function renderProduct(product) {
     // WhatsApp Button
     const whatsappBtn = document.getElementById('whatsapp-btn');
     if (whatsappBtn) {
-        const whatsappMsg = `Hola, estoy interesado en el producto ${product.nombre} (Ref: ${product.sku})`;
-        whatsappBtn.href = `https://wa.me/573001234567?text=${encodeURIComponent(whatsappMsg)}`;
+        whatsappBtn.dataset.id = product.id_producto;
+        whatsappBtn.dataset.name = product.nombre;
+        whatsappBtn.dataset.price = product.precio_actual;
+        whatsappBtn.dataset.image = product.imagen_principal || '';
+        whatsappBtn.dataset.brand = product.categoria || '';
     }
 
     // Add to Cart Button Logic
@@ -191,21 +194,14 @@ function renderSpecs(product) {
     if (!specsContainer) return;
 
     if (product.especificaciones && product.especificaciones.length > 0) {
-        const midPoint = Math.ceil(product.especificaciones.length / 2);
-        const col1Specs = product.especificaciones.slice(0, midPoint);
-        const col2Specs = product.especificaciones.slice(midPoint);
-
         const renderList = (specs) => specs.map(spec => `
-            <div class="flex justify-between py-3 border-b border-gray-200">
-                <span class="font-semibold text-gray-700">${spec.nombre}:</span>
-                <span class="text-gray-600">${spec.valor}</span>
+            <div class="flex justify-between py-2 border-b border-gray-100 last:border-0">
+                <span class="font-semibold text-gray-700 text-sm">${spec.nombre}:</span>
+                <span class="text-gray-600 text-sm text-right ml-4">${spec.valor}</span>
             </div>
         `).join('');
 
-        specsContainer.innerHTML = `
-            <div class="space-y-3">${renderList(col1Specs)}</div>
-            <div class="space-y-3">${renderList(col2Specs)}</div>
-        `;
+        specsContainer.innerHTML = `<div class="space-y-1">${renderList(product.especificaciones)}</div>`;
     } else {
         specsContainer.innerHTML = `
             <div class="space-y-3">
@@ -290,9 +286,12 @@ function updateQuantity(change) {
 }
 
 function switchTab(tabName) {
+    const activeClasses = ['active', 'bg-white', 'text-primary', 'shadow-sm', 'ring-1', 'ring-black/5', 'font-semibold'];
+    const inactiveClasses = ['text-gray-500', 'hover:text-gray-900', 'font-medium'];
+
     document.querySelectorAll('.tab-button').forEach(btn => {
-        btn.classList.remove('active', 'text-primary', 'border-primary');
-        btn.classList.add('text-gray-600', 'border-transparent');
+        btn.classList.remove(...activeClasses);
+        btn.classList.add(...inactiveClasses);
     });
     document.querySelectorAll('.tab-content').forEach(content => {
         content.classList.add('hidden');
@@ -302,8 +301,8 @@ function switchTab(tabName) {
     const activeContent = document.getElementById(`content-${tabName}`);
 
     if (activeBtn) {
-        activeBtn.classList.add('active', 'text-primary', 'border-primary');
-        activeBtn.classList.remove('text-gray-600', 'border-transparent');
+        activeBtn.classList.add(...activeClasses);
+        activeBtn.classList.remove(...inactiveClasses);
     }
     if (activeContent) activeContent.classList.remove('hidden');
 }
