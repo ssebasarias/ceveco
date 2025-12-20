@@ -34,7 +34,6 @@ export class FiltersSidebar {
         if (toggleBtn && wrapper) {
             toggleBtn.addEventListener('click', () => {
                 wrapper.classList.toggle('hidden');
-                // Re-create icons when showing if needed
                 if (!wrapper.classList.contains('hidden') && window.lucide) {
                     window.lucide.createIcons();
                 }
@@ -47,10 +46,36 @@ export class FiltersSidebar {
             clearBtn.addEventListener('click', () => this.clearAllFilters());
         }
 
-        // Price filter
-        const priceBtn = this.container.querySelector('#apply-price-filter');
-        if (priceBtn) {
-            priceBtn.addEventListener('click', () => this.triggerFilterChange());
+        // Initialize Price Filter Accordion Logic
+        // We need to re-bind this if the HTML structure for price changes to match accordion
+        // But assuming the static HTML will be updated to match the new structure, we'll treat it as a group
+        this.initAccordionGroups();
+    }
+
+    // Helper to initialize accordion behavior for existing and new groups
+    initAccordionGroups() {
+        const headers = this.container.querySelectorAll('.filter-group-header');
+        headers.forEach(header => {
+            // Remove old listener to avoid duplicates if re-running
+            header.onclick = null;
+            header.addEventListener('click', (e) => {
+                const group = header.closest('.filter-group');
+                this.toggleGroup(group);
+            });
+        });
+    }
+
+    toggleGroup(group) {
+        if (!group) return;
+        const isOpen = group.classList.contains('open');
+
+        // Optional: Close others? For now, allow multiple open (true accordion)
+        // group.parentElement.querySelectorAll('.filter-group.open').forEach(g => g.classList.remove('open'));
+
+        if (isOpen) {
+            group.classList.remove('open');
+        } else {
+            group.classList.add('open');
         }
     }
 
@@ -61,7 +86,6 @@ export class FiltersSidebar {
         container.innerHTML = '<div class="filter-loading"><div class="filter-loading-spinner"></div></div>';
 
         try {
-            // Check if ProductService is available
             if (typeof window.ProductService === 'undefined') {
                 console.error('ProductService is not defined');
                 return;
@@ -74,30 +98,26 @@ export class FiltersSidebar {
 
                 // Render Subcategories
                 if (subcategorias && subcategorias.length > 0) {
-                    html += `
-                        <div class="filter-group">
-                            <h4 class="filter-group-title">
-                                <i data-lucide="folder" class="w-4 h-4"></i>
-                                Subcategorías
-                            </h4>
-                            <div class="filter-options">
-                                ${subcategorias.map(sub => {
-                        const filterId = `filter-sub-${sub.slug}`;
-                        return `
-                                        <label class="filter-option" for="${filterId}">
-                                            <input 
-                                                type="checkbox" 
-                                                id="${filterId}"
-                                                name="subcategoria" 
-                                                value="${sub.slug}" 
-                                                class="filter-checkbox">
-                                            <span class="filter-label">${this.escapeHTML(sub.nombre)}</span>
-                                        </label>
-                                    `;
-                    }).join('')}
-                            </div>
-                        </div>
-                    `;
+                    html += this.renderFilterGroup({
+                        id: 'subcategorias',
+                        title: 'Subcategorías',
+                        icon: 'folder',
+                        isOpen: true, // Auto open first group
+                        content: subcategorias.map(sub => {
+                            const filterId = `filter-sub-${sub.slug}`;
+                            return `
+                                <label class="filter-option" for="${filterId}">
+                                    <input 
+                                        type="checkbox" 
+                                        id="${filterId}"
+                                        name="subcategoria" 
+                                        value="${sub.slug}" 
+                                        class="filter-checkbox">
+                                    <span class="filter-label">${this.escapeHTML(sub.nombre)}</span>
+                                </label>
+                            `;
+                        }).join('')
+                    });
                 }
 
                 // Render Attributes
@@ -107,50 +127,99 @@ export class FiltersSidebar {
                         if (uniqueValues.length === 0) return '';
 
                         const icon = this.getIconForAttribute(attr.nombre);
-
-                        return `
-                            <div class="filter-group">
-                                <h4 class="filter-group-title">
-                                    <i data-lucide="${icon}" class="w-4 h-4"></i>
-                                      ${this.escapeHTML(attr.nombre)}
-                                     ${attr.unidad ? `<span class=\"filter-group-badge\">${this.escapeHTML(attr.unidad)}</span>` : ''}
-                                </h4>
-                                <div class="filter-options">
-                                    ${uniqueValues.map(val => {
+                        const content = uniqueValues.map(val => {
                             const safeVal = String(val).replace(/"/g, '&quot;');
                             const filterId = `filter-${attr.id_atributo}-${safeVal.replace(/\s+/g, '-').replace(/[^\w-]/g, '')}`;
                             return `
-                                            <label class="filter-option" for="${filterId}">
-                                                <input 
-                                                    type="checkbox" 
-                                                    id="${filterId}"
-                                                    name="attr_${attr.id_atributo}" 
-                                                    value="${safeVal}" 
-                                                    class="filter-checkbox">
-                                                <span class="filter-label">${this.escapeHTML(val)}</span>
-                                            </label>
-                                        `;
-                        }).join('')}
-                                </div>
-                            </div>
-                        `;
+                                <label class="filter-option" for="${filterId}">
+                                    <input 
+                                        type="checkbox" 
+                                        id="${filterId}"
+                                        name="attr_${attr.id_atributo}" 
+                                        value="${safeVal}" 
+                                        class="filter-checkbox">
+                                    <span class="filter-label">${this.escapeHTML(val)}</span>
+                                </label>
+                            `;
+                        }).join('');
+
+                        return this.renderFilterGroup({
+                            id: `attr-${attr.id_atributo}`,
+                            title: attr.nombre,
+                            icon: icon,
+                            unit: attr.unidad,
+                            content: content
+                        });
+
                     }).filter(h => h !== '').join('');
                 }
 
-                container.innerHTML = html || '<div class="filter-group"><p class="text-sm text-gray-500">No hay filtros disponibles</p></div>';
+                container.innerHTML = html || '<div class="filter-group"><div class="p-4 text-sm text-gray-500">No hay filtros disponibles</div></div>';
 
                 // Re-initialize icons
                 if (window.lucide) window.lucide.createIcons();
 
-                // Add event listeners
-                container.querySelectorAll('.filter-checkbox').forEach(checkbox => {
-                    checkbox.addEventListener('change', () => this.triggerFilterChange());
-                });
+                // Re-bind accordions
+                this.initAccordionGroups();
+
+                // Add Checkbox Listeners for Badges
+                this.bindCheckboxListeners();
 
             }
         } catch (err) {
             console.error('Error loading filters', err);
-            container.innerHTML = '<div class="filter-group"><p class="text-sm text-gray-500">No se pudieron cargar los filtros</p></div>';
+            container.innerHTML = '<div class="filter-group"><div class="p-4 text-sm text-gray-500">No se pudieron cargar los filtros</div></div>';
+        }
+    }
+
+    renderFilterGroup({ id, title, icon, content, isOpen = false, unit = '' }) {
+        const titleHtml = unit ? `${this.escapeHTML(title)} <span class="text-xs text-gray-400 ml-1">(${unit})</span>` : this.escapeHTML(title);
+
+        return `
+            <div class="filter-group ${isOpen ? 'open' : ''}" data-group-id="${id}">
+                <button class="filter-group-header" type="button">
+                    <div class="filter-group-title">
+                        <i data-lucide="${icon}" class="w-4 h-4 filter-group-icon"></i>
+                        <span>${titleHtml}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <span class="filter-group-count-badge">0</span>
+                        <i data-lucide="chevron-down" class="filter-chevron"></i>
+                    </div>
+                </button>
+                <div class="filter-group-content">
+                    <div class="filter-options scrollable">
+                        ${content}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    bindCheckboxListeners() {
+        const checkboxes = this.container.querySelectorAll('.filter-checkbox');
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                this.updateGroupBadge(cb);
+                this.triggerFilterChange();
+            });
+        });
+    }
+
+    updateGroupBadge(checkbox) {
+        const group = checkbox.closest('.filter-group');
+        if (!group) return;
+
+        const countSpan = group.querySelector('.filter-group-count-badge');
+        if (!countSpan) return;
+
+        const checkedCount = group.querySelectorAll('.filter-checkbox:checked').length;
+
+        countSpan.textContent = checkedCount;
+        if (checkedCount > 0) {
+            countSpan.classList.add('visible');
+        } else {
+            countSpan.classList.remove('visible');
         }
     }
 
@@ -163,7 +232,8 @@ export class FiltersSidebar {
             'material': 'layers',
             'dimensiones': 'maximize-2',
             'capacidad': 'package',
-            'potencia': 'battery-charging',
+            'bateria': 'battery',
+            'potencia': 'activity',
             'voltaje': 'zap',
             'peso': 'weight',
             'tamaño': 'maximize',
@@ -178,10 +248,9 @@ export class FiltersSidebar {
                 return icon;
             }
         }
-        return 'settings';
+        return 'settings-2';
     }
 
-    // Utility to escape HTML characters to prevent XSS
     escapeHTML(str) {
         return String(str).replace(/[&<>"']/g, function (c) {
             return {
@@ -196,12 +265,13 @@ export class FiltersSidebar {
 
     triggerFilterChange() {
         this.updateClearFiltersButton();
-        // Since we want to reset to page 1 on filter change, the callback should handle that
         this.onFilterChange();
     }
 
     updateClearFiltersButton() {
         const hasCheckboxFilters = this.container.querySelectorAll('#dynamic-filters-container input[type="checkbox"]:checked').length > 0;
+
+        // Check price inputs manually if they exist (need to select them correctly from HTML structure)
         const minInput = this.container.querySelector('#price-min');
         const maxInput = this.container.querySelector('#price-max');
         const hasPriceFilters = (minInput && minInput.value) || (maxInput && maxInput.value);
@@ -216,8 +286,9 @@ export class FiltersSidebar {
 
     clearAllFilters() {
         // Clear checkboxes
-        this.container.querySelectorAll('#dynamic-filters-container input[type="checkbox"]:checked').forEach(checkbox => {
+        this.container.querySelectorAll('.filter-checkbox').forEach(checkbox => {
             checkbox.checked = false;
+            this.updateGroupBadge(checkbox); // Update badges to 0
         });
 
         // Clear price
@@ -230,7 +301,6 @@ export class FiltersSidebar {
         this.triggerFilterChange();
     }
 
-    // New method to retrieve current filter state
     getFilterValues() {
         const minInput = this.container.querySelector('#price-min');
         const maxInput = this.container.querySelector('#price-max');

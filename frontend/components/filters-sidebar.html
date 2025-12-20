@@ -13,7 +13,7 @@
         <!-- Header -->
         <div class="filters-header">
             <h3>
-                <i data-lucide="sliders-horizontal" class="w-5 h-5 filters-header-icon"></i>
+                <i data-lucide="sliders-horizontal" class="filters-header-icon"></i>
                 Filtros
             </h3>
             <button class="btn-clear-filters" id="clear-filters-btn" style="display: none;">
@@ -23,33 +23,40 @@
 
         <!-- Dynamic Attribute Filters -->
         <div id="dynamic-filters-container">
-            <!-- Filters will be loaded dynamically -->
+            <!-- Filters will be loaded dynamically here -->
             <div class="filter-loading">
                 <div class="filter-loading-spinner"></div>
             </div>
         </div>
 
-        <!-- Price Filter -->
-        <div class="filter-group">
-            <h3 class="font-bold text-lg mb-4 text-gray-900">Precio</h3>
-            <div class="px-1 space-y-4">
-                <div class="flex items-center gap-2">
-                    <div class="relative flex-1">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                        <input type="number" id="price-min" placeholder="Mín" min="0"
-                            class="w-full pl-6 pr-2 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:outline-none">
-                    </div>
-                    <span class="text-gray-400">-</span>
-                    <div class="relative flex-1">
-                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
-                        <input type="number" id="price-max" placeholder="Máx" min="0"
-                            class="w-full pl-6 pr-2 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary/20 focus:outline-none">
-                    </div>
+        <!-- Price Filter (Accordion Style) -->
+        <div class="filter-group open" id="price-filter-group">
+            <button class="filter-group-header" type="button">
+                <div class="filter-group-title">
+                    <i data-lucide="dollar-sign" class="w-4 h-4 filter-group-icon"></i>
+                    <span>Precio</span>
                 </div>
-                <button id="apply-price-filter"
-                    class="w-full py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-primary transition-colors focus:ring-2 focus:ring-offset-2 focus:ring-gray-900">
-                    Filtrar Precio
-                </button>
+                <div class="flex items-center">
+                    <i data-lucide="chevron-down" class="filter-chevron"></i>
+                </div>
+            </button>
+            <div class="filter-group-content">
+                <div class="price-filter-container">
+                    <div class="price-inputs-row">
+                        <div class="price-input-wrapper">
+                            <span class="price-symbol">$</span>
+                            <input type="number" id="price-min" placeholder="Mín" min="0" class="price-input-field">
+                        </div>
+                        <span class="text-gray-400">-</span>
+                        <div class="price-input-wrapper">
+                            <span class="price-symbol">$</span>
+                            <input type="number" id="price-max" placeholder="Máx" min="0" class="price-input-field">
+                        </div>
+                    </div>
+                    <button id="apply-price-filter" class="btn-price-apply">
+                        Aplicar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
