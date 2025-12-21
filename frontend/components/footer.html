@@ -1,22 +1,22 @@
 <footer class="bg-gray-50 pt-16 pb-8 border-t border-gray-200">
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <!-- Col 1 - Logo y descripción -->
-            <div class="space-y-4">
-                <div class="inline-block">
+            <div class="flex flex-col items-start">
+                <div class="mb-4">
                     <img src="../assets/img/logo 50 años.png" alt="Ceveco - 50 años"
-                        class="h-48 w-auto mix-blend-multiply">
+                        class="h-32 w-auto mix-blend-multiply">
                 </div>
-                <p class="text-sm text-gray-600 leading-relaxed max-w-xs">
-                    Tu aliado experto en electrodomésticos y hogar. <span class="font-semibold text-gray-800">Calidad,
-                        garantía y respaldo</span> en cada compra.
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    Tu aliado experto en electrodomésticos y hogar.
+                    <span class="font-semibold text-gray-800">Calidad, garantía y respaldo</span> en cada compra.
                 </p>
             </div>
 
             <!-- Col 2 - Información Legal -->
-            <div>
+            <div class="flex flex-col">
                 <h4 class="font-bold text-gray-900 mb-4">Información Legal</h4>
-                <ul class="space-y-2 text-sm">
+                <ul class="space-y-2 text-sm flex-1">
                     <li>
                         <button type="button" data-legal="terms"
                             class="legal-link text-gray-600 hover:text-primary transition-colors duration-200 text-left w-full cursor-pointer bg-transparent border-0 p-0">
@@ -51,74 +51,74 @@
             </div>
 
             <!-- Col 3 - Contacto -->
-            <div>
+            <div class="flex flex-col">
                 <h4 class="font-bold text-gray-900 mb-4">Contacto</h4>
                 <p class="text-xs text-gray-500 mb-3">Sede Principal - Riosucio</p>
-                <ul class="space-y-3 text-sm text-gray-500">
-                    <li class="flex items-start gap-3">
-                        <i data-lucide="map-pin" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0"></i>
-                        <span>Cl. 9 #575<br>Riosucio, Caldas</span>
+                <ul class="space-y-2.5 text-sm flex-1">
+                    <li class="flex items-start gap-2.5">
+                        <i data-lucide="map-pin" class="w-4 h-4 text-primary mt-0.5 flex-shrink-0"></i>
+                        <span class="text-xs">Cl. 9 #575<br>Riosucio, Caldas</span>
                     </li>
-                    <li class="flex items-center gap-3">
-                        <i data-lucide="phone" class="w-5 h-5 text-primary flex-shrink-0"></i>
-                        <a href="tel:+576068592032" class="hover:text-primary transition-colors">
+                    <li class="flex items-center gap-2.5">
+                        <i data-lucide="phone" class="w-4 h-4 text-primary flex-shrink-0"></i>
+                        <a href="tel:+576068592032" class="hover:text-primary transition-colors text-xs">
                             (606) 859 2032
                         </a>
                     </li>
-                    <li class="flex items-center gap-3">
-                        <i data-lucide="smartphone" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                    <li class="flex items-center gap-2.5">
+                        <i data-lucide="smartphone" class="w-4 h-4 text-primary flex-shrink-0"></i>
                         <a href="https://wa.me/573216453672" target="_blank"
-                            class="hover:text-primary transition-colors">
+                            class="hover:text-primary transition-colors text-xs">
                             +57 321 645 3672
                         </a>
                     </li>
-                    <li class="flex items-center gap-3">
-                        <i data-lucide="mail" class="w-5 h-5 text-primary flex-shrink-0"></i>
+                    <li class="flex items-center gap-2.5">
+                        <i data-lucide="mail" class="w-4 h-4 text-primary flex-shrink-0"></i>
                         <a href="mailto:contacto@ceveco.com.co"
-                            class="hover:text-primary transition-colors">contacto@ceveco.com.co</a>
+                            class="hover:text-primary transition-colors text-xs">contacto@ceveco.com.co</a>
                     </li>
                 </ul>
             </div>
 
             <!-- Col 4 - Métodos de Pago -->
-            <div>
+            <div class="flex flex-col">
                 <h4 class="font-bold text-gray-900 mb-4">Métodos de Pago</h4>
                 <p class="text-xs text-gray-500 mb-3">Escanea el código QR para pagar</p>
-                <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-2.5 flex-1">
                     <!-- Bancolombia Button -->
                     <button type="button" data-bank="bancolombia"
-                        class="bank-qr-btn group flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        class="bank-qr-btn group flex items-center gap-2.5 px-3 py-2.5 bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <div
-                            class="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            class="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#FDDA24" />
                                 <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="#FDDA24" />
                             </svg>
                         </div>
                         <div class="flex-1 text-left">
-                            <div class="text-sm font-bold text-gray-900">Bancolombia</div>
-                            <div class="text-xs text-gray-700">Ver código QR</div>
+                            <div class="text-xs font-bold text-gray-900">Bancolombia</div>
+                            <div class="text-[10px] text-gray-700">Ver código QR</div>
                         </div>
                         <i data-lucide="qr-code"
-                            class="w-5 h-5 text-gray-800 group-hover:scale-110 transition-transform"></i>
+                            class="w-4 h-4 text-gray-800 group-hover:scale-110 transition-transform"></i>
                     </button>
 
                     <!-- Davivienda Button -->
                     <button type="button" data-bank="davivienda"
-                        class="bank-qr-btn group flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                        class="bank-qr-btn group flex items-center gap-2.5 px-3 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <div
-                            class="w-10 h-10 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                            class="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
                                 <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#ED1C24" />
                                 <path d="M2 17L12 22L22 17V12L12 17L2 12V17Z" fill="#ED1C24" />
                             </svg>
                         </div>
                         <div class="flex-1 text-left">
-                            <div class="text-sm font-bold text-white">Davivienda</div>
-                            <div class="text-xs text-red-100">Ver código QR</div>
+                            <div class="text-xs font-bold text-white">Davivienda</div>
+                            <div class="text-[10px] text-red-100">Ver código QR</div>
                         </div>
                         <i data-lucide="qr-code"
-                            class="w-5 h-5 text-white group-hover:scale-110 transition-transform"></i>
+                            class="w-4 h-4 text-white group-hover:scale-110 transition-transform"></i>
                     </button>
                 </div>
             </div>
