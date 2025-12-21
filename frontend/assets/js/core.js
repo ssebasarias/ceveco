@@ -560,6 +560,156 @@
     }
 
     // ==========================================
+    // 8. BANK QR MODAL
+    // ==========================================
+    const BANK_QR_DATA = {
+        bancolombia: {
+            title: 'Pago con Bancolombia',
+            image: '../assets/img/qr-bancolombia.png'
+        },
+        davivienda: {
+            title: 'Pago con Davivienda',
+            image: '../assets/img/qr-davivienda.png'
+        }
+    };
+
+    // Función para abrir el modal de QR bancario
+    window.openBankQRModal = function (bank) {
+        const modal = document.getElementById('bank-qr-modal');
+        const backdrop = document.getElementById('bank-qr-backdrop');
+        const card = document.getElementById('bank-qr-card');
+        const title = document.getElementById('bank-qr-title');
+        const image = document.getElementById('bank-qr-image');
+
+        if (!modal || !backdrop || !card || !title || !image) {
+            console.error('Bank QR modal elements not found');
+            return;
+        }
+
+        const data = BANK_QR_DATA[bank];
+        if (!data) {
+            console.error('Bank QR data not found for:', bank);
+            return;
+        }
+
+        // Set content
+        title.textContent = data.title;
+        image.src = data.image;
+        image.alt = `Código QR ${data.title}`;
+
+        // Show modal
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Trigger animations
+        requestAnimationFrame(() => {
+            backdrop.style.opacity = '1';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        });
+
+        // Reinit lucide icons if needed
+        if (window.lucide) window.lucide.createIcons();
+    };
+
+    // Función para cerrar el modal de QR bancario
+    window.closeBankQRModal = function () {
+        const modal = document.getElementById('bank-qr-modal');
+        const backdrop = document.getElementById('bank-qr-backdrop');
+        const card = document.getElementById('bank-qr-card');
+        const image = document.getElementById('bank-qr-image');
+
+        if (!modal || !backdrop || !card) return;
+
+        // Reset zoom state
+        if (image) {
+            image.classList.remove('scale-150');
+            image.classList.remove('cursor-zoom-out');
+            image.classList.add('cursor-zoom-in');
+            if (card.classList.contains('overflow-auto')) {
+                card.classList.remove('overflow-auto');
+            }
+        }
+
+        // Animate out
+        backdrop.style.opacity = '0';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+
+        // Hide after animation
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }, 300);
+    };
+
+    // Setup event listeners for bank QR modal
+    function setupBankQRModalListeners() {
+        // Open modal when clicking bank buttons
+        document.addEventListener('click', (e) => {
+            const bankBtn = e.target.closest('.bank-qr-btn');
+            if (bankBtn) {
+                e.preventDefault();
+                const bank = bankBtn.dataset.bank;
+                if (bank) window.openBankQRModal(bank);
+            }
+        });
+
+        // Close modal listeners
+        const closeElements = ['bank-qr-close-x', 'bank-qr-backdrop'];
+        closeElements.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.closeBankQRModal();
+                });
+            }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('bank-qr-modal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    window.closeBankQRModal();
+                }
+            }
+        });
+
+        // Zoom toggle on image click
+        document.addEventListener('click', (e) => {
+            const qrImage = e.target.closest('#bank-qr-image');
+            if (qrImage) {
+                e.stopPropagation(); // Prevent closing modal
+                const card = document.getElementById('bank-qr-card');
+                const isZoomed = qrImage.classList.contains('scale-150');
+
+                if (isZoomed) {
+                    // Zoom out
+                    qrImage.classList.remove('scale-150');
+                    qrImage.classList.remove('cursor-zoom-out');
+                    qrImage.classList.add('cursor-zoom-in');
+                    if (card) card.classList.remove('overflow-auto');
+                } else {
+                    // Zoom in
+                    qrImage.classList.add('scale-150');
+                    qrImage.classList.remove('cursor-zoom-in');
+                    qrImage.classList.add('cursor-zoom-out');
+                    if (card) card.classList.add('overflow-auto');
+                }
+            }
+        });
+    }
+
+    // Initialize bank QR modal listeners after components load
+    document.addEventListener('components:loaded', setupBankQRModalListeners);
+    // Also try immediate setup in case components are already loaded
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(setupBankQRModalListeners, 100);
+    }
+
+    // ==========================================
     // 6. EXECUTION START
     // ==========================================
     document.addEventListener('DOMContentLoaded', async () => {
