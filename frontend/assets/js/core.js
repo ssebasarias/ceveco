@@ -410,6 +410,156 @@
     }
 
     // ==========================================
+    // 7. FOOTER & LEGAL MODAL - Implementación Limpia
+    // ==========================================
+    const LEGAL_CONTENT = {
+        terms: {
+            title: 'Términos y Condiciones',
+            content: `
+                <h4 class="font-bold mb-2">1. Introducción</h4>
+                <p class="mb-4">Bienvenido a Ceveco (ceveco.com.co). Estos términos y condiciones regulan el uso de nuestro sitio web y la compra de productos a través del mismo.</p>
+                <h4 class="font-bold mb-2">2. Uso del Sitio</h4>
+                <p class="mb-4">Al acceder a este sitio, usted confirma que tiene al menos 18 años de edad o que está accediendo bajo la supervisión de un padre o tutor.</p>
+                <h4 class="font-bold mb-2">3. Precios y Disponibilidad</h4>
+                <p class="mb-4">Todos los precios están en pesos colombianos (COP). Nos reservamos el derecho de modificar los precios sin previo aviso.</p>
+            `
+        },
+        privacy: {
+            title: 'Política de Privacidad',
+            content: `
+                <h4 class="font-bold mb-2">Protección de Datos</h4>
+                <p class="mb-4">En cumplimiento de la Ley 1581 de 2012, Ceveco se compromete a proteger sus datos personales. Sus datos serán tratados de manera confidencial y solo para los fines establecidos.</p>
+                <h4 class="font-bold mb-2">Recopilación de Información</h4>
+                <p class="mb-4">Recopilamos información cuando usted se registra, realiza una compra o se suscribe a nuestro boletín.</p>
+            `
+        },
+        shipping: {
+            title: 'Política de Envíos',
+            content: `
+                <h4 class="font-bold mb-2">Cobertura</h4>
+                <p class="mb-4">Realizamos envíos a los principales municipios de Colombia.</p>
+                <h4 class="font-bold mb-2">Tiempos de Entrega</h4>
+                <p class="mb-4">El tiempo estimado de entrega es de 2 a 5 días hábiles en ciudades principales y hasta 8 días en otras zonas. Pueden presentarse variaciones por causas ajenas a nuestra voluntad.</p>
+            `
+        },
+        returns: {
+            title: 'Garantías y Devoluciones',
+            content: `
+                <h4 class="font-bold mb-2">Garantía Legal</h4>
+                <p class="mb-4">Todos nuestros productos cuentan con la garantía legal establecida por la Superintendencia de Industria y Comercio.</p>
+                <h4 class="font-bold mb-2">Derecho de Retracto</h4>
+                <p class="mb-4">Usted tiene derecho a devolver el producto dentro de los 5 días hábiles siguientes a la recepción, siempre que esté en perfectas condiciones y en su empaque original.</p>
+            `
+        },
+        cookies: {
+            title: 'Política de Cookies',
+            content: `
+                <p class="mb-4">Utilizamos cookies propias y de terceros para mejorar su experiencia de navegación, analizar el tráfico del sitio y personalizar el contenido.</p>
+            `
+        }
+    };
+
+    // Función para abrir el modal
+    window.openLegalModal = function (type) {
+        const modal = document.getElementById('legal-modal');
+        const backdrop = document.getElementById('legal-backdrop');
+        const card = document.getElementById('legal-modal-card');
+        const title = document.getElementById('legal-title');
+        const content = document.getElementById('legal-content');
+
+        if (!modal || !backdrop || !card || !title || !content) {
+            console.error('Modal elements not found');
+            return;
+        }
+
+        const data = LEGAL_CONTENT[type];
+        if (!data) {
+            console.error('Legal content not found for type:', type);
+            return;
+        }
+
+        // Set content
+        title.textContent = data.title;
+        content.innerHTML = data.content;
+
+        // Show modal
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
+        // Trigger animations
+        requestAnimationFrame(() => {
+            backdrop.style.opacity = '1';
+            card.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        });
+
+        // Reinit lucide icons if needed
+        if (window.lucide) window.lucide.createIcons();
+    };
+
+    // Función para cerrar el modal
+    window.closeLegalModal = function () {
+        const modal = document.getElementById('legal-modal');
+        const backdrop = document.getElementById('legal-backdrop');
+        const card = document.getElementById('legal-modal-card');
+
+        if (!modal || !backdrop || !card) return;
+
+        // Animate out
+        backdrop.style.opacity = '0';
+        card.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+
+        // Hide after animation
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }, 300);
+    };
+
+    // Setup event listeners for legal modal
+    function setupLegalModalListeners() {
+        // Open modal when clicking legal links
+        document.addEventListener('click', (e) => {
+            const legalBtn = e.target.closest('.legal-link');
+            if (legalBtn) {
+                e.preventDefault();
+                const type = legalBtn.dataset.legal;
+                if (type) window.openLegalModal(type);
+            }
+        });
+
+        // Close modal listeners
+        const closeElements = ['legal-close-x', 'legal-ok-btn', 'legal-backdrop'];
+        closeElements.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.closeLegalModal();
+                });
+            }
+        });
+
+        // Close on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const modal = document.getElementById('legal-modal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    window.closeLegalModal();
+                }
+            }
+        });
+    }
+
+    // Initialize legal modal listeners after components load
+    document.addEventListener('components:loaded', setupLegalModalListeners);
+    // Also try immediate setup in case components are already loaded
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(setupLegalModalListeners, 100);
+    }
+
+    // ==========================================
     // 6. EXECUTION START
     // ==========================================
     document.addEventListener('DOMContentLoaded', async () => {
