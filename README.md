@@ -1,44 +1,31 @@
-# 📘 Ceveco - Documentación del Proyecto
+# Proyecto Ceveco
 
-Bienvenido a la documentación oficial de **Ceveco**, una plataforma de comercio electrónico moderna y robusta.
+Este repositorio contiene el sistema de gestión y tienda virtual de Ceveco.
 
-## 🚀 Inicio Rápido
+## 📂 Estructura
 
-### ¿Quieres desplegar en un servidor?
-Consulta la [Guía de Instalación en Servidor (Docker)](doc/INSTALACION_SERVIDOR.md).
-> **Resumen:** `git clone` -> configurar `.env` -> `docker-compose up -d`.
+- `backend/`: API Express y servidor de imágenes.
+- `frontend/`: Aplicación web.
+- `scripts/`: Herramientas de ingesta y mantenimiento.
+  - `ingestion/`: Scripts para cargar productos desde Excel (Honda, Suzuki, etc).
+  - `maintenance/`: Scripts para verificar y limpiar la BD.
+  - `tests/`: Pruebas de integración.
+- `docs/`: Documentación del proyecto.
+- `raw_data/`: Archivos Excel fuente.
 
-### ¿Quieres desarrollar localmente?
-Consulta la [Guía de Desarrollo Local](doc/GUIA_DESARROLLO.md).
-> **Resumen:** Instalar Postgres, `npm install` en backend, y `npm run dev`.
+## 🚀 Uso Rápido
 
----
+### Ingesta de Productos
+```bash
+# Cargar Honda
+node scripts/ingestion/motos/ingest-motos.js "raw_data/HONDA.xlsx" "Honda"
 
-## 📚 Índice de Documentación
+# Cargar Suzuki
+node scripts/ingestion/motos/ingest-motos.js "raw_data/SUZUKI.xlsx" "Suzuki"
+```
 
-Toda la documentación detallada se encuentra en la carpeta `doc/`:
-
-*   **Infraestructura y Despliegue:**
-    *   [`INSTALACION_SERVIDOR.md`](doc/INSTALACION_SERVIDOR.md): Guía completa de Docker y Docker Compose.
-    *   [`BASE_DE_DATOS.md`](doc/BASE_DE_DATOS.md): Detalles del esquema SQL y modelos.
-
-*   **Desarrollo:**
-    *   [`GUIA_DESARROLLO.md`](doc/GUIA_DESARROLLO.md): Comandos, scripts y setup.
-    *   [`GUIA_COLORES.md`](doc/GUIA_COLORES.md) y [`MIGRACION_CSS.md`](doc/MIGRACION_CSS.md): Estándares de diseño y estilos.
-
-*   **Arquitectura:**
-    *   [`arquitectura/estructura_proyecto.txt`](doc/arquitectura/estructura_proyecto.txt): Mapa del árbol de archivos.
-    *   [`funcionalidades/BUSQUEDA_UNIFICADA.md`](doc/funcionalidades/BUSQUEDA_UNIFICADA.md): Detalles sobre la implementación de búsqueda.
-
----
-
-## 🏗️ Stack Tecnológico
-
-*   **Frontend:** HTML5, CSS3 (Tailwind + Vanilla), JavaScript (Módulos ES6).
-*   **Backend:** Node.js, Express.js.
-*   **Base de Datos:** PostgreSQL.
-*   **Infraestructura:** Docker, Docker Compose.
-*   **Testing:** Playwright (E2E).
-
----
-*Ceveco Development Team - 2025*
+### Mantenimiento
+```bash
+# Verificar estado del sistema
+node scripts/maintenance/check-system.js
+```
