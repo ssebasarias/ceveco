@@ -1,0 +1,1026 @@
+[
+  {
+    "archivo": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "original": {
+      "ref": "CSO  90  - 15 cm",
+      "nombre": "CSO  90  - 15 cm",
+      "categoria": "SEMIORTOPEDICO",
+      "precio_contado": 705000,
+      "precio_promo": 635000,
+      "raw": {
+        "REF. - MEDIDA": "CSO  90  - 15 cm",
+        "CONTADO": 705000,
+        "PROMOCION": 635000,
+        "_categoria": "SEMIORTOPEDICO"
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Colchones",
+        "id": 32,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Colchones\" encontrada"
+      },
+      "marca": {
+        "nombre": "Comodisimos",
+        "id": 15,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Tipo",
+          "valor": "Semiortopédico"
+        }
+      ],
+      "nombre_sugerido": "CSO  90  - 15 cm"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "CSO  90  - 15 cm",
+      "nombre": "CSO  90  - 15 cm",
+      "descripcion_corta": "Comodisimos CSO  90  - 15 cm",
+      "descripcion_larga": "<p>Comodisimos CSO  90  - 15 cm</p><p>Precio especial: $705,000</p>",
+      "id_categoria": 2,
+      "id_subcategoria": 32,
+      "id_marca": 15,
+      "precio": 705000,
+      "precio_oferta": 635000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "CSO__90____15_cm_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\CSO__90____15_cm_1.webp",
+          "size": 552,
+          "url": "/images/products/CSO__90____15_cm_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDW-i4e2BVtU9FLSXHkRAnFNSO118nNdq99RaCNhOuub0yLxjns-0ZRbUvBM0&s"
+        },
+        {
+          "filename": "CSO__90____15_cm_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\CSO__90____15_cm_2.webp",
+          "size": 3332,
+          "url": "/images/products/CSO__90____15_cm_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMnpYxL9Nmc6ne6pQCThIai6tei8_ZfyaphS6JN_Srm4jMJ6UZ0HBlmcJeYds&s"
+        },
+        {
+          "filename": "CSO__90____15_cm_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\CSO__90____15_cm_3.webp",
+          "size": 1576,
+          "url": "/images/products/CSO__90____15_cm_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_aJIHN4QkoHexHC2ud9uf82w3XBpWuS3_e9orcgeSH6Eo3a9-d7UuQw9wGg&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Tipo",
+          "valor": "Semiortopédico"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "original": {
+      "ref": "7705946480017           K-GTV40G200",
+      "nombre": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+      "categoria": " CORBETA 1",
+      "precio_contado": 1010000,
+      "precio_promo": 915000,
+      "raw": {
+        "REF.": "7705946480017           K-GTV40G200",
+        "TELEVISORES KALLEY": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+        "CONTADO": 1010000,
+        "PROMO": 915000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "Kalley",
+        "id": 2,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "40",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "7705946480017           K-GTV40G200",
+      "nombre": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+      "descripcion_corta": "Kalley TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+      "descripcion_larga": "<p>Kalley TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más</p><p>Precio especial: $1,010,000</p>",
+      "id_categoria": 1,
+      "id_subcategoria": 4,
+      "id_marca": 2,
+      "precio": 1010000,
+      "precio_oferta": 915000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "7705946480017___________K_GTV40G200_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\7705946480017___________K_GTV40G200_1.webp",
+          "size": 3218,
+          "url": "/images/products/7705946480017___________K_GTV40G200_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2abd_uB7ynhyR5aNBGuvOufj6I6n5hpgDyyF8y-uMsWwmOluu1cEcc1kg_AY&s"
+        },
+        {
+          "filename": "7705946480017___________K_GTV40G200_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\7705946480017___________K_GTV40G200_2.webp",
+          "size": 1826,
+          "url": "/images/products/7705946480017___________K_GTV40G200_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZhTUlzUgthotoe9HNo8RkmRw4thxoXyPneEq6L6XJsuo7NFl_GI9mzoHpQNI&s"
+        },
+        {
+          "filename": "7705946480017___________K_GTV40G200_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\7705946480017___________K_GTV40G200_3.webp",
+          "size": 2412,
+          "url": "/images/products/7705946480017___________K_GTV40G200_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTm7VvBI2r71rov0FB8GIcKIHczgsDheveiMH7yXXD-NIxJCBoxEl12wN8Oi6M&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "40",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "HACEB DICIEMBRE 06 2025.xlsx",
+    "original": {
+      "ref": "NEV 220 CE TI R2",
+      "nombre": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+      "categoria": "Hoja1",
+      "precio_contado": 1420000,
+      "precio_promo": 1290000,
+      "raw": {
+        "REF": "NEV 220 CE TI R2",
+        "CODIGO": 9002739,
+        "NEVERAS CONVENCIONAL": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+        "CONTADO": 1420000,
+        "PROMOCION": 1290000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Haceb",
+        "id": 3,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo ."
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "NEV 220 CE TI R2",
+      "nombre": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+      "descripcion_corta": "Haceb Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+      "descripcion_larga": "<p>Haceb Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .</p><p>Precio especial: $1,420,000</p>",
+      "id_categoria": 1,
+      "id_subcategoria": 77,
+      "id_marca": 3,
+      "precio": 1420000,
+      "precio_oferta": 1290000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "NEV_220_CE_TI_R2_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\NEV_220_CE_TI_R2_1.webp",
+          "size": 1104,
+          "url": "/images/products/NEV_220_CE_TI_R2_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSslcTgn3lgNN-gEI4jynRjsIu1nEmMQzsXHbHgKPHVsGSXFT3LVNdSlF4WLg&s"
+        },
+        {
+          "filename": "NEV_220_CE_TI_R2_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\NEV_220_CE_TI_R2_2.webp",
+          "size": 2576,
+          "url": "/images/products/NEV_220_CE_TI_R2_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoTgTjEljpt5CpXIhfOG3I_8tds29NJFsPh9sbJWbbt4taivDZuJD6TGDOTg&s"
+        },
+        {
+          "filename": "NEV_220_CE_TI_R2_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\NEV_220_CE_TI_R2_3.webp",
+          "size": 1602,
+          "url": "/images/products/NEV_220_CE_TI_R2_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdEDBfcy320wgR6bvJDCh2axmT_nDzZRUWIXcRCFJnoIzzkcUh8rs1PaJyEA&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "HONDA AGOSTO 01 2025.xlsx",
+    "original": {
+      "ref": "WAVE 110S CBS",
+      "nombre": "WAVE 110S CBS Modelo 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7750000,
+      "precio_promo": 7550000,
+      "raw": {
+        "REFERENCIA": "WAVE 110S CBS",
+        "MODELO": 2026,
+        "CONTADO": 7750000,
+        "PROMOCION": 7550000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Honda",
+        "id": 1,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "WAVE 110S CBS Modelo 2026"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "WAVE 110S CBS",
+      "nombre": "WAVE 110S CBS Modelo 2026",
+      "descripcion_corta": "Honda WAVE 110S CBS Modelo 2026",
+      "descripcion_larga": "<p>Honda WAVE 110S CBS Modelo 2026</p><p>Precio especial: $7,750,000</p>",
+      "id_categoria": 3,
+      "id_subcategoria": 34,
+      "id_marca": 1,
+      "precio": 7750000,
+      "precio_oferta": 7550000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "WAVE_110S_CBS_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\WAVE_110S_CBS_1.webp",
+          "size": 3414,
+          "url": "/images/products/WAVE_110S_CBS_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR0oU7b-Jq5nOr_AlTN5okX6qYn31-r-7qEQukbtBAFpZZ19r6boWsuYWPew&s"
+        },
+        {
+          "filename": "WAVE_110S_CBS_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\WAVE_110S_CBS_2.webp",
+          "size": 3674,
+          "url": "/images/products/WAVE_110S_CBS_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPTz4jWMQG48mSbZMqyV4ebgXH4MC9LihqiucxzDzDcFo-SChOtEuZ3RjnZZI&s"
+        },
+        {
+          "filename": "WAVE_110S_CBS_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\WAVE_110S_CBS_3.webp",
+          "size": 1356,
+          "url": "/images/products/WAVE_110S_CBS_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1afpkeSlhEqVc9JRiOCSRfrvXjKYKehtEgga4q0kTWyGTPhm8VyXuujtjWQ&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "HYUNDAI NOVIEMBRE 29 2025.xlsx",
+    "original": {
+      "ref": "HYLED4328G",
+      "nombre": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 1045000,
+      "precio_promo": 945000,
+      "raw": {
+        "REF": "HYLED4328G ",
+        "TELEVISORES": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+        "CONTADO": 1045000,
+        "PROMOCION": 945000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "43",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato."
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "HYLED4328G",
+      "nombre": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+      "descripcion_corta": "LG TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente ",
+      "descripcion_larga": "<p>LG TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.</p><p>Precio especial: $1,045,000</p>",
+      "id_categoria": 1,
+      "id_subcategoria": 4,
+      "id_marca": 5,
+      "precio": 1045000,
+      "precio_oferta": 945000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "HYLED4328G_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\HYLED4328G_1.webp",
+          "size": 3298,
+          "url": "/images/products/HYLED4328G_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOWURcGzjZ2Ry2ZmziafrS5J1KxrvVMK8zGVjUa4MyPGqAbRXcM_9TwOkfXw&s"
+        },
+        {
+          "filename": "HYLED4328G_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\HYLED4328G_2.webp",
+          "size": 3576,
+          "url": "/images/products/HYLED4328G_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScioWjmfn-SqBOkM49hfrBIaMxM8Kg158f-VEcRMGBcdC4tEXVXrxJDiGjVQ&s"
+        },
+        {
+          "filename": "HYLED4328G_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\HYLED4328G_3.webp",
+          "size": 3224,
+          "url": "/images/products/HYLED4328G_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6w0HxT1os23UCrf2u6o0n6FMuPmaIAwVo8w2dn9_qT7gz7sVTKFPyWDd44g&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "43",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "INVAL OCTUBRE 25 2025.xlsx",
+    "original": {
+      "ref": "AR 2X2",
+      "nombre": "ARCHIVADOR  2  GAVETAS",
+      "categoria": "Hoja1",
+      "precio_contado": 375000,
+      "precio_promo": 335000,
+      "raw": {
+        "REF.": "AR 2X2",
+        "ARCHIVADOR": "ARCHIVADOR  2  GAVETAS",
+        "CONTADO": 375000,
+        "PROMOCION": 335000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Archivadores",
+        "id": 78,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Archivadores\" encontrada"
+      },
+      "marca": {
+        "nombre": "Inval",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "2 x 2 cm"
+        }
+      ],
+      "nombre_sugerido": "ARCHIVADOR  2  GAVETAS"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "AR 2X2",
+      "nombre": "ARCHIVADOR  2  GAVETAS",
+      "descripcion_corta": "Inval ARCHIVADOR  2  GAVETAS",
+      "descripcion_larga": "<p>Inval ARCHIVADOR  2  GAVETAS</p><p>Precio especial: $375,000</p>",
+      "id_categoria": 2,
+      "id_subcategoria": 78,
+      "id_marca": 1,
+      "precio": 375000,
+      "precio_oferta": 335000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "AR_2X2_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\AR_2X2_1.webp",
+          "size": 3846,
+          "url": "/images/products/AR_2X2_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQRBsT0rTet3wIbq5Ztzw5rQp5GjnWFNHFR3qeLEjnLcUcGs7cvfEWwDwiKvw&s"
+        },
+        {
+          "filename": "AR_2X2_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\AR_2X2_2.webp",
+          "size": 1638,
+          "url": "/images/products/AR_2X2_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Px09d2EoYcuLRBj18RbkR1EIk8XAGl8bb78tDgpws3-dCfY4UUHYManRYw&s"
+        },
+        {
+          "filename": "AR_2X2_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\AR_2X2_3.webp",
+          "size": 4152,
+          "url": "/images/products/AR_2X2_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHiIc_LNZPv-OmQHdDhr5OhiQHpIL6f755Ptv4uRGdZZ-gMqfBSa7ZwtZyZg&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "2 x 2 cm"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "LG NOVIEMBRE 29 2025.xlsx",
+    "original": {
+      "ref": "32LR600",
+      "nombre": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 845000,
+      "precio_promo": 765000,
+      "raw": {
+        "REF": "32LR600",
+        "TELEVISORES": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+        "CONTADO": 845000,
+        "PROMO": 765000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "32",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core ."
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "32LR600",
+      "nombre": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+      "descripcion_corta": "LG TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+      "descripcion_larga": "<p>LG TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .</p><p>Precio especial: $845,000</p>",
+      "id_categoria": 1,
+      "id_subcategoria": 4,
+      "id_marca": 5,
+      "precio": 845000,
+      "precio_oferta": 765000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "32LR600_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\32LR600_1.webp",
+          "size": 2272,
+          "url": "/images/products/32LR600_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTq7yAt5V1hKQMf2yFUXtjpQmOrTLlFwU87e1CX0iqbZ0jTyCF64yozE0cEXw&s"
+        },
+        {
+          "filename": "32LR600_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\32LR600_2.webp",
+          "size": 1916,
+          "url": "/images/products/32LR600_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIRMcxpPELydKAmgXcUPPjHHUoqTuZXld-V03w8tF70ynpYdoN8n-WchbLpQ&s"
+        },
+        {
+          "filename": "32LR600_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\32LR600_3.webp",
+          "size": 3048,
+          "url": "/images/products/32LR600_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUnGgWfT6U7cne8s7CIRG4UbJ5KLLat2YXjhP9eXZPNjkCoTj3XS4Gq7mq-zA&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "32",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "original": {
+      "ref": "10007772237       LLZ-8TD",
+      "nombre": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+      "categoria": "Hoja1",
+      "precio_contado": 920000,
+      "precio_promo": 840000,
+      "raw": {
+        "REF.": "10007772237       LLZ-8TD",
+        "CABINAS": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+        "CONTADO": 920000,
+        "PROMOCION": 840000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Audio y Sonido",
+        "id": 79,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Audio y Sonido\" encontrada"
+      },
+      "marca": {
+        "nombre": "Samsung",
+        "id": 4,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "8",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico."
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "10007772237       LLZ-8TD",
+      "nombre": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+      "descripcion_corta": "Samsung Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono",
+      "descripcion_larga": "<p>Samsung Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.</p><p>Precio especial: $920,000</p>",
+      "id_categoria": 1,
+      "id_subcategoria": 79,
+      "id_marca": 4,
+      "precio": 920000,
+      "precio_oferta": 840000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "10007772237_______LLZ_8TD_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\10007772237_______LLZ_8TD_1.webp",
+          "size": 1658,
+          "url": "/images/products/10007772237_______LLZ_8TD_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9maQXQzUeqHeMkMo66Mk3RSg3sgCgTPTecfey6l2sdUNczmm0plpuIQm_5w&s"
+        },
+        {
+          "filename": "10007772237_______LLZ_8TD_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\10007772237_______LLZ_8TD_2.webp",
+          "size": 2784,
+          "url": "/images/products/10007772237_______LLZ_8TD_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQco5Nj11dzzn9BzsIpPbP9h_Jo7rhOENxhAtVdp2IDsBAiE96UmjCyTZaHhH0&s"
+        },
+        {
+          "filename": "10007772237_______LLZ_8TD_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\10007772237_______LLZ_8TD_3.webp",
+          "size": 2728,
+          "url": "/images/products/10007772237_______LLZ_8TD_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNsgu1OiJw8WM1mpLILrZjCyvnS1oNfC5V1bukI610G_G6iBkJbPIN-jeA5w&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "8",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "original": {
+      "ref": "XX-LIS-001",
+      "nombre": "SOFA CAMA CLIC CLAC",
+      "categoria": "LISTA 2",
+      "precio_contado": 1115000,
+      "precio_promo": 995000,
+      "raw": {
+        "SOFA-CAMA": "SOFA CAMA CLIC CLAC",
+        "CONTADO": 1115000,
+        "PROMOCION": 995000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Maximuebles",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "SOFA CAMA CLIC CLAC"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "XX-LIS-001",
+      "nombre": "SOFA CAMA CLIC CLAC",
+      "descripcion_corta": "Maximuebles SOFA CAMA CLIC CLAC",
+      "descripcion_larga": "<p>Maximuebles SOFA CAMA CLIC CLAC</p><p>Precio especial: $1,115,000</p>",
+      "id_categoria": 2,
+      "id_subcategoria": 30,
+      "id_marca": 1,
+      "precio": 1115000,
+      "precio_oferta": 995000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "XX_LIS_001_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\XX_LIS_001_1.webp",
+          "size": 1476,
+          "url": "/images/products/XX_LIS_001_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXEvLEvrTmub_OBbp2JnXITsx0ivYtuB5T_rUdN2ZbtWE9AqI7F0bLimdD&s"
+        },
+        {
+          "filename": "XX_LIS_001_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\XX_LIS_001_2.webp",
+          "size": 4798,
+          "url": "/images/products/XX_LIS_001_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReid-mPloydup2Sqk9KzClHZ0NYZjo3d95ARAMQfkj_B19aTo_azaM0IfOiRE&s"
+        },
+        {
+          "filename": "XX_LIS_001_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\XX_LIS_001_3.webp",
+          "size": 1234,
+          "url": "/images/products/XX_LIS_001_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT0Fk3Eh3FoR0NTCYzLMwU7nl67mwJGCgNpHl86kPTp9qlihkJlP4TnloG7Zw&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "original": {
+      "ref": "GA010116911",
+      "nombre": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 1065000,
+      "precio_promo": 910000,
+      "raw": {
+        "MOTOSIERRA": "GTA 26 10CM",
+        "CODIGO": "GA010116911",
+        "DESCRIPCIÓN": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+        "CONTADO": 1065000,
+        "PROMO": 910000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Herramientas STIHL",
+        "id": 4,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Sopladores",
+        "id": 44,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Sopladores\" encontrada"
+      },
+      "marca": {
+        "nombre": "STIHL",
+        "id": 7,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "4",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "GA010116911",
+      "nombre": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+      "descripcion_corta": "STIHL Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+      "descripcion_larga": "<p>STIHL Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte</p><p>Precio especial: $1,065,000</p>",
+      "id_categoria": 4,
+      "id_subcategoria": 44,
+      "id_marca": 7,
+      "precio": 1065000,
+      "precio_oferta": 910000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "GA010116911_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\GA010116911_1.webp",
+          "size": 3312,
+          "url": "/images/products/GA010116911_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC4E2PG4O4o6LmxXuGpaCyStgIs9UayDuEIIpHEaIbEX7OdtYK0NzbFzKssQ&s"
+        },
+        {
+          "filename": "GA010116911_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\GA010116911_2.webp",
+          "size": 1770,
+          "url": "/images/products/GA010116911_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwej3tm6F67tuooP7xsEPmobxe7QeCkktVKR1CArSDR78VFHpVucHQTUeFvW4&s"
+        },
+        {
+          "filename": "GA010116911_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\GA010116911_3.webp",
+          "size": 870,
+          "url": "/images/products/GA010116911_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxd6IbOXDoG51YPB0i5WDMONGs_9b8nGgLa5EzjBYsI3mq1taz6Q41h6aZ3eA&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "4",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ]
+    },
+    "exito": true
+  },
+  {
+    "archivo": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "original": {
+      "ref": "AX4 EIII",
+      "nombre": "AX4 EIII MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 6020000,
+      "precio_promo": 5820000,
+      "raw": {
+        "REFERENCIA": "AX4 EIII",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 6020000,
+        "PROMOCION": 5820000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Suzuki",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "AX4 EIII MODELO 2026"
+    },
+    "imagenes_scrapeadas": 3,
+    "imagenes_descargadas": 3,
+    "final": {
+      "ref": "AX4 EIII",
+      "nombre": "AX4 EIII MODELO 2026",
+      "descripcion_corta": "Suzuki AX4 EIII MODELO 2026",
+      "descripcion_larga": "<p>Suzuki AX4 EIII MODELO 2026</p><p>Precio especial: $6,020,000</p>",
+      "id_categoria": 3,
+      "id_subcategoria": 34,
+      "id_marca": 1,
+      "precio": 6020000,
+      "precio_oferta": 5820000,
+      "stock": 10,
+      "activo": true,
+      "destacado": false,
+      "imagenes": [
+        {
+          "filename": "AX4_EIII_1.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\AX4_EIII_1.webp",
+          "size": 3896,
+          "url": "/images/products/AX4_EIII_1.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSme15EbS1NJJ7YgYb5FPL-oF1gEGc1YeOLBNND6mvZbN6ZNRAW-eRY-Zj-xcM&s"
+        },
+        {
+          "filename": "AX4_EIII_2.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\AX4_EIII_2.webp",
+          "size": 6354,
+          "url": "/images/products/AX4_EIII_2.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQezuEj41wpTZJL5akJcfo02AMw2c9RleC-hJ5F5QOWQQCc0d8apuLoBfs3HQ&s"
+        },
+        {
+          "filename": "AX4_EIII_3.webp",
+          "filepath": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\scraped_images\\AX4_EIII_3.webp",
+          "size": 4706,
+          "url": "/images/products/AX4_EIII_3.webp",
+          "original_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7LddTVRR60iiV82H3xNM7ddwfZs5jqXgQT86eJQzCZDx8Cd6nGOvVWCjqnR8&s"
+        }
+      ],
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ]
+    },
+    "exito": true
+  }
+]

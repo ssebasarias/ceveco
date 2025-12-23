@@ -27,7 +27,7 @@ async function addToCart(productId, nombre = null, precio = null, imagen = null)
             id: productId,
             name: nombre,
             price: precio,
-            image: imagen || 'https://via.placeholder.com/100x100?text=Producto',
+            image: imagen || '/assets/img/no-image.svg',
             brand: 'Ceveco'
         };
     } else if (typeof productId === 'object') {
@@ -36,7 +36,7 @@ async function addToCart(productId, nombre = null, precio = null, imagen = null)
             id: productId.id_producto || productId.id,
             name: productId.nombre || productId.name,
             price: productId.precio_actual || productId.price,
-            image: productId.imagen_principal || productId.image || 'https://via.placeholder.com/100x100?text=Producto',
+            image: productId.imagen_principal || productId.image || '/assets/img/no-image.svg',
             brand: productId.marca || productId.brand || 'Ceveco'
         };
     } else {

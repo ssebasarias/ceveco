@@ -1,0 +1,2337 @@
+[
+  {
+    "archivo": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "SEMIORTOPEDICO",
+      "nombre": "SEMIORTOPEDICO",
+      "categoria": "Hoja1",
+      "precio_contado": 0,
+      "precio_promo": 0,
+      "raw": {
+        "REF. - MEDIDA": "SEMIORTOPEDICO",
+        "CONTADO": "",
+        "PROMOCION": ""
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Colchones",
+        "id": 32,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Colchones\" encontrada"
+      },
+      "marca": {
+        "nombre": "Comodisimos",
+        "id": 15,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Tipo",
+          "valor": "Semiortopédico"
+        }
+      ],
+      "nombre_sugerido": "SEMIORTOPEDICO"
+    }
+  },
+  {
+    "archivo": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "CSO  90  - 15 cm",
+      "nombre": "CSO  90  - 15 cm",
+      "categoria": "Hoja1",
+      "precio_contado": 705000,
+      "precio_promo": 635000,
+      "raw": {
+        "REF. - MEDIDA": "CSO  90  - 15 cm",
+        "CONTADO": 705000,
+        "PROMOCION": 635000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Colchones",
+        "id": 32,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Colchones\" encontrada"
+      },
+      "marca": {
+        "nombre": "Comodisimos",
+        "id": 15,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "CSO  90  - 15 cm"
+    }
+  },
+  {
+    "archivo": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "CSO 100 - 15 cm",
+      "nombre": "CSO 100 - 15 cm",
+      "categoria": "Hoja1",
+      "precio_contado": 770000,
+      "precio_promo": 690000,
+      "raw": {
+        "REF. - MEDIDA": "CSO 100 - 15 cm",
+        "CONTADO": 770000,
+        "PROMOCION": 690000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Colchones",
+        "id": 32,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Colchones\" encontrada"
+      },
+      "marca": {
+        "nombre": "Comodisimos",
+        "id": 15,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "CSO 100 - 15 cm"
+    }
+  },
+  {
+    "archivo": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "CSO 120 - 15 cm",
+      "nombre": "CSO 120 - 15 cm",
+      "categoria": "Hoja1",
+      "precio_contado": 920000,
+      "precio_promo": 830000,
+      "raw": {
+        "REF. - MEDIDA": "CSO 120 - 15 cm",
+        "CONTADO": 920000,
+        "PROMOCION": 830000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Colchones",
+        "id": 32,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Colchones\" encontrada"
+      },
+      "marca": {
+        "nombre": "Comodisimos",
+        "id": 15,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "CSO 120 - 15 cm"
+    }
+  },
+  {
+    "archivo": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "CSO 130 - 15 cm",
+      "nombre": "CSO 130 - 15 cm",
+      "categoria": "Hoja1",
+      "precio_contado": 1045000,
+      "precio_promo": 940000,
+      "raw": {
+        "REF. - MEDIDA": "CSO 130 - 15 cm",
+        "CONTADO": 1045000,
+        "PROMOCION": 940000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Colchones",
+        "id": 32,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Colchones\" encontrada"
+      },
+      "marca": {
+        "nombre": "Comodisimos",
+        "id": 15,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "CSO 130 - 15 cm"
+    }
+  },
+  {
+    "archivo": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "7705946480017           K-GTV40G200",
+      "nombre": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+      "categoria": " CORBETA 1",
+      "precio_contado": 1010000,
+      "precio_promo": 915000,
+      "raw": {
+        "REF.": "7705946480017           K-GTV40G200",
+        "TELEVISORES KALLEY": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+        "CONTADO": 1010000,
+        "PROMO": 915000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "Kalley",
+        "id": 2,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "40",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más"
+    }
+  },
+  {
+    "archivo": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "REF.",
+      "nombre": "VARIOS",
+      "categoria": " CORBETA 1",
+      "precio_contado": 0,
+      "precio_promo": 0,
+      "raw": {
+        "REF.": "REF.",
+        "TELEVISORES KALLEY": "VARIOS",
+        "CONTADO": "CONTADO",
+        "PROMO": "PROMOCION  "
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Kalley",
+        "id": 2,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "VARIOS"
+    }
+  },
+  {
+    "archivo": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "7705946909716        K-MB43G",
+      "nombre": "Nevera mini bar, potencia de 72W, Capacidad de 43 lts, refrigerador R600A, refrigerador y congelador,1 año de garantia",
+      "categoria": " CORBETA 1",
+      "precio_contado": 570000,
+      "precio_promo": 515000,
+      "raw": {
+        "REF.": "7705946909716        K-MB43G",
+        "TELEVISORES KALLEY": "Nevera mini bar, potencia de 72W, Capacidad de 43 lts, refrigerador R600A, refrigerador y congelador,1 año de garantia",
+        "CONTADO": 570000,
+        "PROMO": 515000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Neveras",
+        "id": 2,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Neveras\" encontrada"
+      },
+      "marca": {
+        "nombre": "Kalley",
+        "id": 2,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Nevera mini bar, potencia de 72W, Capacidad de 43 lts, refrigerador R600A, refrigerador y congelador,1 año de garantia"
+    }
+  },
+  {
+    "archivo": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "7705946916370          K-MB93G",
+      "nombre": "Nevera mini bar, potencia de 72W, Capacidad de 93 lts, refrigerador R600A, refrigerador y congelador,1 año de garantia.",
+      "categoria": " CORBETA 1",
+      "precio_contado": 825000,
+      "precio_promo": 745000,
+      "raw": {
+        "REF.": "7705946916370          K-MB93G",
+        "TELEVISORES KALLEY": "Nevera mini bar, potencia de 72W, Capacidad de 93 lts, refrigerador R600A, refrigerador y congelador,1 año de garantia.",
+        "CONTADO": 825000,
+        "PROMO": 745000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Neveras",
+        "id": 2,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Neveras\" encontrada"
+      },
+      "marca": {
+        "nombre": "Kalley",
+        "id": 2,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Nevera mini bar, potencia de 72W, Capacidad de 93 lts, refrigerador R600A, refrigerador y congelador,1 año de garantia."
+    }
+  },
+  {
+    "archivo": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "7705946691123         K-CH99L",
+      "nombre": "Congelador 99 lts, Temperatura ajustable, Ruedas para fácil desplazamiento, llave de seguridad, Tubería D type refrigeración eficiente.",
+      "categoria": " CORBETA 1",
+      "precio_contado": 970000,
+      "precio_promo": 870000,
+      "raw": {
+        "REF.": "7705946691123         K-CH99L",
+        "TELEVISORES KALLEY": "Congelador 99 lts, Temperatura ajustable, Ruedas para fácil desplazamiento, llave de seguridad, Tubería D type refrigeración eficiente. ",
+        "CONTADO": 970000,
+        "PROMO": 870000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Kalley",
+        "id": 2,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Congelador 99 lts, Temperatura ajustable, Ruedas para fácil desplazamiento, llave de seguridad, Tubería D type refrigeración eficiente."
+    }
+  },
+  {
+    "archivo": "HACEB DICIEMBRE 06 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "NEV 220 CE TI R2",
+      "nombre": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+      "categoria": "Hoja1",
+      "precio_contado": 1420000,
+      "precio_promo": 1290000,
+      "raw": {
+        "REF": "NEV 220 CE TI R2",
+        "CODIGO": 9002739,
+        "NEVERAS CONVENCIONAL": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+        "CONTADO": 1420000,
+        "PROMOCION": 1290000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Haceb",
+        "id": 3,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo ."
+    }
+  },
+  {
+    "archivo": "HACEB DICIEMBRE 06 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "REF",
+      "nombre": "CODIGO",
+      "categoria": "Hoja1",
+      "precio_contado": 0,
+      "precio_promo": 0,
+      "raw": {
+        "REF": "REF",
+        "CODIGO": "CODIGO",
+        "NEVERAS CONVENCIONAL": "NEVERAS NO FROST ",
+        "CONTADO": "CONTADO",
+        "PROMOCION": "PROMOCION"
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Haceb",
+        "id": 3,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "CODIGO"
+    }
+  },
+  {
+    "archivo": "HACEB DICIEMBRE 06 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "NEV 243 SE MI INV",
+      "nombre": "226L , dispensador de agua Slim,panel digital, fabricador de hielo, color titanium, iluminacion LED, MANIJA INTERNA, INVERTER",
+      "categoria": "Hoja1",
+      "precio_contado": 1905000,
+      "precio_promo": 1725000,
+      "raw": {
+        "REF": "NEV 243 SE MI INV",
+        "CODIGO": 9003541,
+        "NEVERAS CONVENCIONAL": "226L , dispensador de agua Slim,panel digital, fabricador de hielo, color titanium, iluminacion LED, MANIJA INTERNA, INVERTER",
+        "CONTADO": 1905000,
+        "PROMOCION": 1725000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Haceb",
+        "id": 3,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "226L , dispensador de agua Slim,panel digital, fabricador de hielo, color titanium, iluminacion LED, MANIJA INTERNA, INVERTER"
+    }
+  },
+  {
+    "archivo": "HACEB DICIEMBRE 06 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "NEV 271L ME NE INV",
+      "nombre": "259L, dispensador de agua, tanque 3 litros ,Vivaflow (frío envolvente al interior), BIO ICE (hielo al instante). MANIJA INTERNA.",
+      "categoria": "Hoja1",
+      "precio_contado": 2040000,
+      "precio_promo": 1845000,
+      "raw": {
+        "REF": "NEV 271L ME NE INV",
+        "CODIGO": 9003544,
+        "NEVERAS CONVENCIONAL": "259L, dispensador de agua, tanque 3 litros ,Vivaflow (frío envolvente al interior), BIO ICE (hielo al instante). MANIJA INTERNA.",
+        "CONTADO": 2040000,
+        "PROMOCION": 1845000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Haceb",
+        "id": 3,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "259L, dispensador de agua, tanque 3 litros ,Vivaflow (frío envolvente al interior), BIO ICE (hielo al instante). MANIJA INTERNA."
+    }
+  },
+  {
+    "archivo": "HACEB DICIEMBRE 06 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "NEV 311 SE MI TI R2",
+      "nombre": "294L, dispensador de agua, tanque 3 litros ,Vivaflow (frío envolvente al interior), BIO ICE (hielo al instante). MANIJA INTERNA.",
+      "categoria": "Hoja1",
+      "precio_contado": 2145000,
+      "precio_promo": 1940000,
+      "raw": {
+        "REF": "NEV 311 SE MI TI R2",
+        "CODIGO": 9002749,
+        "NEVERAS CONVENCIONAL": "294L, dispensador de agua, tanque 3 litros ,Vivaflow (frío envolvente al interior), BIO ICE (hielo al instante). MANIJA INTERNA.",
+        "CONTADO": 2145000,
+        "PROMOCION": 1940000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Electrodomésticos",
+        "id": 77,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Electrodomésticos\" encontrada"
+      },
+      "marca": {
+        "nombre": "Haceb",
+        "id": 3,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "294L, dispensador de agua, tanque 3 litros ,Vivaflow (frío envolvente al interior), BIO ICE (hielo al instante). MANIJA INTERNA."
+    }
+  },
+  {
+    "archivo": "HONDA AGOSTO 01 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "WAVE 110S CBS",
+      "nombre": "WAVE 110S CBS Modelo 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7750000,
+      "precio_promo": 7550000,
+      "raw": {
+        "REFERENCIA": "WAVE 110S CBS",
+        "MODELO": 2026,
+        "CONTADO": 7750000,
+        "PROMOCION": 7550000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Honda",
+        "id": 1,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "WAVE 110S CBS Modelo 2026"
+    }
+  },
+  {
+    "archivo": "HONDA AGOSTO 01 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "CB 100",
+      "nombre": "CB 100 Modelo 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 5900000,
+      "precio_promo": 5700000,
+      "raw": {
+        "REFERENCIA": "CB 100 ",
+        "MODELO": 2026,
+        "CONTADO": 5900000,
+        "PROMOCION": 5700000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Deportivas",
+        "id": 35,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Deportivas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Honda",
+        "id": 1,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "CB 100 Modelo 2026"
+    }
+  },
+  {
+    "archivo": "HONDA AGOSTO 01 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "CB 125F 2.0",
+      "nombre": "CB 125F 2.0 Modelo 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7190000,
+      "precio_promo": 6990000,
+      "raw": {
+        "REFERENCIA": "CB 125F 2.0",
+        "MODELO": 2026,
+        "CONTADO": 7190000,
+        "PROMOCION": 6990000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Honda",
+        "id": 1,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "CB 125F 2.0 Modelo 2026"
+    }
+  },
+  {
+    "archivo": "HONDA AGOSTO 01 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "CB 125F 2.0 MAX",
+      "nombre": "CB 125F 2.0 MAX Modelo 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7330000,
+      "precio_promo": 7130000,
+      "raw": {
+        "REFERENCIA": "CB 125F 2.0 MAX",
+        "MODELO": 2026,
+        "CONTADO": 7330000,
+        "PROMOCION": 7130000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Honda",
+        "id": 1,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "CB 125F 2.0 MAX Modelo 2026"
+    }
+  },
+  {
+    "archivo": "HONDA AGOSTO 01 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "CB 125F DLX 2.0",
+      "nombre": "CB 125F DLX 2.0 Modelo 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7350000,
+      "precio_promo": 7150000,
+      "raw": {
+        "REFERENCIA": "CB 125F DLX 2.0",
+        "MODELO": 2026,
+        "CONTADO": 7350000,
+        "PROMOCION": 7150000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Honda",
+        "id": 1,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "CB 125F DLX 2.0 Modelo 2026"
+    }
+  },
+  {
+    "archivo": "HYUNDAI NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "HYLED4328G",
+      "nombre": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 1045000,
+      "precio_promo": 945000,
+      "raw": {
+        "REF": "HYLED4328G ",
+        "TELEVISORES": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+        "CONTADO": 1045000,
+        "PROMOCION": 945000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "43",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato."
+    }
+  },
+  {
+    "archivo": "HYUNDAI NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "HYLED5812G",
+      "nombre": "TV LED 4K UHD, 58\" Smart Tv,Google Tv- , asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 1815000,
+      "precio_promo": 1645000,
+      "raw": {
+        "REF": "HYLED5812G ",
+        "TELEVISORES": "TV LED 4K UHD, 58\" Smart Tv,Google Tv- , asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+        "CONTADO": 1815000,
+        "PROMOCION": 1645000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "58",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV LED 4K UHD, 58\" Smart Tv,Google Tv- , asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato."
+    }
+  },
+  {
+    "archivo": "HYUNDAI NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "HYLED6512G",
+      "nombre": "TV LED 4K UHD, 60\" Smart Tv,Google Tv- , asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 2395000,
+      "precio_promo": 2175000,
+      "raw": {
+        "REF": "HYLED6512G",
+        "TELEVISORES": "TV LED 4K UHD, 60\" Smart Tv,Google Tv- , asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+        "CONTADO": 2395000,
+        "PROMOCION": 2175000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "60",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV LED 4K UHD, 60\" Smart Tv,Google Tv- , asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato."
+    }
+  },
+  {
+    "archivo": "INVAL OCTUBRE 25 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "AR 2X2",
+      "nombre": "ARCHIVADOR  2  GAVETAS",
+      "categoria": "Hoja1",
+      "precio_contado": 375000,
+      "precio_promo": 335000,
+      "raw": {
+        "REF.": "AR 2X2",
+        "ARCHIVADOR": "ARCHIVADOR  2  GAVETAS",
+        "CONTADO": 375000,
+        "PROMOCION": 335000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Archivadores",
+        "id": 78,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Archivadores\" encontrada"
+      },
+      "marca": {
+        "nombre": "Inval",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "2 x 2 cm"
+        }
+      ],
+      "nombre_sugerido": "ARCHIVADOR  2  GAVETAS"
+    }
+  },
+  {
+    "archivo": "INVAL OCTUBRE 25 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "REF.",
+      "nombre": "ARMARIOS INVAL",
+      "categoria": "Hoja1",
+      "precio_contado": 0,
+      "precio_promo": 0,
+      "raw": {
+        "REF.": "REF.",
+        "ARCHIVADOR": "ARMARIOS INVAL ",
+        "CONTADO": "CONTADO",
+        "PROMOCION": "PROMOCION "
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Inval",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "ARMARIOS INVAL"
+    }
+  },
+  {
+    "archivo": "INVAL OCTUBRE 25 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "AM 31023",
+      "nombre": "ARMARIO INVAL (150X200) ARENA / BLANCO",
+      "categoria": "Hoja1",
+      "precio_contado": 1495000,
+      "precio_promo": 1320000,
+      "raw": {
+        "REF.": "AM 31023",
+        "ARCHIVADOR": "ARMARIO INVAL (150X200) ARENA / BLANCO ",
+        "CONTADO": 1495000,
+        "PROMOCION": 1320000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Inval",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "150 x 200 cm"
+        }
+      ],
+      "nombre_sugerido": "ARMARIO INVAL (150X200) ARENA / BLANCO"
+    }
+  },
+  {
+    "archivo": "INVAL OCTUBRE 25 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "AM 30923",
+      "nombre": "ARMARIO INVAL (200X200) ARENA / BLANCO",
+      "categoria": "Hoja1",
+      "precio_contado": 2080000,
+      "precio_promo": 1845000,
+      "raw": {
+        "REF.": "AM 30923",
+        "ARCHIVADOR": "ARMARIO INVAL (200X200) ARENA / BLANCO  ",
+        "CONTADO": 2080000,
+        "PROMOCION": 1845000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Inval",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "200 x 200 cm"
+        }
+      ],
+      "nombre_sugerido": "ARMARIO INVAL (200X200) ARENA / BLANCO"
+    }
+  },
+  {
+    "archivo": "INVAL OCTUBRE 25 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "REF.",
+      "nombre": "VARIOS RTA",
+      "categoria": "Hoja1",
+      "precio_contado": 0,
+      "precio_promo": 0,
+      "raw": {
+        "REF.": "REF.",
+        "ARCHIVADOR": "VARIOS RTA",
+        "CONTADO": "CONTADO",
+        "PROMOCION": "PROMOCION "
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Inval",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "VARIOS RTA"
+    }
+  },
+  {
+    "archivo": "LG NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "32LR600",
+      "nombre": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 845000,
+      "precio_promo": 765000,
+      "raw": {
+        "REF": "32LR600",
+        "TELEVISORES": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+        "CONTADO": 845000,
+        "PROMO": 765000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "32",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core ."
+    }
+  },
+  {
+    "archivo": "LG NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "43LM6370",
+      "nombre": "TV  43\" Full HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 1465000,
+      "precio_promo": 1330000,
+      "raw": {
+        "REF": "43LM6370",
+        "TELEVISORES": "TV  43\" Full HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+        "CONTADO": 1465000,
+        "PROMO": 1330000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "43",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV  43\" Full HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core ."
+    }
+  },
+  {
+    "archivo": "LG NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "50UA8050",
+      "nombre": "TV LED 50\" Smart Tv Ultra UHD 4K HDR10 PRO, Procesador gen  ThinQ ™ , Full Navegación, HDMI, USB, Bluetooth, Sistema operativo webOS Re. CONTROL MAGIC.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 2250000,
+      "precio_promo": 2050000,
+      "raw": {
+        "REF": "50UA8050",
+        "TELEVISORES": "TV LED 50\" Smart Tv Ultra UHD 4K HDR10 PRO, Procesador gen  ThinQ ™ , Full Navegación, HDMI, USB, Bluetooth, Sistema operativo webOS Re. CONTROL MAGIC.",
+        "CONTADO": 2250000,
+        "PROMO": 2050000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "50",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV LED 50\" Smart Tv Ultra UHD 4K HDR10 PRO, Procesador gen  ThinQ ™ , Full Navegación, HDMI, USB, Bluetooth, Sistema operativo webOS Re. CONTROL MAGIC."
+    }
+  },
+  {
+    "archivo": "LG NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "55UA8050",
+      "nombre": "TV LED 55\" Smart Tv Ultra UHD 4K, Procesador α5 Gen4 | ThinQ ™ ,Full Navegación, HDMI, USB, Bluetooth, Sistema operativo webOS Smart TV. CONTROL MAGIC.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 2535000,
+      "precio_promo": 2305000,
+      "raw": {
+        "REF": "55UA8050",
+        "TELEVISORES": "TV LED 55\" Smart Tv Ultra UHD 4K, Procesador α5 Gen4 | ThinQ ™ ,Full Navegación, HDMI, USB, Bluetooth, Sistema operativo webOS Smart TV. CONTROL MAGIC.",
+        "CONTADO": 2535000,
+        "PROMO": 2305000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "55",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV LED 55\" Smart Tv Ultra UHD 4K, Procesador α5 Gen4 | ThinQ ™ ,Full Navegación, HDMI, USB, Bluetooth, Sistema operativo webOS Smart TV. CONTROL MAGIC."
+    }
+  },
+  {
+    "archivo": "LG NOVIEMBRE 29 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "55NANO80T",
+      "nombre": "TV NANO 55\" Smart Tv Ultra UHD 4K, Procesador α5 Gen4 | ThinQ ™ ,Full Navegación, HDMI, USB, Bluetooth, S. O webOS Smart TV. CONTROL MAGIC.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 2815000,
+      "precio_promo": 2560000,
+      "raw": {
+        "REF": "55NANO80T",
+        "TELEVISORES": "TV NANO 55\" Smart Tv Ultra UHD 4K, Procesador α5 Gen4 | ThinQ ™ ,Full Navegación, HDMI, USB, Bluetooth, S. O webOS Smart TV. CONTROL MAGIC.",
+        "CONTADO": 2815000,
+        "PROMO": 2560000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Televisores",
+        "id": 4,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Televisores\" encontrada"
+      },
+      "marca": {
+        "nombre": "LG",
+        "id": 5,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "55",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "TV NANO 55\" Smart Tv Ultra UHD 4K, Procesador α5 Gen4 | ThinQ ™ ,Full Navegación, HDMI, USB, Bluetooth, S. O webOS Smart TV. CONTROL MAGIC."
+    }
+  },
+  {
+    "archivo": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "10007772237       LLZ-8TD",
+      "nombre": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+      "categoria": "Hoja1",
+      "precio_contado": 920000,
+      "precio_promo": 840000,
+      "raw": {
+        "REF.": "10007772237       LLZ-8TD",
+        "CABINAS": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+        "CONTADO": 920000,
+        "PROMOCION": 840000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Audio y Sonido",
+        "id": 79,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Audio y Sonido\" encontrada"
+      },
+      "marca": {
+        "nombre": "Samsung",
+        "id": 4,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "8",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico."
+    }
+  },
+  {
+    "archivo": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "1007116500           LLP-6500",
+      "nombre": "Cabina doble, con parlante de 15\", 4000 Watts musicales, 400 RMS, Radio Fm, Entada US / SD/ RCA /Bluetooth, Luz Led frontal, 2 entradas de microfono, Salida para pasiva.",
+      "categoria": "Hoja1",
+      "precio_contado": 1420000,
+      "precio_promo": 1260000,
+      "raw": {
+        "REF.": "1007116500           LLP-6500       ",
+        "CABINAS": "Cabina doble, con parlante de 15\", 4000 Watts musicales, 400 RMS, Radio Fm, Entada US / SD/ RCA /Bluetooth, Luz Led frontal, 2 entradas de microfono, Salida para pasiva. ",
+        "CONTADO": 1420000,
+        "PROMOCION": 1260000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Audio y Sonido",
+        "id": 79,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Audio y Sonido\" encontrada"
+      },
+      "marca": {
+        "nombre": "Samsung",
+        "id": 4,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "15",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Cabina doble, con parlante de 15\", 4000 Watts musicales, 400 RMS, Radio Fm, Entada US / SD/ RCA /Bluetooth, Luz Led frontal, 2 entradas de microfono, Salida para pasiva."
+    }
+  },
+  {
+    "archivo": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "LLH915D",
+      "nombre": "Bafle 15 clase D, parlante de 15\", iman 80 onzas, bobina 3\", 700 wats, Twiter 44mm Titanio, Funcione. Bluetooth, Tws, sensibilidad 96 db",
+      "categoria": "Hoja1",
+      "precio_contado": 1650000,
+      "precio_promo": 1460000,
+      "raw": {
+        "REF.": "LLH915D",
+        "CABINAS": "Bafle 15 clase D, parlante de 15\", iman 80 onzas, bobina 3\", 700 wats, Twiter 44mm Titanio, Funcione. Bluetooth, Tws, sensibilidad 96 db",
+        "CONTADO": 1650000,
+        "PROMOCION": 1460000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Audio y Sonido",
+        "id": 79,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Audio y Sonido\" encontrada"
+      },
+      "marca": {
+        "nombre": "Samsung",
+        "id": 4,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "15",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Bafle 15 clase D, parlante de 15\", iman 80 onzas, bobina 3\", 700 wats, Twiter 44mm Titanio, Funcione. Bluetooth, Tws, sensibilidad 96 db"
+    }
+  },
+  {
+    "archivo": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "10007772183     LLR15-A31",
+      "nombre": "Cabina Elite, con parlante de 15\",vatios RMS 800W, Driver en titanio 5.3\", amplificador class H Bi - AMP, USB, Bluetooth, entradas de microfono XLR or 1/4\" Jack, linea de entrada XLR or 1/4\", jack, RCA, 3.5 mm Jack, linea de salida XLR, Eq 2 band EQ, rango de frecuencia 45Hz - 20 KHz.",
+      "categoria": "Hoja1",
+      "precio_contado": 2665000,
+      "precio_promo": 2360000,
+      "raw": {
+        "REF.": "10007772183     LLR15-A31    ",
+        "CABINAS": "Cabina Elite, con parlante de 15\",vatios RMS 800W, Driver en titanio 5.3\", amplificador class H Bi - AMP, USB, Bluetooth, entradas de microfono XLR or 1/4\" Jack, linea de entrada XLR or 1/4\", jack, RCA, 3.5 mm Jack, linea de salida XLR, Eq 2 band EQ, rango de frecuencia 45Hz - 20 KHz.",
+        "CONTADO": 2665000,
+        "PROMOCION": 2360000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Audio y Sonido",
+        "id": 79,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Audio y Sonido\" encontrada"
+      },
+      "marca": {
+        "nombre": "Samsung",
+        "id": 4,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "15",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Cabina Elite, con parlante de 15\",vatios RMS 800W, Driver en titanio 5.3\", amplificador class H Bi - AMP, USB, Bluetooth, entradas de microfono XLR or 1/4\" Jack, linea de entrada XLR or 1/4\", jack, RCA, 3.5 mm Jack, linea de salida XLR, Eq 2 band EQ, rango de frecuencia 45Hz - 20 KHz."
+    }
+  },
+  {
+    "archivo": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "LLJ22-152",
+      "nombre": "Parlante 15\" doble de 5000 Wats musicales 400 RMS, Ecualizador grafica, 2 entradas para microfono, Radio Fm, Entrada USB / SD / RCA, Conexión Bluetooth, Salida para pasiva, busqueda por carpeta, doble ventilador",
+      "categoria": "Hoja1",
+      "precio_contado": 2595000,
+      "precio_promo": 2295000,
+      "raw": {
+        "REF.": "LLJ22-152    ",
+        "CABINAS": "Parlante 15\" doble de 5000 Wats musicales 400 RMS, Ecualizador grafica, 2 entradas para microfono, Radio Fm, Entrada USB / SD / RCA, Conexión Bluetooth, Salida para pasiva, busqueda por carpeta, doble ventilador ",
+        "CONTADO": 2595000,
+        "PROMOCION": 2295000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Electro Hogar",
+        "id": 1,
+        "confianza": 0.85
+      },
+      "subcategoria": {
+        "nombre": "Audio y Sonido",
+        "id": 79,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Audio y Sonido\" encontrada"
+      },
+      "marca": {
+        "nombre": "Samsung",
+        "id": 4,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "15",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Parlante 15\" doble de 5000 Wats musicales 400 RMS, Ecualizador grafica, 2 entradas para microfono, Radio Fm, Entrada USB / SD / RCA, Conexión Bluetooth, Salida para pasiva, busqueda por carpeta, doble ventilador"
+    }
+  },
+  {
+    "archivo": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "XX-LIS-001",
+      "nombre": "SOFA CAMA CLIC CLAC",
+      "categoria": "LISTA 2",
+      "precio_contado": 1115000,
+      "precio_promo": 995000,
+      "raw": {
+        "SOFA-CAMA": "SOFA CAMA CLIC CLAC",
+        "CONTADO": 1115000,
+        "PROMOCION": 995000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Maximuebles",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "SOFA CAMA CLIC CLAC"
+    }
+  },
+  {
+    "archivo": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "XX-LIS-002",
+      "nombre": "SOFA CAMA MONTREAL",
+      "categoria": "LISTA 2",
+      "precio_contado": 1560000,
+      "precio_promo": 1395000,
+      "raw": {
+        "SOFA-CAMA": "SOFA CAMA MONTREAL ",
+        "CONTADO": 1560000,
+        "PROMOCION": 1395000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Maximuebles",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "SOFA CAMA MONTREAL"
+    }
+  },
+  {
+    "archivo": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "XX-LIS-003",
+      "nombre": "SOMIER TAPIZADOS",
+      "categoria": "LISTA 2",
+      "precio_contado": 0,
+      "precio_promo": 0,
+      "raw": {
+        "SOFA-CAMA": "SOMIER TAPIZADOS ",
+        "CONTADO": "CONTADO ",
+        "PROMOCION": "PROMOCION "
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Maximuebles",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "SOMIER TAPIZADOS"
+    }
+  },
+  {
+    "archivo": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "XX-LIS-004",
+      "nombre": "SOMIER TAPIZADO 100 X 190",
+      "categoria": "LISTA 2",
+      "precio_contado": 500000,
+      "precio_promo": 445000,
+      "raw": {
+        "SOFA-CAMA": "SOMIER TAPIZADO 100 X 190 ",
+        "CONTADO": 500000,
+        "PROMOCION": 445000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Maximuebles",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "100 x 190 cm"
+        }
+      ],
+      "nombre_sugerido": "SOMIER TAPIZADO 100 X 190"
+    }
+  },
+  {
+    "archivo": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "XX-LIS-005",
+      "nombre": "SOMIER TAPIZADO 120 X 190",
+      "categoria": "LISTA 2",
+      "precio_contado": 530000,
+      "precio_promo": 475000,
+      "raw": {
+        "SOFA-CAMA": "SOMIER TAPIZADO 120 X 190 ",
+        "CONTADO": 530000,
+        "PROMOCION": 475000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Muebles y Organización",
+        "id": 2,
+        "confianza": 0.9
+      },
+      "subcategoria": {
+        "nombre": "Muebles de Cocina",
+        "id": 30,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Muebles de Cocina\" encontrada"
+      },
+      "marca": {
+        "nombre": "Maximuebles",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        },
+        {
+          "nombre": "Medida",
+          "valor": "120 x 190 cm"
+        }
+      ],
+      "nombre_sugerido": "SOMIER TAPIZADO 120 X 190"
+    }
+  },
+  {
+    "archivo": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "GA010116911",
+      "nombre": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 1065000,
+      "precio_promo": 910000,
+      "raw": {
+        "MOTOSIERRA": "GTA 26 10CM",
+        "CODIGO": "GA010116911",
+        "DESCRIPCIÓN": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+        "CONTADO": 1065000,
+        "PROMO": 910000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Herramientas STIHL",
+        "id": 4,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Sopladores",
+        "id": 44,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Sopladores\" encontrada"
+      },
+      "marca": {
+        "nombre": "STIHL",
+        "id": 7,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "4",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte"
+    }
+  },
+  {
+    "archivo": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "11482000270",
+      "nombre": "Baja intensidad de uso, cilindrada 30 cm³ , potencia 1,74 hp, peso 4,5 km",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 840000,
+      "precio_promo": 715000,
+      "raw": {
+        "MOTOSIERRA": "MS 162 35CM",
+        "CODIGO": 11482000270,
+        "DESCRIPCIÓN": "Baja intensidad de uso, cilindrada 30 cm³ , potencia 1,74 hp, peso 4,5 km",
+        "CONTADO": 840000,
+        "PROMO": 715000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Herramientas STIHL",
+        "id": 4,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Sopladores",
+        "id": 44,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Sopladores\" encontrada"
+      },
+      "marca": {
+        "nombre": "STIHL",
+        "id": 7,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Baja intensidad de uso, cilindrada 30 cm³ , potencia 1,74 hp, peso 4,5 km"
+    }
+  },
+  {
+    "archivo": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "11482000273",
+      "nombre": "Peso 3.9 Kg, potencia 1,74 Hp/1.3 Kw, tipo cadena 3/8\"P, cilindrada 30.1 cm³",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 1005000,
+      "precio_promo": 860000,
+      "raw": {
+        "MOTOSIERRA": "MS 172 40CM ",
+        "CODIGO": 11482000273,
+        "DESCRIPCIÓN": "Peso 3.9 Kg, potencia 1,74 Hp/1.3 Kw, tipo cadena 3/8\"P, cilindrada 30.1 cm³",
+        "CONTADO": 1005000,
+        "PROMO": 860000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Herramientas STIHL",
+        "id": 4,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Sopladores",
+        "id": 44,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Sopladores\" encontrada"
+      },
+      "marca": {
+        "nombre": "STIHL",
+        "id": 7,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "8",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Peso 3.9 Kg, potencia 1,74 Hp/1.3 Kw, tipo cadena 3/8\"P, cilindrada 30.1 cm³"
+    }
+  },
+  {
+    "archivo": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "11482000305",
+      "nombre": "Peso 3.9 Kg, potencia de 2 Hp/1.5 Kw, tipo cadena 3/8\"P,. cilindrada 31.8 cm³",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 1175000,
+      "precio_promo": 1005000,
+      "raw": {
+        "MOTOSIERRA": "MS 182 45CM",
+        "CODIGO": 11482000305,
+        "DESCRIPCIÓN": "Peso 3.9 Kg, potencia de 2 Hp/1.5 Kw, tipo cadena 3/8\"P,. cilindrada 31.8 cm³",
+        "CONTADO": 1175000,
+        "PROMO": 1005000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Herramientas STIHL",
+        "id": 4,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Sopladores",
+        "id": 44,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Sopladores\" encontrada"
+      },
+      "marca": {
+        "nombre": "STIHL",
+        "id": 7,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Tamaño de Pantalla",
+          "valor": "8",
+          "unidad": "pulgadas"
+        },
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Peso 3.9 Kg, potencia de 2 Hp/1.5 Kw, tipo cadena 3/8\"P,. cilindrada 31.8 cm³"
+    }
+  },
+  {
+    "archivo": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "MAO040115867",
+      "nombre": "Motosierra a bateria de baja intesidad de uso voltaje 36v, bateria Ion litio, peso 29k",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 1705000,
+      "precio_promo": 1460000,
+      "raw": {
+        "MOTOSIERRA": "MSA 60.0",
+        "CODIGO": "MAO040115867",
+        "DESCRIPCIÓN": "Motosierra a bateria de baja intesidad de uso voltaje 36v, bateria Ion litio, peso 29k",
+        "CONTADO": 1705000,
+        "PROMO": 1460000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "STIHL",
+        "id": 7,
+        "accion": "usar_existente"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2025"
+        }
+      ],
+      "nombre_sugerido": "Motosierra a bateria de baja intesidad de uso voltaje 36v, bateria Ion litio, peso 29k"
+    }
+  },
+  {
+    "archivo": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "producto_num": 1,
+    "original": {
+      "ref": "AX4 EIII",
+      "nombre": "AX4 EIII MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 6020000,
+      "precio_promo": 5820000,
+      "raw": {
+        "REFERENCIA": "AX4 EIII",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 6020000,
+        "PROMOCION": 5820000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Suzuki",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "AX4 EIII MODELO 2026"
+    }
+  },
+  {
+    "archivo": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "producto_num": 2,
+    "original": {
+      "ref": "AX4H EVOLUTION EIII",
+      "nombre": "AX4H EVOLUTION EIII MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 6260000,
+      "precio_promo": 5960000,
+      "raw": {
+        "REFERENCIA": "AX4H EVOLUTION EIII",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 6260000,
+        "PROMOCION": 5960000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Suzuki",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "AX4H EVOLUTION EIII MODELO 2026"
+    }
+  },
+  {
+    "archivo": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "producto_num": 3,
+    "original": {
+      "ref": "AX4 ABS",
+      "nombre": "AX4 ABS MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 6509000,
+      "precio_promo": 6309000,
+      "raw": {
+        "REFERENCIA": "AX4 ABS",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 6509000,
+        "PROMOCION": 6309000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Suzuki",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "AX4 ABS MODELO 2026"
+    }
+  },
+  {
+    "archivo": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "producto_num": 4,
+    "original": {
+      "ref": "GN 125 EIII",
+      "nombre": "GN 125 EIII MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7199000,
+      "precio_promo": 6999000,
+      "raw": {
+        "REFERENCIA": "GN 125 EIII",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 7199000,
+        "PROMOCION": 6999000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Suzuki",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "GN 125 EIII MODELO 2026"
+    }
+  },
+  {
+    "archivo": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "producto_num": 5,
+    "original": {
+      "ref": "GN 125 ABS",
+      "nombre": "GN 125 ABS MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7599000,
+      "precio_promo": 7399000,
+      "raw": {
+        "REFERENCIA": "GN 125 ABS ",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 7599000,
+        "PROMOCION": 7399000
+      }
+    },
+    "clasificacion": {
+      "categoria": {
+        "nombre": "Motos",
+        "id": 3,
+        "confianza": 0.95
+      },
+      "subcategoria": {
+        "nombre": "Motos Urbanas",
+        "id": 34,
+        "accion": "usar_existente",
+        "razon": "Subcategoría similar \"Motos Urbanas\" encontrada"
+      },
+      "marca": {
+        "nombre": "Suzuki",
+        "id": null,
+        "accion": "crear_nueva"
+      },
+      "atributos": [
+        {
+          "nombre": "Año Modelo",
+          "valor": "2026"
+        }
+      ],
+      "nombre_sugerido": "GN 125 ABS MODELO 2026"
+    }
+  }
+]

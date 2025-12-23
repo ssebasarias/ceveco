@@ -65,6 +65,11 @@ if (process.env.NODE_ENV === 'development') {
 // ARCHIVOS ESTÁTICOS
 // ============================================
 const path = require('path');
+
+// Servir imágenes de productos desde backend/public
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
+
+// Servir frontend
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend/pages')));
 

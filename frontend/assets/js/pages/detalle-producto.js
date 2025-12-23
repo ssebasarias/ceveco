@@ -126,23 +126,27 @@ function renderProduct(product) {
         }
     }
 
-    // Imágenes
-    const mainImgUrl = product.imagen_principal || 'https://via.placeholder.com/600x600?text=Sin+Imagen';
+    // Imágenes - Buscar la imagen principal correctamente
+    let images = product.imagenes || [];
+
+    // Buscar imagen principal (es_principal = true) o tomar la primera
+    let mainImgUrl = '/assets/img/no-image.svg';
+    if (images.length > 0) {
+        const imagenPrincipal = images.find(img => img.es_principal) || images[0];
+        mainImgUrl = imagenPrincipal.url_imagen || imagenPrincipal.url;
+    }
+
     const mainImage = dom.mainImage();
     if (mainImage) mainImage.src = mainImgUrl;
 
     // Renderizar thumbnails
     const thumbnailsContainer = dom.thumbnails();
-    let images = product.imagenes || [];
-    if (images.length === 0 && product.imagen_principal) {
-        images = [{ url: product.imagen_principal }];
-    }
 
     if (images.length > 0 && thumbnailsContainer) {
         thumbnailsContainer.innerHTML = images.map((img, index) => `
-            <button data-url="${img.url}" data-index="${index}"
+            <button data-url="${img.url_imagen || img.url}" data-index="${index}"
                 class="thumbnail ${index === 0 ? 'active border-primary' : 'border-gray-200'} border-2 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                <img src="${img.url}" alt="Vista ${index + 1}" class="w-full h-full object-contain p-1 pointer-events-none">
+                <img src="${img.url_imagen || img.url}" alt="Vista ${index + 1}" class="w-full h-full object-contain p-1 pointer-events-none">
             </button>
         `).join('');
     }
@@ -193,30 +197,31 @@ function renderSpecs(product) {
     const specsContainer = document.getElementById('specs-container');
     if (!specsContainer) return;
 
+    // Si hay especificaciones (atributos) de la BD
     if (product.especificaciones && product.especificaciones.length > 0) {
-        const renderList = (specs) => specs.map(spec => `
-            <div class="flex justify-between py-2 border-b border-gray-100 last:border-0">
-                <span class="font-semibold text-gray-700 text-sm">${spec.nombre}:</span>
-                <span class="text-gray-600 text-sm text-right ml-4">${spec.valor}</span>
-            </div>
-        `).join('');
+        const renderList = (specs) => specs.map(spec => {
+            const valor = spec.valor || 'N/A';
+            const unidad = spec.unidad ? ` ${spec.unidad}` : '';
+
+            return `
+                <div class="flex justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded">
+                    <span class="font-semibold text-gray-700">${spec.nombre}:</span>
+                    <span class="text-gray-900 font-medium">${valor}${unidad}</span>
+                </div>
+            `;
+        }).join('');
 
         specsContainer.innerHTML = `<div class="space-y-1">${renderList(product.especificaciones)}</div>`;
     } else {
+        // Fallback si no hay especificaciones
         specsContainer.innerHTML = `
-            <div class="space-y-3">
-                <div class="flex justify-between py-3 border-b border-gray-200">
-                    <span class="font-semibold text-gray-700">Marca:</span>
-                    <span class="text-gray-600">${product.marca}</span>
-                </div>
-                <div class="flex justify-between py-3 border-b border-gray-200">
-                    <span class="font-semibold text-gray-700">Categoría:</span>
-                    <span class="text-gray-600">${product.categoria}</span>
-                </div>
-                 <div class="flex justify-between py-3 border-b border-gray-200">
-                    <span class="font-semibold text-gray-700">SKU:</span>
-                    <span class="text-gray-600">${product.sku}</span>
-                </div>
+            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                <svg class="w-12 h-12 mx-auto mb-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm text-yellow-800 font-medium">
+                    Las especificaciones técnicas detalladas estarán disponibles próximamente.
+                </p>
             </div>
         `;
     }

@@ -1,0 +1,266 @@
+﻿[dotenv@17.2.3] injecting env (20) from backend\.env -- tip: ­ƒøá´©Å  run anywhere with `dotenvx run -- yourcommand`
+
+====================================================================================================
+­ƒöì AN├üLISIS DE T├ìTULOS Y DESCRIPCIONES - HONDA
+====================================================================================================
+
+­ƒôé Leyendo Excel: C:\Users\guerr\Documents\ProyectosWeb\ceveco\raw_data\HONDA AGOSTO 01 2025.xlsx
+­ƒôè Total de filas en Excel: 22
+Ô£à Encabezados encontrados en fila 3: , REFERENCIA, MODELO, CONTADO, PROMOCION, , , , , , , , , , , 
+
+­ƒöì Mapeo de columnas:
+  - Referencia: REFERENCIA
+  - Modelo/Descripci├│n: MODELO
+  - Precio Contado: CONTADO
+  - Precio Promo: PROMOCION
+
+Ô£à 19 productos normalizados de 19 filas de datos
+
+­ƒôè Muestra del primer producto:
+{
+  "ref": "WAVE 110S CBS",
+  "nombre": "WAVE 110S CBS Modelo 2026",
+  "categoria": "Hoja1",
+  "precio_contado": 7750000,
+  "precio_promo": 7550000,
+  "raw": {
+    "REFERENCIA": "WAVE 110S CBS",
+    "MODELO": 2026,
+    "CONTADO": 7750000,
+    "PROMOCION": 7550000
+  }
+}
+­ƒôª Productos en Excel: 19
+
+Analizando primeros 5 productos...
+
+====================================================================================================
+
+1. PRODUCTO: WAVE 110S CBS Modelo 2026
+
+====================================================================================================
+
+­ƒôï DATOS DEL EXCEL:
+
+   REF/SKU:          WAVE 110S CBS
+   Nombre:           WAVE 110S CBS Modelo 2026
+   Categor├¡a:        Hoja1
+   Precio Contado:   7750000
+   Precio Promo:     7550000
+   Raw Data:         [object Object]
+
+­ƒôØ T├ìTULOS:
+
+   ÔØî Actual:        WAVE 110S CBS Modelo 2026
+   Ô£à Mejorado:      Honda WAVE 110S CBS 2026 CBS
+
+­ƒôä DESCRIPCI├ôN CORTA:
+
+   Honda WAVE 110S CBS 2026 CBS - Motocicleta Honda de ├║ltima generaci├│n
+
+­ƒôä DESCRIPCI├ôN LARGA (preview):
+
+   Honda WAVE 110S CBS 2026 CBS Motocicleta Honda de ├║ltima generaci├│n, dise├▒ada para ofrecer el mejor rendimiento, econom├¡a y confiabilidad. Caracter├¡sticas Principales: Marca: Honda Modelo: Honda WAVE ...
+
+­ƒôè AN├üLISIS DE DATOS:
+
+   Columnas disponibles:  6
+   Columnas usadas:       3
+   Columnas NO usadas:    3
+
+   ÔÜá´©Å  Datos NO aprovechados:
+      - precio_contado: 7750000
+      - precio_promo: 7550000
+      - raw: [object Object]
+
+
+====================================================================================================
+
+2. PRODUCTO: CB 100 Modelo 2026
+
+====================================================================================================
+
+­ƒôï DATOS DEL EXCEL:
+
+   REF/SKU:          CB 100
+   Nombre:           CB 100 Modelo 2026
+   Categor├¡a:        Hoja1
+   Precio Contado:   5900000
+   Precio Promo:     5700000
+   Raw Data:         [object Object]
+
+­ƒôØ T├ìTULOS:
+
+   ÔØî Actual:        CB 100 Modelo 2026
+   Ô£à Mejorado:      Honda CB 100 Modelo 2026
+
+­ƒôä DESCRIPCI├ôN CORTA:
+
+   Honda CB 100 Modelo 2026 - Motocicleta Honda de ├║ltima generaci├│n
+
+­ƒôä DESCRIPCI├ôN LARGA (preview):
+
+   Honda CB 100 Modelo 2026 Motocicleta Honda de ├║ltima generaci├│n, dise├▒ada para ofrecer el mejor rendimiento, econom├¡a y confiabilidad. Caracter├¡sticas Principales: Marca: Honda Modelo: Honda CB 100 Mo...
+
+­ƒôè AN├üLISIS DE DATOS:
+
+   Columnas disponibles:  6
+   Columnas usadas:       3
+   Columnas NO usadas:    3
+
+   ÔÜá´©Å  Datos NO aprovechados:
+      - precio_contado: 5900000
+      - precio_promo: 5700000
+      - raw: [object Object]
+
+
+====================================================================================================
+
+3. PRODUCTO: CB 125F 2.0 Modelo 2026
+
+====================================================================================================
+
+­ƒôï DATOS DEL EXCEL:
+
+   REF/SKU:          CB 125F 2.0
+   Nombre:           CB 125F 2.0 Modelo 2026
+   Categor├¡a:        Hoja1
+   Precio Contado:   7190000
+   Precio Promo:     6990000
+   Raw Data:         [object Object]
+
+­ƒôØ T├ìTULOS:
+
+   ÔØî Actual:        CB 125F 2.0 Modelo 2026
+   Ô£à Mejorado:      Honda CB 125F 2.0 Modelo 2026
+
+­ƒôä DESCRIPCI├ôN CORTA:
+
+   Honda CB 125F 2.0 Modelo 2026 - Motocicleta Honda de ├║ltima generaci├│n
+
+­ƒôä DESCRIPCI├ôN LARGA (preview):
+
+   Honda CB 125F 2.0 Modelo 2026 Motocicleta Honda de ├║ltima generaci├│n, dise├▒ada para ofrecer el mejor rendimiento, econom├¡a y confiabilidad. Caracter├¡sticas Principales: Marca: Honda Modelo: Honda CB 1...
+
+­ƒôè AN├üLISIS DE DATOS:
+
+   Columnas disponibles:  6
+   Columnas usadas:       3
+   Columnas NO usadas:    3
+
+   ÔÜá´©Å  Datos NO aprovechados:
+      - precio_contado: 7190000
+      - precio_promo: 6990000
+      - raw: [object Object]
+
+
+====================================================================================================
+
+4. PRODUCTO: CB 125F 2.0 MAX Modelo 2026
+
+====================================================================================================
+
+­ƒôï DATOS DEL EXCEL:
+
+   REF/SKU:          CB 125F 2.0 MAX
+   Nombre:           CB 125F 2.0 MAX Modelo 2026
+   Categor├¡a:        Hoja1
+   Precio Contado:   7330000
+   Precio Promo:     7130000
+   Raw Data:         [object Object]
+
+­ƒôØ T├ìTULOS:
+
+   ÔØî Actual:        CB 125F 2.0 MAX Modelo 2026
+   Ô£à Mejorado:      Honda CB 125F 2.0 MAX 2026 MAX
+
+­ƒôä DESCRIPCI├ôN CORTA:
+
+   Honda CB 125F 2.0 MAX 2026 MAX - Motocicleta Honda de ├║ltima generaci├│n
+
+­ƒôä DESCRIPCI├ôN LARGA (preview):
+
+   Honda CB 125F 2.0 MAX 2026 MAX Motocicleta Honda de ├║ltima generaci├│n, dise├▒ada para ofrecer el mejor rendimiento, econom├¡a y confiabilidad. Caracter├¡sticas Principales: Marca: Honda Modelo: Honda CB ...
+
+­ƒôè AN├üLISIS DE DATOS:
+
+   Columnas disponibles:  6
+   Columnas usadas:       3
+   Columnas NO usadas:    3
+
+   ÔÜá´©Å  Datos NO aprovechados:
+      - precio_contado: 7330000
+      - precio_promo: 7130000
+      - raw: [object Object]
+
+
+====================================================================================================
+
+5. PRODUCTO: CB 125F DLX 2.0 Modelo 2026
+
+====================================================================================================
+
+­ƒôï DATOS DEL EXCEL:
+
+   REF/SKU:          CB 125F DLX 2.0
+   Nombre:           CB 125F DLX 2.0 Modelo 2026
+   Categor├¡a:        Hoja1
+   Precio Contado:   7350000
+   Precio Promo:     7150000
+   Raw Data:         [object Object]
+
+­ƒôØ T├ìTULOS:
+
+   ÔØî Actual:        CB 125F DLX 2.0 Modelo 2026
+   Ô£à Mejorado:      Honda CB 125F DLX 2026 DLX
+
+­ƒôä DESCRIPCI├ôN CORTA:
+
+   Honda CB 125F DLX 2026 DLX - Motocicleta Honda de ├║ltima generaci├│n
+
+­ƒôä DESCRIPCI├ôN LARGA (preview):
+
+   Honda CB 125F DLX 2026 DLX Motocicleta Honda de ├║ltima generaci├│n, dise├▒ada para ofrecer el mejor rendimiento, econom├¡a y confiabilidad. Caracter├¡sticas Principales: Marca: Honda Modelo: Honda CB 125F...
+
+­ƒôè AN├üLISIS DE DATOS:
+
+   Columnas disponibles:  6
+   Columnas usadas:       3
+   Columnas NO usadas:    3
+
+   ÔÜá´©Å  Datos NO aprovechados:
+      - precio_contado: 7350000
+      - precio_promo: 7150000
+      - raw: [object Object]
+
+
+
+====================================================================================================
+­ƒÆí RECOMENDACIONES
+====================================================================================================
+
+1. T├ìTULOS:
+   Ô£à Usar formato: "Honda [MODELO] [A├æO] [CARACTER├ìSTICAS]"
+   Ô£à Ejemplo: "Honda WAVE 110S 2026 CBS"
+   Ô£à M├ís corto, m├ís claro, mejor SEO
+
+2. DESCRIPCIONES:
+   Ô£à Incluir informaci├│n del Excel (precio_contado, precio_promo)
+   Ô£à Agregar caracter├¡sticas t├®cnicas si est├ín disponibles
+   Ô£à Mantener estructura HTML para mejor presentaci├│n
+   Ô£à NO incluir precios en la descripci├│n (solo en campos dedicados)
+
+3. DATOS DEL EXCEL:
+   Ô£à Mapear "precio_contado" ÔåÆ precio_actual
+   Ô£à Mapear "precio_promo" ÔåÆ precio_promocional
+   Ô£à Usar "raw" para informaci├│n adicional
+   Ô£à Usar "categoria" para clasificaci├│n
+
+4. PR├ôXIMOS PASOS:
+   1. Actualizar ExcelNormalizer para mapear precios correctamente
+   2. Crear generador de t├¡tulos espec├¡fico para motos
+   3. Crear plantilla de descripci├│n para Honda
+   4. Procesar Excel Honda completo con mejoras
+
+====================================================================================================
+

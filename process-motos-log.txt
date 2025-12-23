@@ -1,0 +1,178 @@
+﻿[dotenv@17.2.3] injecting env (20) from backend\.env -- tip: ­ƒôí add observability to secrets: https://dotenvx.com/ops
+
+====================================================================================================
+­ƒÅì´©Å  PROCESADOR UNIVERSAL - TODAS LAS MOTOS
+====================================================================================================
+
+
+====================================================================================================
+­ƒÅì´©Å  PROCESANDO: HONDA
+====================================================================================================
+
+­ƒôé Leyendo Excel: C:\Users\guerr\Documents\ProyectosWeb\ceveco\raw_data\HONDA AGOSTO 01 2025.xlsx
+­ƒôè Total de filas en Excel: 22
+Ô£à Encabezados encontrados en fila 3: , REFERENCIA, MODELO, CONTADO, PROMOCION, , , , , , , , , , , 
+
+­ƒöì Mapeo de columnas:
+  - Referencia: REFERENCIA
+  - Modelo/Descripci├│n: MODELO
+  - Precio Contado: CONTADO
+  - Precio Promo: PROMOCION
+
+Ô£à 19 productos normalizados de 19 filas de datos
+
+­ƒôè Muestra del primer producto:
+{
+  "ref": "WAVE 110S CBS",
+  "nombre": "WAVE 110S CBS Modelo 2026",
+  "categoria": "Hoja1",
+  "precio_contado": 7750000,
+  "precio_promo": 7550000,
+  "raw": {
+    "REFERENCIA": "WAVE 110S CBS",
+    "MODELO": 2026,
+    "CONTADO": 7750000,
+    "PROMOCION": 7550000
+  }
+}
+­ƒôª Productos en Excel: 19
+
+Ô£à Marca Honda: ID 1
+Ô£à Categor├¡a Motos: ID 3
+
+[5%] 1/19
+­ƒôª WAVE 110S CBS Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[11%] 2/19
+­ƒôª CB 100 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[16%] 3/19
+­ƒôª CB 125F 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[21%] 4/19
+­ƒôª CB 125F 2.0 MAX Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[26%] 5/19
+­ƒôª CB 125F DLX 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[32%] 6/19
+­ƒôª CB190R 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[37%] 7/19
+­ƒôª CB 300 F Modelo 2024
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[42%] 8/19
+­ƒôª DIO 110  STD E3 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[47%] 9/19
+­ƒôª DIO 110  DLX E3 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[53%] 10/19
+­ƒôª NAVI 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[58%] 11/19
+­ƒôª NAVI MIX 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[63%] 12/19
+­ƒôª PCX 160 Modelo 2025
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[68%] 13/19
+­ƒôª XR 150L 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[74%] 14/19
+­ƒôª XR 190L 2.0 Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[79%] 15/19
+­ƒôª XR 300L Tornado Modelo 2025
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[84%] 16/19
+­ƒôª NX 190 Modelo 2025
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[89%] 17/19
+­ƒôª XBLADE Modelo 2025
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[95%] 18/19
+­ƒôª XBLADE Modelo 2026
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+[100%] 19/19
+­ƒôª LISTA DE PRECIOS SUJETA A CAMBIOS SIN PREVIO AVISO
+   ÔØî Error: llave duplicada viola restricci├│n de unicidad ┬½productos_sku_key┬╗
+
+
+Ô£à Honda: 0 productos, 0 im├ígenes
+
+
+====================================================================================================
+­ƒÅì´©Å  PROCESANDO: SUZUKI
+====================================================================================================
+
+­ƒôé Leyendo Excel: C:\Users\guerr\Documents\ProyectosWeb\ceveco\raw_data\SUZUKI SEPTIEMBRE 01 2025.xlsx
+­ƒôè Total de filas en Excel: 29
+Ô£à Encabezados encontrados en fila 3: REFERENCIA, MODELO, CONTADO, PROMOCION, 
+
+­ƒöì Mapeo de columnas:
+  - Referencia: REFERENCIA
+  - Modelo/Descripci├│n: MODELO
+  - Precio Contado: CONTADO
+  - Precio Promo: PROMOCION
+
+Ô£à 26 productos normalizados de 26 filas de datos
+
+­ƒôè Muestra del primer producto:
+{
+  "ref": "AX4 EIII",
+  "nombre": "AX4 EIII MODELO 2026",
+  "categoria": "Hoja1",
+  "precio_contado": 6020000,
+  "precio_promo": 5820000,
+  "raw": {
+    "REFERENCIA": "AX4 EIII",
+    "MODELO": "MODELO 2026",
+    "CONTADO": 6020000,
+    "PROMOCION": 5820000
+  }
+}
+­ƒôª Productos en Excel: 26
+
+node : 
+En línea: 1 Carácter: 1
++ node process-all-motorcycles.js 2>&1 | Out-File 
+-Encoding UTF8 proces ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [ 
+   ], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ÔØî Error procesando Suzuki: no existe la columna 
+┬½slug┬╗ en la relaci├│n ┬½marcas┬╗
+
+====================================================================================================
+­ƒôè REPORTE FINAL
+====================================================================================================
+
+Ô£à Total Productos: 0
+­ƒô© Total Im├ígenes:  0
+
+Por Marca:
+   Honda: 0 productos, 0 im├ígenes
+
+====================================================================================================
+

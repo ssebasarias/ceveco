@@ -1,0 +1,189 @@
+[
+  {
+    "file": "COMODISIMOS AGOSTO 15 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 0,
+    "sample": null,
+    "error": null
+  },
+  {
+    "file": "CORBETA DICIEMBRE 11 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 35,
+    "sample": {
+      "ref": "7705946480017           K-GTV40G200",
+      "nombre": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+      "categoria": " CORBETA 1",
+      "precio_contado": 1010000,
+      "precio_promo": 915000,
+      "raw": {
+        "REF.": "7705946480017           K-GTV40G200",
+        "TELEVISORES KALLEY": "TV de 40\" ,Full HD, Sistema Android TV (Google),Control del TV y Smart Home por voz (Google Assistant), Netflix, YouTube, Amazon, Disney + y miles más",
+        "CONTADO": 1010000,
+        "PROMO": 915000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "HACEB DICIEMBRE 06 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 24,
+    "sample": {
+      "ref": "NEV 220 CE TI R2",
+      "nombre": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+      "categoria": "Hoja1",
+      "precio_contado": 1420000,
+      "precio_promo": 1290000,
+      "raw": {
+        "REF": "NEV 220 CE TI R2",
+        "CODIGO": 9002739,
+        "NEVERAS CONVENCIONAL": "Dispensador de agua, tanque 2 litros de capacidad, entrepaños removibles e intercambiables, acabado externo Alubrite o plomo .",
+        "CONTADO": 1420000,
+        "PROMOCION": 1290000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "HONDA AGOSTO 01 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 18,
+    "sample": {
+      "ref": "WAVE 110S CBS",
+      "nombre": "2026",
+      "categoria": "Hoja1",
+      "precio_contado": 7750000,
+      "precio_promo": 7550000,
+      "raw": {
+        "REFERENCIA": "WAVE 110S CBS",
+        "MODELO": 2026,
+        "CONTADO": 7750000,
+        "PROMOCION": 7550000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "HYUNDAI NOVIEMBRE 29 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 3,
+    "sample": {
+      "ref": "HYLED4328G",
+      "nombre": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 1045000,
+      "precio_promo": 945000,
+      "raw": {
+        "REF": "HYLED4328G ",
+        "TELEVISORES": "TV LED Full HD 43\" Smart Tv, GOOGLE TV, asistente de voz de Google, Tecnología HDR10: imágenes más nítidas y realistas, Dolby Atmos: audio envolvente y experiencia inmersiva,Control por voz: interacción más práctica e intuitiva, Navegación fluida con su sistema operativo google tv, Acceso directo a apps favoritas: facilidad de uso y entretenimiento inmediato.",
+        "CONTADO": 1045000,
+        "PROMOCION": 945000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "INVAL OCTUBRE 25 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 7,
+    "sample": {
+      "ref": "AR 2X2",
+      "nombre": "ARCHIVADOR  2  GAVETAS",
+      "categoria": "Hoja1",
+      "precio_contado": 375000,
+      "precio_promo": 335000,
+      "raw": {
+        "REF.": "AR 2X2",
+        "ARCHIVADOR": "ARCHIVADOR  2  GAVETAS",
+        "CONTADO": 375000,
+        "PROMOCION": 335000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "LG NOVIEMBRE 29 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 33,
+    "sample": {
+      "ref": "32LR600",
+      "nombre": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+      "categoria": "LISTA LG 1",
+      "precio_contado": 845000,
+      "precio_promo": 765000,
+      "raw": {
+        "REF": "32LR600",
+        "TELEVISORES": "TV  32\" HD,USB - 2 HDMI - TDT, SMART TV - WebOS 3,5, Procesador Dual core .",
+        "CONTADO": 845000,
+        "PROMO": 765000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "LYL SOUND DICIEMBRE 06 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 5,
+    "sample": {
+      "ref": "10007772237       LLZ-8TD",
+      "nombre": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+      "categoria": "Hoja1",
+      "precio_contado": 920000,
+      "precio_promo": 840000,
+      "raw": {
+        "REF.": "10007772237       LLZ-8TD",
+        "CABINAS": "Cabina RECARGABLE, con parlante de 8\", 250 Watts,Conexión Bluetooth 5.0,  2 entradas de microfono e instrumento,ecualizador con DPS, incluye microfono UHF inhalambrico.",
+        "CONTADO": 920000,
+        "PROMOCION": 840000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "MAXIMUEBLES NOVIEMBRE 11 2025.xlsx",
+    "status": "ERROR",
+    "products": 0,
+    "sample": null,
+    "error": "No se encontraron encabezados de columnas (REF, MODELO, CONTADO, etc.)"
+  },
+  {
+    "file": "STIHL NOVIEMBRE 18 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 53,
+    "sample": {
+      "ref": "GA010116911",
+      "nombre": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+      "categoria": "STIHL MAQUINAS",
+      "precio_contado": 1065000,
+      "precio_promo": 910000,
+      "raw": {
+        "MOTOSIERRA": "GTA 26 10CM",
+        "CODIGO": "GA010116911",
+        "DESCRIPCIÓN": "Cadena 1/4\" ,cubierta protectora, indicador carga,cargador, Bolsa de transporte",
+        "CONTADO": 1065000,
+        "PROMO": 910000
+      }
+    },
+    "error": null
+  },
+  {
+    "file": "SUZUKI SEPTIEMBRE 01 2025.xlsx",
+    "status": "SUCCESS",
+    "products": 24,
+    "sample": {
+      "ref": "AX4 EIII",
+      "nombre": "MODELO 2026",
+      "categoria": "Hoja1",
+      "precio_contado": 6020000,
+      "precio_promo": 5820000,
+      "raw": {
+        "REFERENCIA": "AX4 EIII",
+        "MODELO": "MODELO 2026",
+        "CONTADO": 6020000,
+        "PROMOCION": 5820000
+      }
+    },
+    "error": null
+  }
+]

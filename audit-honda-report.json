@@ -1,0 +1,874 @@
+{
+  "fecha": "2025-12-23T04:15:21.551Z",
+  "archivo": "HONDA.xlsx",
+  "productos_analizados": 5,
+  "normalizacion": {
+    "total_productos": 19,
+    "primeros_5": [
+      {
+        "index": 1,
+        "sku": "WAVE 110S CBS",
+        "nombre": "WAVE 110S CBS Modelo 2026",
+        "categoria_excel": "Hoja1",
+        "columnas_disponibles": [
+          "ref",
+          "nombre",
+          "categoria",
+          "precio_contado",
+          "precio_promo",
+          "raw"
+        ]
+      },
+      {
+        "index": 2,
+        "sku": "CB 100",
+        "nombre": "CB 100 Modelo 2026",
+        "categoria_excel": "Hoja1",
+        "columnas_disponibles": [
+          "ref",
+          "nombre",
+          "categoria",
+          "precio_contado",
+          "precio_promo",
+          "raw"
+        ]
+      },
+      {
+        "index": 3,
+        "sku": "CB 125F 2.0",
+        "nombre": "CB 125F 2.0 Modelo 2026",
+        "categoria_excel": "Hoja1",
+        "columnas_disponibles": [
+          "ref",
+          "nombre",
+          "categoria",
+          "precio_contado",
+          "precio_promo",
+          "raw"
+        ]
+      },
+      {
+        "index": 4,
+        "sku": "CB 125F 2.0 MAX",
+        "nombre": "CB 125F 2.0 MAX Modelo 2026",
+        "categoria_excel": "Hoja1",
+        "columnas_disponibles": [
+          "ref",
+          "nombre",
+          "categoria",
+          "precio_contado",
+          "precio_promo",
+          "raw"
+        ]
+      },
+      {
+        "index": 5,
+        "sku": "CB 125F DLX 2.0",
+        "nombre": "CB 125F DLX 2.0 Modelo 2026",
+        "categoria_excel": "Hoja1",
+        "columnas_disponibles": [
+          "ref",
+          "nombre",
+          "categoria",
+          "precio_contado",
+          "precio_promo",
+          "raw"
+        ]
+      }
+    ]
+  },
+  "clasificacion": [],
+  "imagenes": [
+    {
+      "producto": "WAVE 110S CBS Modelo 2026",
+      "sku": "WAVE_110S_CBS",
+      "busqueda_google": "Honda WAVE 110S CBS Modelo 2026 moto",
+      "imagenes_encontradas": 3,
+      "imagenes": [
+        {
+          "nombre": "WAVE_110S_CBS_1.webp",
+          "tamaño_kb": "3.33",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\WAVE_110S_CBS_1.webp"
+        },
+        {
+          "nombre": "WAVE_110S_CBS_2.webp",
+          "tamaño_kb": "3.59",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\WAVE_110S_CBS_2.webp"
+        },
+        {
+          "nombre": "WAVE_110S_CBS_3.webp",
+          "tamaño_kb": "3.42",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\WAVE_110S_CBS_3.webp"
+        }
+      ],
+      "resolucion_actual": "800x800px",
+      "problema": null
+    },
+    {
+      "producto": "CB 100 Modelo 2026",
+      "sku": "CB_100",
+      "busqueda_google": "Honda CB 100 Modelo 2026 moto",
+      "imagenes_encontradas": 3,
+      "imagenes": [
+        {
+          "nombre": "CB_100_1.webp",
+          "tamaño_kb": "3.55",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_100_1.webp"
+        },
+        {
+          "nombre": "CB_100_2.webp",
+          "tamaño_kb": "2.92",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_100_2.webp"
+        },
+        {
+          "nombre": "CB_100_3.webp",
+          "tamaño_kb": "3.43",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_100_3.webp"
+        }
+      ],
+      "resolucion_actual": "800x800px",
+      "problema": null
+    },
+    {
+      "producto": "CB 125F 2.0 Modelo 2026",
+      "sku": "CB_125F_2_0",
+      "busqueda_google": "Honda CB 125F 2.0 Modelo 2026 moto",
+      "imagenes_encontradas": 6,
+      "imagenes": [
+        {
+          "nombre": "CB_125F_2_0_1.webp",
+          "tamaño_kb": "3.44",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_1.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_2.webp",
+          "tamaño_kb": "4.03",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_2.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_3.webp",
+          "tamaño_kb": "6.69",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_3.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_MAX_1.webp",
+          "tamaño_kb": "3.44",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_MAX_1.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_MAX_2.webp",
+          "tamaño_kb": "6.69",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_MAX_2.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_MAX_3.webp",
+          "tamaño_kb": "5.55",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_MAX_3.webp"
+        }
+      ],
+      "resolucion_actual": "800x800px",
+      "problema": null
+    },
+    {
+      "producto": "CB 125F 2.0 MAX Modelo 2026",
+      "sku": "CB_125F_2_0_MAX",
+      "busqueda_google": "Honda CB 125F 2.0 MAX Modelo 2026 moto",
+      "imagenes_encontradas": 3,
+      "imagenes": [
+        {
+          "nombre": "CB_125F_2_0_MAX_1.webp",
+          "tamaño_kb": "3.44",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_MAX_1.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_MAX_2.webp",
+          "tamaño_kb": "6.69",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_MAX_2.webp"
+        },
+        {
+          "nombre": "CB_125F_2_0_MAX_3.webp",
+          "tamaño_kb": "5.55",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_2_0_MAX_3.webp"
+        }
+      ],
+      "resolucion_actual": "800x800px",
+      "problema": null
+    },
+    {
+      "producto": "CB 125F DLX 2.0 Modelo 2026",
+      "sku": "CB_125F_DLX_2_0",
+      "busqueda_google": "Honda CB 125F DLX 2.0 Modelo 2026 moto",
+      "imagenes_encontradas": 3,
+      "imagenes": [
+        {
+          "nombre": "CB_125F_DLX_2_0_1.webp",
+          "tamaño_kb": "3.44",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_DLX_2_0_1.webp"
+        },
+        {
+          "nombre": "CB_125F_DLX_2_0_2.webp",
+          "tamaño_kb": "3.95",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_DLX_2_0_2.webp"
+        },
+        {
+          "nombre": "CB_125F_DLX_2_0_3.webp",
+          "tamaño_kb": "3.63",
+          "ruta": "C:\\Users\\guerr\\Documents\\ProyectosWeb\\ceveco\\product_images_final\\CB_125F_DLX_2_0_3.webp"
+        }
+      ],
+      "resolucion_actual": "800x800px",
+      "problema": null
+    }
+  ],
+  "descripciones": [
+    {
+      "producto": "WAVE 110S CBS Modelo 2026",
+      "descripcion_corta": "WAVE 110S CBS Modelo 2026",
+      "descripcion_larga_preview": "<div class=\"product-description\">\n  <h3>Honda WAVE 110S CBS Modelo 2026</h3>\n  <p>Producto de alta calidad de la marca Honda.</p>\n  \n  <h4>Características:</h4>\n  <p>Consulta las especificaciones técn",
+      "info_disponible_excel": [
+        {
+          "columna": "ref",
+          "valor": "WAVE 110S CBS"
+        },
+        {
+          "columna": "nombre",
+          "valor": "WAVE 110S CBS Modelo 2026"
+        },
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7750000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7550000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "WAVE 110S CBS",
+            "MODELO": 2026,
+            "CONTADO": 7750000,
+            "PROMOCION": 7550000
+          }
+        }
+      ],
+      "info_usada": [
+        "ref",
+        "nombre"
+      ],
+      "info_no_usada": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ],
+      "problema": "Información del Excel no aprovechada"
+    },
+    {
+      "producto": "CB 100 Modelo 2026",
+      "descripcion_corta": "CB 100 Modelo 2026",
+      "descripcion_larga_preview": "<div class=\"product-description\">\n  <h3>Honda CB 100 Modelo 2026</h3>\n  <p>Producto de alta calidad de la marca Honda.</p>\n  \n  <h4>Características:</h4>\n  <p>Consulta las especificaciones técnicas en",
+      "info_disponible_excel": [
+        {
+          "columna": "ref",
+          "valor": "CB 100"
+        },
+        {
+          "columna": "nombre",
+          "valor": "CB 100 Modelo 2026"
+        },
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 5900000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 5700000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 100 ",
+            "MODELO": 2026,
+            "CONTADO": 5900000,
+            "PROMOCION": 5700000
+          }
+        }
+      ],
+      "info_usada": [
+        "ref",
+        "nombre"
+      ],
+      "info_no_usada": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ],
+      "problema": "Información del Excel no aprovechada"
+    },
+    {
+      "producto": "CB 125F 2.0 Modelo 2026",
+      "descripcion_corta": "CB 125F 2.0 Modelo 2026",
+      "descripcion_larga_preview": "<div class=\"product-description\">\n  <h3>Honda CB 125F 2.0 Modelo 2026</h3>\n  <p>Producto de alta calidad de la marca Honda.</p>\n  \n  <h4>Características:</h4>\n  <p>Consulta las especificaciones técnic",
+      "info_disponible_excel": [
+        {
+          "columna": "ref",
+          "valor": "CB 125F 2.0"
+        },
+        {
+          "columna": "nombre",
+          "valor": "CB 125F 2.0 Modelo 2026"
+        },
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7190000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 6990000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F 2.0",
+            "MODELO": 2026,
+            "CONTADO": 7190000,
+            "PROMOCION": 6990000
+          }
+        }
+      ],
+      "info_usada": [
+        "ref",
+        "nombre"
+      ],
+      "info_no_usada": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ],
+      "problema": "Información del Excel no aprovechada"
+    },
+    {
+      "producto": "CB 125F 2.0 MAX Modelo 2026",
+      "descripcion_corta": "CB 125F 2.0 MAX Modelo 2026",
+      "descripcion_larga_preview": "<div class=\"product-description\">\n  <h3>Honda CB 125F 2.0 MAX Modelo 2026</h3>\n  <p>Producto de alta calidad de la marca Honda.</p>\n  \n  <h4>Características:</h4>\n  <p>Consulta las especificaciones té",
+      "info_disponible_excel": [
+        {
+          "columna": "ref",
+          "valor": "CB 125F 2.0 MAX"
+        },
+        {
+          "columna": "nombre",
+          "valor": "CB 125F 2.0 MAX Modelo 2026"
+        },
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7330000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7130000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F 2.0 MAX",
+            "MODELO": 2026,
+            "CONTADO": 7330000,
+            "PROMOCION": 7130000
+          }
+        }
+      ],
+      "info_usada": [
+        "ref",
+        "nombre"
+      ],
+      "info_no_usada": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ],
+      "problema": "Información del Excel no aprovechada"
+    },
+    {
+      "producto": "CB 125F DLX 2.0 Modelo 2026",
+      "descripcion_corta": "CB 125F DLX 2.0 Modelo 2026",
+      "descripcion_larga_preview": "<div class=\"product-description\">\n  <h3>Honda CB 125F DLX 2.0 Modelo 2026</h3>\n  <p>Producto de alta calidad de la marca Honda.</p>\n  \n  <h4>Características:</h4>\n  <p>Consulta las especificaciones té",
+      "info_disponible_excel": [
+        {
+          "columna": "ref",
+          "valor": "CB 125F DLX 2.0"
+        },
+        {
+          "columna": "nombre",
+          "valor": "CB 125F DLX 2.0 Modelo 2026"
+        },
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7350000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7150000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F DLX 2.0",
+            "MODELO": 2026,
+            "CONTADO": 7350000,
+            "PROMOCION": 7150000
+          }
+        }
+      ],
+      "info_usada": [
+        "ref",
+        "nombre"
+      ],
+      "info_no_usada": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ],
+      "problema": "Información del Excel no aprovechada"
+    }
+  ],
+  "atributos": [
+    {
+      "producto": "WAVE 110S CBS Modelo 2026",
+      "atributos_del_nombre": {},
+      "atributos_en_excel": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7750000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7550000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "WAVE 110S CBS",
+            "MODELO": 2026,
+            "CONTADO": 7750000,
+            "PROMOCION": 7550000
+          }
+        }
+      ],
+      "atributos_perdidos": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7750000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7550000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "WAVE 110S CBS",
+            "MODELO": 2026,
+            "CONTADO": 7750000,
+            "PROMOCION": 7550000
+          }
+        }
+      ],
+      "problema": "4 atributos del Excel no se capturan"
+    },
+    {
+      "producto": "CB 100 Modelo 2026",
+      "atributos_del_nombre": {},
+      "atributos_en_excel": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 5900000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 5700000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 100 ",
+            "MODELO": 2026,
+            "CONTADO": 5900000,
+            "PROMOCION": 5700000
+          }
+        }
+      ],
+      "atributos_perdidos": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 5900000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 5700000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 100 ",
+            "MODELO": 2026,
+            "CONTADO": 5900000,
+            "PROMOCION": 5700000
+          }
+        }
+      ],
+      "problema": "4 atributos del Excel no se capturan"
+    },
+    {
+      "producto": "CB 125F 2.0 Modelo 2026",
+      "atributos_del_nombre": {},
+      "atributos_en_excel": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7190000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 6990000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F 2.0",
+            "MODELO": 2026,
+            "CONTADO": 7190000,
+            "PROMOCION": 6990000
+          }
+        }
+      ],
+      "atributos_perdidos": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7190000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 6990000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F 2.0",
+            "MODELO": 2026,
+            "CONTADO": 7190000,
+            "PROMOCION": 6990000
+          }
+        }
+      ],
+      "problema": "4 atributos del Excel no se capturan"
+    },
+    {
+      "producto": "CB 125F 2.0 MAX Modelo 2026",
+      "atributos_del_nombre": {},
+      "atributos_en_excel": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7330000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7130000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F 2.0 MAX",
+            "MODELO": 2026,
+            "CONTADO": 7330000,
+            "PROMOCION": 7130000
+          }
+        }
+      ],
+      "atributos_perdidos": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7330000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7130000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F 2.0 MAX",
+            "MODELO": 2026,
+            "CONTADO": 7330000,
+            "PROMOCION": 7130000
+          }
+        }
+      ],
+      "problema": "4 atributos del Excel no se capturan"
+    },
+    {
+      "producto": "CB 125F DLX 2.0 Modelo 2026",
+      "atributos_del_nombre": {},
+      "atributos_en_excel": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7350000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7150000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F DLX 2.0",
+            "MODELO": 2026,
+            "CONTADO": 7350000,
+            "PROMOCION": 7150000
+          }
+        }
+      ],
+      "atributos_perdidos": [
+        {
+          "columna": "categoria",
+          "valor": "Hoja1"
+        },
+        {
+          "columna": "precio_contado",
+          "valor": 7350000
+        },
+        {
+          "columna": "precio_promo",
+          "valor": 7150000
+        },
+        {
+          "columna": "raw",
+          "valor": {
+            "REFERENCIA": "CB 125F DLX 2.0",
+            "MODELO": 2026,
+            "CONTADO": 7350000,
+            "PROMOCION": 7150000
+          }
+        }
+      ],
+      "problema": "4 atributos del Excel no se capturan"
+    }
+  ],
+  "problemas_detectados": [
+    {
+      "paso": "clasificacion",
+      "producto": "WAVE 110S CBS Modelo 2026",
+      "error": "classifier.classify is not a function"
+    },
+    {
+      "paso": "clasificacion",
+      "producto": "CB 100 Modelo 2026",
+      "error": "classifier.classify is not a function"
+    },
+    {
+      "paso": "clasificacion",
+      "producto": "CB 125F 2.0 Modelo 2026",
+      "error": "classifier.classify is not a function"
+    },
+    {
+      "paso": "clasificacion",
+      "producto": "CB 125F 2.0 MAX Modelo 2026",
+      "error": "classifier.classify is not a function"
+    },
+    {
+      "paso": "clasificacion",
+      "producto": "CB 125F DLX 2.0 Modelo 2026",
+      "error": "classifier.classify is not a function"
+    },
+    {
+      "paso": "descripciones",
+      "producto": "WAVE 110S CBS Modelo 2026",
+      "problema": "4 columnas del Excel no se usan en la descripción",
+      "columnas_ignoradas": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "descripciones",
+      "producto": "CB 100 Modelo 2026",
+      "problema": "4 columnas del Excel no se usan en la descripción",
+      "columnas_ignoradas": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "descripciones",
+      "producto": "CB 125F 2.0 Modelo 2026",
+      "problema": "4 columnas del Excel no se usan en la descripción",
+      "columnas_ignoradas": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "descripciones",
+      "producto": "CB 125F 2.0 MAX Modelo 2026",
+      "problema": "4 columnas del Excel no se usan en la descripción",
+      "columnas_ignoradas": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "descripciones",
+      "producto": "CB 125F DLX 2.0 Modelo 2026",
+      "problema": "4 columnas del Excel no se usan en la descripción",
+      "columnas_ignoradas": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "atributos",
+      "producto": "WAVE 110S CBS Modelo 2026",
+      "problema": "Atributos del Excel no se extraen",
+      "atributos_perdidos": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "atributos",
+      "producto": "CB 100 Modelo 2026",
+      "problema": "Atributos del Excel no se extraen",
+      "atributos_perdidos": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "atributos",
+      "producto": "CB 125F 2.0 Modelo 2026",
+      "problema": "Atributos del Excel no se extraen",
+      "atributos_perdidos": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "atributos",
+      "producto": "CB 125F 2.0 MAX Modelo 2026",
+      "problema": "Atributos del Excel no se extraen",
+      "atributos_perdidos": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    },
+    {
+      "paso": "atributos",
+      "producto": "CB 125F DLX 2.0 Modelo 2026",
+      "problema": "Atributos del Excel no se extraen",
+      "atributos_perdidos": [
+        "categoria",
+        "precio_contado",
+        "precio_promo",
+        "raw"
+      ]
+    }
+  ],
+  "recomendaciones": [
+    {
+      "area": "imagenes",
+      "problema": "Resolución de 800x800px insuficiente para detalle de producto",
+      "solucion": "Aumentar a 1200x1200px o 1600x1600px",
+      "impacto": "Alto - Mejora significativa en calidad visual"
+    },
+    {
+      "area": "descripciones",
+      "problema": "Descripciones genéricas que no aprovechan datos del Excel",
+      "solucion": "Crear plantillas dinámicas que incluyan todas las columnas relevantes",
+      "impacto": "Medio - Mejora en SEO y experiencia de usuario"
+    },
+    {
+      "area": "atributos",
+      "problema": "Solo se extraen atributos del nombre, se ignoran columnas del Excel",
+      "solucion": "Leer TODAS las columnas del Excel y mapearlas a atributos",
+      "impacto": "Alto - Fichas técnicas más completas"
+    }
+  ]
+}
