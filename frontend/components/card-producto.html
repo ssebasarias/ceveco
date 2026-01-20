@@ -8,10 +8,26 @@
         <i data-lucide="heart" class="w-4 h-4 text-gray-400 transition-colors pointer-events-none"></i>
     </button>
 
+    <!-- Admin Controls (solo visible para admins) -->
+    <div class="admin-product-controls absolute top-3 left-3 z-20 hidden flex gap-2" style="display: none !important; visibility: hidden !important;">
+        <button type="button" class="js-edit-product p-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition-all"
+                data-id="{{id}}"
+                title="Editar producto">
+            <i data-lucide="edit" class="w-4 h-4"></i>
+        </button>
+        <button type="button" class="js-delete-product p-2 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all"
+                data-id="{{id}}"
+                data-name="{{name_attr}}"
+                title="Eliminar producto">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
+    </div>
+
     <!-- Image Area (Square, linked via parent click) -->
     <div class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl pointer-events-none">
         <img src="{{image}}" alt="{{name}}" loading="lazy" decoding="async"
-            class="absolute top-0 left-0 w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500">
+            data-fallback-images="{{imagenes_fallback}}"
+            class="js-product-image absolute top-0 left-0 w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500">
         {{badge_block}}
     </div>
 

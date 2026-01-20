@@ -15,6 +15,8 @@
     <!-- ✨ Sistema CSS Centralizado Profesional ✨ -->
     <link rel="stylesheet" href="../assets/css/main.css">
 
+    <!-- Modal de Selección de Asesor -->
+    <link rel="stylesheet" href="../assets/css/asesor-modal.css">
 
     <script src="../assets/js/theme.config.js"></script>
 </head>
@@ -26,20 +28,36 @@
     <div id="navbar-root"></div>
 
     <!-- Hero Section -->
-    <section class="bg-gray-50 relative md:h-[500px] overflow-hidden flex flex-col md:block">
+    <section class="hero-banner-container relative md:h-[500px] h-[250px]">
         <!-- Image Container -->
-        <div class="h-[250px] w-full relative md:absolute md:inset-0 md:h-full">
-            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Hero Banner"
-                class="w-full h-full object-cover opacity-90 transition-opacity duration-1000">
+        <div class="hero-image-wrapper absolute inset-0 w-full h-full">
+            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Hero Banner">
             <!-- Desktop Gradient Overlay -->
-            <div class="hidden md:block absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent">
-            </div>
+            <div class="hero-gradient-overlay hidden md:block"></div>
             <!-- Mobile Gradient (Bottom Fade) -->
-            <div class="md:hidden absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-transparent"></div>
+            <div class="hero-gradient-overlay-mobile md:hidden"></div>
         </div>
-
-
     </section>
+
+    <!-- Admin Controls (solo visible para admins) -->
+    <div id="admin-banner-controls" class="container mx-auto px-4 py-4 hidden">
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+            <div>
+                <h3 class="font-semibold text-blue-900">Panel de Administración</h3>
+                <p class="text-sm text-blue-700">Gestiona banners y contenido destacado</p>
+            </div>
+            <div class="flex gap-2">
+                <button id="admin-panel-btn"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+                    Panel Admin
+                </button>
+                <button id="manage-banners-btn"
+                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium">
+                    Gestionar Banners
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Categories Showcase -->
     <main class="w-full">
@@ -210,11 +228,18 @@
     <script type="module" src="../assets/js/favorites/index.js"></script>
 
     <script src="../assets/js/pages/home.js" defer></script>
+
+    <!-- Admin CRUD Scripts -->
+    <script src="../assets/js/utils/admin-helper.js"></script>
+    <script src="../assets/js/pages/admin-crud.js" defer></script>
+
     <!-- Theme Loader -->
-    <script src="../theme/christmas/loader.js"></script>
     <!-- WhatsApp Floating Button Integration -->
     <div id="whatsapp-root"></div>
     <script src="../assets/js/components/whatsapp-button.js" defer></script>
+
+    <!-- Modal de Selección de Asesor -->
+    <script src="../assets/js/asesor-modal.js" defer></script>
 </body>
 
 </html>

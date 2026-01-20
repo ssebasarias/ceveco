@@ -11,6 +11,10 @@
     <link rel="icon" type="image/png" href="../assets/img/logo.png">
     <!-- ✨ Sistema CSS Centralizado Profesional ✨ -->
     <link rel="stylesheet" href="../assets/css/main.css">
+
+    <!-- Modal de Selección de Asesor -->
+    <link rel="stylesheet" href="../assets/css/asesor-modal.css">
+
     <script src="../assets/js/theme.config.js"></script>
     <!-- ✅ CSS eliminado - Ahora centralizado en main.css -->
 </head>
@@ -20,13 +24,12 @@
     <!-- Sticky Header -->
     <div id="navbar-root"></div>
     <!-- Hero Section -->
-    <section id="category-hero" class="relative bg-gray-50 h-[200px] overflow-hidden hidden">
-        <div class="absolute inset-0">
-            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Banner"
-                class="w-full h-full object-cover opacity-90">
-            <div class="absolute inset-0 bg-gradient-to-r from-white/90 via-white/50 to-transparent"></div>
+    <section id="category-hero" class="hero-banner-container relative h-[200px] overflow-hidden hidden">
+        <div class="hero-image-wrapper absolute inset-0 w-full h-full">
+            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Banner">
+            <div class="hero-gradient-overlay"></div>
         </div>
-        <div class="container mx-auto px-4 h-full relative flex items-center">
+        <div class="container mx-auto px-4 h-full relative flex items-center z-10">
             <div class="max-w-xl space-y-4">
                 <h1 id="hero-title" class="text-3xl md:text-4xl font-bold text-gray-900 leading-tight">
                     Catálogo <span class="text-primary">Ceveco</span>
@@ -49,12 +52,25 @@
             <div class="flex-1">
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 md:mb-8 gap-4">
                     <h2 id="catalog-title" class="text-xl md:text-2xl font-bold text-gray-900">Todos los Productos</h2>
-                    <select id="sort-select"
-                        class="w-full sm:w-auto border-none bg-gray-50 text-sm font-medium text-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 cursor-pointer">
-                        <option value="relevancia">Ordenar por: Relevancia</option>
-                        <option value="precio_asc">Precio: Menor a Mayor</option>
-                        <option value="precio_desc">Precio: Mayor a Menor</option>
-                    </select>
+                    <div class="flex items-center gap-3">
+                        <!-- Admin Button: Agregar Producto -->
+                        <button id="admin-add-product-btn"
+                            class="hidden px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            Agregar Producto
+                        </button>
+                        <button id="admin-import-json-btn"
+                            class="hidden px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium flex items-center gap-2">
+                            <i data-lucide="upload" class="w-4 h-4"></i>
+                            Importar JSON
+                        </button>
+                        <select id="sort-select"
+                            class="w-full sm:w-auto border-none bg-gray-50 text-sm font-medium text-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary/20 cursor-pointer">
+                            <option value="relevancia">Ordenar por: Relevancia</option>
+                            <option value="precio_asc">Precio: Menor a Mayor</option>
+                            <option value="precio_desc">Precio: Mayor a Menor</option>
+                        </select>
+                    </div>
                 </div>
 
                 <!-- Loading State -->
@@ -105,7 +121,6 @@
     <script src="../assets/js/config.js"></script>
 
     <!-- Theme Loader -->
-    <script src="../theme/christmas/loader.js"></script>
 
     <!-- Modern Core Services -->
     <script src="../assets/js/utils/constants.js"></script>
@@ -127,9 +142,17 @@
     <script type="module" src="../assets/js/favorites/index.js"></script>
 
     <script type="module" src="../assets/js/pages/productos.js" defer></script>
+
+    <!-- Admin CRUD Scripts -->
+    <script src="../assets/js/utils/admin-helper.js"></script>
+    <script src="../assets/js/pages/admin-crud.js" defer></script>
+
     <!-- WhatsApp Floating Button Integration -->
     <div id="whatsapp-root"></div>
     <script src="../assets/js/components/whatsapp-button.js" defer></script>
+
+    <!-- Modal de Selección de Asesor -->
+    <script src="../assets/js/asesor-modal.js" defer></script>
 </body>
 
 </html>

@@ -33,10 +33,64 @@
 
     if (missing.length > 0) {
         console.warn('⚠️ Core Dependencies Missing:', missing.join(', '));
+        console.warn('💡 Verifica que todos los scripts se hayan cargado en el orden correcto');
     } else {
         console.log('✅ Core Services Ready');
         initializeGlobalState();
     }
+
+    // Función de diagnóstico de servicios (disponible globalmente)
+    window.checkServicesStatus = function() {
+        console.log('\n🔍 VERIFICACIÓN DE SERVICIOS CEVECO\n');
+        console.log('═'.repeat(50));
+        
+        const services = {
+            'CONSTANTS': window.CONSTANTS,
+            'StorageUtils': window.StorageUtils,
+            'API': window.API,
+            'AuthService': window.AuthService,
+            'ProductService': window.ProductService,
+            'FavoritesService': window.FavoritesService,
+            'OrdersService': window.OrdersService
+        };
+
+        let allOk = true;
+        Object.keys(services).forEach(name => {
+            const service = services[name];
+            if (service && typeof service === 'object') {
+                console.log(`✅ ${name}: Disponible`);
+            } else {
+                console.log(`❌ ${name}: NO DISPONIBLE`);
+                allOk = false;
+            }
+        });
+
+        console.log('═'.repeat(50));
+        
+        // Verificar endpoints del API
+        if (window.API && window.CONSTANTS) {
+            console.log('\n📡 Verificando conectividad con el backend...');
+            fetch('/health')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('✅ Backend conectado:', data.message);
+                    console.log('   Entorno:', data.environment);
+                })
+                .catch(err => {
+                    console.error('❌ No se pudo conectar al backend:', err.message);
+                    console.log('💡 Asegúrate de que el servidor esté corriendo en el puerto 3000');
+                });
+        }
+
+        if (allOk) {
+            console.log('\n🎉 Todos los servicios están disponibles');
+        } else {
+            console.log('\n⚠️  Algunos servicios no están disponibles');
+            console.log('💡 Recarga la página o verifica la consola para más detalles');
+        }
+        
+        return allOk;
+    };
 
     function initializeGlobalState() {
         // Restore session if token exists
@@ -160,8 +214,43 @@
         // Fallback Image
         const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f3f4f6' width='400' height='400'/%3E%3Ctext fill='%239ca3af' font-family='sans-serif' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ESin Imagen%3C/text%3E%3C/svg%3E";
 
+        // Obtener imagen principal - verificar múltiples fuentes
         let imagenUrl = product.imagen_principal || product.image;
-        if (!imagenUrl || imagenUrl.includes('via.placeholder.com')) imagenUrl = fallbackImage;
+        
+        // Si no hay imagen_principal o es un placeholder, buscar en el array de imágenes
+        const isPlaceholder = imagenUrl && (
+            imagenUrl.includes('via.placeholder.com') || 
+            imagenUrl.includes('data:image/svg') ||
+            imagenUrl.includes('⚠️')
+        );
+        
+        if ((!imagenUrl || isPlaceholder) && product.imagenes && Array.isArray(product.imagenes) && product.imagenes.length > 0) {
+            // Buscar primera imagen válida (no placeholder)
+            const validImg = product.imagenes.find(img => {
+                const url = img.url_imagen || img.url || img;
+                return url && 
+                       !url.includes('via.placeholder.com') && 
+                       !url.includes('data:image/svg') &&
+                       !url.includes('⚠️');
+            });
+            
+            if (validImg) {
+                imagenUrl = validImg.url_imagen || validImg.url || validImg;
+            } else if (!imagenUrl) {
+                // Si no hay ninguna válida, usar la primera disponible
+                const firstImg = product.imagenes[0];
+                imagenUrl = firstImg.url_imagen || firstImg.url || firstImg;
+            }
+        }
+        
+        // Solo usar fallback si realmente no hay imagen válida
+        if (!imagenUrl || 
+            imagenUrl.includes('via.placeholder.com') || 
+            imagenUrl.includes('data:image/svg') ||
+            imagenUrl.includes('⚠️') ||
+            imagenUrl.trim() === '') {
+            imagenUrl = fallbackImage;
+        }
 
         const nombre = product.nombre || 'Producto sin nombre';
         const categoria = product.categoria || product.marca || '';
@@ -183,10 +272,37 @@
         const escapeJs = (str) => str.replace(/'/g, "\\'").replace(/"/g, '\\"');
         const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-        return template
+        // Preparar array de imágenes para fallback (como JSON en data attribute)
+        // Incluir todas las imágenes válidas, empezando por la principal
+        const imagenesArray = [];
+        
+        // Agregar imagen principal si es válida
+        if (imagenUrl && imagenUrl !== fallbackImage && !imagenUrl.includes('via.placeholder.com') && !imagenUrl.includes('data:image/svg')) {
+            imagenesArray.push(imagenUrl);
+        }
+        
+        // Agregar imágenes del array que no sean placeholders y no estén ya incluidas
+        if (product.imagenes && Array.isArray(product.imagenes)) {
+            product.imagenes.forEach(img => {
+                const url = img.url_imagen || img.url || img;
+                if (typeof url === 'string' && 
+                    url && 
+                    !url.includes('via.placeholder.com') && 
+                    !url.includes('data:image/svg') && 
+                    !url.includes('⚠️') &&
+                    !imagenesArray.includes(url)) {
+                    imagenesArray.push(url);
+                }
+            });
+        }
+        
+        const imagenesJson = imagenesArray.length > 0 ? escapeHtml(JSON.stringify(imagenesArray)) : '[]';
+        
+        let cardHtml = template
             .replace(/{{id}}/g, id)
             .replace(/{{image}}/g, safeImagen)
             .replace(/{{image_attr}}/g, escapeHtml(safeImagen))
+            .replace(/{{imagenes_fallback}}/g, imagenesJson)
             .replace(/{{name}}/g, safeNombre)
             .replace(/{{name_escaped}}/g, escapeJs(safeNombre))
             .replace(/{{name_attr}}/g, escapeHtml(safeNombre))
@@ -197,6 +313,9 @@
             .replace(/{{image_escaped}}/g, escapeJs(safeImagen))
             .replace(/{{badge_block}}/g, badgeBlock)
             .replace(/{{old_price_block}}/g, oldPriceBlock);
+        
+        // Retornar HTML - los event listeners se configurarán después de insertar en el DOM
+        return cardHtml;
     };
 
     // ==========================================
@@ -383,28 +502,32 @@
                 window.goToProduct(card.dataset.productId);
             }
 
-            // Quote Product (WhatsApp)
+            // Quote Product (WhatsApp) - Ahora abre modal de asesores
             const quoteBtn = e.target.closest('.js-quote-product');
             if (quoteBtn) {
                 e.preventDefault();
                 e.stopPropagation();
 
                 const d = quoteBtn.dataset;
-                const name = d.name || 'Producto';
-                const id = d.id || '';
-                // Use absolute URL for the image if possible, otherwise just send the name
-                const image = d.image || '';
+                const productInfo = {
+                    nombre: d.name || 'Producto',
+                    sku: d.id || ''
+                };
 
-                // Get global phone or fallback
-                let phone = '573001234567'; // Default fallback
-                if (window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.whatsapp) {
-                    phone = window.CONFIG.APP.whatsapp.replace(/\D/g, '');
+                // Abrir modal de selección de asesor
+                if (typeof abrirModalAsesor === 'function') {
+                    abrirModalAsesor(productInfo);
+                } else {
+                    // Fallback al comportamiento anterior si el modal no está disponible
+                    console.warn('Modal de asesores no disponible, usando WhatsApp directo');
+                    let phone = '573001234567';
+                    if (window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.whatsapp) {
+                        phone = window.CONFIG.APP.whatsapp.replace(/\D/g, '');
+                    }
+                    const message = `Hola, me interesa cotizar este producto:\n\n*${productInfo.nombre}*\nRef/ID: ${productInfo.sku}`;
+                    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+                    window.open(url, '_blank');
                 }
-
-                const message = `Hola, me interesa cotizar este producto:\n\n*${name}*\nRef/ID: ${id}\n${window.location.origin}${image}`;
-                const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-
-                window.open(url, '_blank');
             }
         });
     }

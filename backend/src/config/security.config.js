@@ -30,7 +30,12 @@ const helmetConfig = {
                 "data:",
                 "https://via.placeholder.com",
                 "https://ceveco.com.co",
-                "https://lh3.googleusercontent.com"
+                "https://lh3.googleusercontent.com",
+                // Dominios de imágenes de productos
+                "https://*.vtexassets.com",
+                "https://motos.honda.com.co",
+                "https://*.honda.com.co",
+                "https://*.haceb.com.co"
             ],
             connectSrc: [
                 "'self'",

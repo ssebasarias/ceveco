@@ -219,13 +219,13 @@ class ProductoController {
 
             const productData = req.body;
 
-            // Por ahora retornamos que la funcionalidad está pendiente
-            // TODO: Implementar ProductoService.createProducto()
-            return res.status(501).json({
-                success: false,
-                message: 'Funcionalidad de creación de productos en desarrollo',
-                info: 'Esta ruta requiere implementar ProductoService.createProducto()'
-            });
+            const result = await ProductoService.createProducto(productData);
+            
+            if (!result.success) {
+                return res.status(400).json(result);
+            }
+
+            res.status(201).json(result);
 
         } catch (error) {
             console.error('Error en create:', error);
@@ -254,12 +254,20 @@ class ProductoController {
             const { id } = req.params;
             const updates = req.body;
 
-            // TODO: Implementar ProductoService.updateProducto()
-            return res.status(501).json({
-                success: false,
-                message: 'Funcionalidad de actualización de productos en desarrollo',
-                info: 'Esta ruta requiere implementar ProductoService.updateProducto()'
-            });
+            if (isNaN(id)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID de producto inválido'
+                });
+            }
+
+            const result = await ProductoService.updateProducto(parseInt(id), updates);
+            
+            if (!result.success) {
+                return res.status(404).json(result);
+            }
+
+            res.json(result);
 
         } catch (error) {
             console.error('Error en update:', error);
@@ -287,12 +295,20 @@ class ProductoController {
 
             const { id } = req.params;
 
-            // TODO: Implementar ProductoService.deleteProducto() - Soft delete
-            return res.status(501).json({
-                success: false,
-                message: 'Funcionalidad de eliminación de productos en desarrollo',
-                info: 'Esta ruta requiere implementar ProductoService.deleteProducto() con soft delete'
-            });
+            if (isNaN(id)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID de producto inválido'
+                });
+            }
+
+            const result = await ProductoService.deleteProducto(parseInt(id));
+            
+            if (!result.success) {
+                return res.status(404).json(result);
+            }
+
+            res.json(result);
 
         } catch (error) {
             console.error('Error en delete:', error);

@@ -130,25 +130,39 @@ function renderProduct(product) {
     let images = product.imagenes || [];
 
     // Buscar imagen principal (es_principal = true) o tomar la primera
-    let mainImgUrl = '/assets/img/no-image.svg';
+    const fallbackSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
+    let mainImgUrl = fallbackSvg;
     if (images.length > 0) {
         const imagenPrincipal = images.find(img => img.es_principal) || images[0];
-        mainImgUrl = imagenPrincipal.url_imagen || imagenPrincipal.url;
+        mainImgUrl = imagenPrincipal.url_imagen || imagenPrincipal.url || fallbackSvg;
     }
 
     const mainImage = dom.mainImage();
-    if (mainImage) mainImage.src = mainImgUrl;
+    if (mainImage) {
+        mainImage.src = mainImgUrl;
+        // Manejar errores de carga de imagen
+        mainImage.onerror = function() {
+            this.onerror = null; // Evitar loop infinito
+            this.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
+        };
+    }
 
     // Renderizar thumbnails
     const thumbnailsContainer = dom.thumbnails();
 
     if (images.length > 0 && thumbnailsContainer) {
-        thumbnailsContainer.innerHTML = images.map((img, index) => `
-            <button data-url="${img.url_imagen || img.url}" data-index="${index}"
+        const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
+        thumbnailsContainer.innerHTML = images.map((img, index) => {
+            const imgUrl = img.url_imagen || img.url || placeholderSvg;
+            return `
+            <button data-url="${imgUrl}" data-index="${index}"
                 class="thumbnail ${index === 0 ? 'active border-primary' : 'border-gray-200'} border-2 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                <img src="${img.url_imagen || img.url}" alt="Vista ${index + 1}" class="w-full h-full object-contain p-1 pointer-events-none">
+                <img src="${imgUrl}" alt="Vista ${index + 1}" 
+                    onerror="this.onerror=null;this.src='${placeholderSvg}';"
+                    class="w-full h-full object-contain p-1 pointer-events-none">
             </button>
-        `).join('');
+        `;
+        }).join('');
     }
 
     // Descripción larga

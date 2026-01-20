@@ -231,7 +231,7 @@ class ProductoModel {
   static async findBySku(sku) {
     const queryText = `
       SELECT * FROM productos
-      WHERE sku = $1 AND activo = TRUE
+      WHERE sku = $1
     `;
 
     const result = await query(queryText, [sku]);
@@ -479,6 +479,157 @@ class ProductoModel {
 
     const result = await query(queryTextCorrect, [categorySlug]);
     return result.rows;
+  }
+
+  /**
+   * Crear un nuevo producto
+   * @param {Object} productData - Datos del producto
+   * @returns {Promise<Object>} Producto creado
+   */
+  static async create(productData) {
+    const {
+      sku,
+      nombre,
+      descripcion_corta,
+      descripcion_larga,
+      precio_actual,
+      precio_anterior,
+      stock,
+      id_categoria,
+      id_subcategoria,
+      id_marca,
+      badge,
+      destacado = false,
+      activo = true
+    } = productData;
+
+    const queryText = `
+      INSERT INTO productos (
+        sku, nombre, descripcion_corta, descripcion_larga,
+        precio_actual, precio_anterior, stock,
+        id_categoria, id_subcategoria, id_marca,
+        badge, destacado, activo
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      RETURNING *
+    `;
+
+    const params = [
+      sku,
+      nombre,
+      descripcion_corta || null,
+      descripcion_larga || null,
+      precio_actual,
+      precio_anterior || null,
+      stock || 0,
+      id_categoria,
+      id_subcategoria || null,
+      id_marca,
+      badge || null,
+      destacado,
+      activo
+    ];
+
+    const result = await query(queryText, params);
+    return result.rows[0];
+  }
+
+  /**
+   * Actualizar un producto
+   * @param {number} id - ID del producto
+   * @param {Object} productData - Datos a actualizar
+   * @returns {Promise<Object|null>} Producto actualizado o null
+   */
+  static async update(id, productData) {
+    const fields = [];
+    const params = [];
+    let paramCount = 0;
+
+    const allowedFields = [
+      'nombre', 'descripcion_corta', 'descripcion_larga',
+      'precio_actual', 'precio_anterior', 'stock',
+      'id_categoria', 'id_subcategoria', 'id_marca',
+      'badge', 'destacado', 'activo'
+    ];
+
+    for (const [key, value] of Object.entries(productData)) {
+      if (allowedFields.includes(key) && value !== undefined) {
+        paramCount++;
+        fields.push(`${key} = $${paramCount}`);
+        params.push(value);
+      }
+    }
+
+    if (fields.length === 0) {
+      return await this.findById(id);
+    }
+
+    paramCount++;
+    fields.push(`fecha_actualizacion = CURRENT_TIMESTAMP`);
+    params.push(id);
+
+    const queryText = `
+      UPDATE productos
+      SET ${fields.join(', ')}
+      WHERE id_producto = $${paramCount}
+      RETURNING *
+    `;
+
+    const result = await query(queryText, params);
+    return result.rows[0] || null;
+  }
+
+  /**
+   * Eliminar un producto (soft delete - marca como inactivo)
+   * @param {number} id - ID del producto
+   * @returns {Promise<boolean>} True si se eliminó
+   */
+  static async delete(id) {
+    const queryText = `
+      UPDATE productos
+      SET activo = FALSE, fecha_actualizacion = CURRENT_TIMESTAMP
+      WHERE id_producto = $1
+      RETURNING id_producto
+    `;
+
+    const result = await query(queryText, [id]);
+    return result.rows.length > 0;
+  }
+
+  /**
+   * Agregar imagen a un producto
+   * @param {number} idProducto - ID del producto
+   * @param {string} urlImagen - URL de la imagen
+   * @param {boolean} esPrincipal - Si es la imagen principal
+   * @param {number} orden - Orden de la imagen
+   * @returns {Promise<Object>} Imagen creada
+   */
+  static async addImage(idProducto, urlImagen, esPrincipal = false, orden = 0) {
+    // Si es principal, desmarcar otras como principales
+    if (esPrincipal) {
+      await query(
+        'UPDATE producto_imagenes SET es_principal = FALSE WHERE id_producto = $1',
+        [idProducto]
+      );
+    }
+
+    const queryText = `
+      INSERT INTO producto_imagenes (id_producto, url_imagen, es_principal, orden)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *
+    `;
+
+    const result = await query(queryText, [idProducto, urlImagen, esPrincipal, orden]);
+    return result.rows[0];
+  }
+
+  /**
+   * Eliminar todas las imágenes de un producto
+   * @param {number} idProducto - ID del producto
+   * @returns {Promise<void>}
+   */
+  static async deleteImages(idProducto) {
+    await query('DELETE FROM producto_imagenes WHERE id_producto = $1', [idProducto]);
   }
 }
 

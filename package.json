@@ -2,7 +2,8 @@
   "scripts": {
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:debug": "playwright test --debug"
+    "test:e2e:debug": "playwright test --debug",
+    "create-admin": "node scripts/create-admin-user.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

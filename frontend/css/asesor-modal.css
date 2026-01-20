@@ -1,0 +1,500 @@
+/* ========================================
+   MODAL DE SELECCIÓN DE ASESOR - REDISEÑADO
+   ======================================== */
+
+.asesor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.asesor-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+}
+
+.asesor-modal-content {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    max-width: 550px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.asesor-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.08);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.asesor-modal-close:hover {
+    background: rgba(220, 38, 38, 0.1);
+    transform: rotate(90deg);
+}
+
+.asesor-modal-close svg {
+    color: #666;
+}
+
+/* Header - Título Rojo Grande */
+.asesor-modal-header {
+    padding: 32px 32px 24px;
+    text-align: center;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border-radius: 20px 20px 0 0;
+}
+
+.asesor-modal-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.asesor-modal-header p {
+    display: none; /* Ocultamos el subtítulo para simplificar */
+}
+
+/* Body */
+.asesor-modal-body {
+    padding: 28px 32px 32px;
+}
+
+/* Opción Aleatoria - Más Destacada */
+.asesor-option-random {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+    margin-bottom: 24px;
+}
+
+.asesor-option-random:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(245, 158, 11, 0.45);
+}
+
+.asesor-option-random:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+.asesor-option-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.asesor-option-icon svg {
+    color: white;
+    width: 24px;
+    height: 24px;
+}
+
+.asesor-option-text {
+    text-align: center;
+    flex: 1;
+}
+
+.asesor-option-text h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.asesor-option-text p {
+    display: none; /* Simplificamos el botón */
+}
+
+/* Divider */
+.asesor-divider {
+    position: relative;
+    text-align: center;
+    margin: 24px 0 20px;
+}
+
+.asesor-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d1d5db 50%, transparent);
+}
+
+.asesor-divider span {
+    position: relative;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 0 16px;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Título del Carrusel */
+.asesor-carousel-title {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Carrusel - Más Compacto */
+.asesor-carousel-container {
+    position: relative;
+    padding: 0 50px;
+}
+
+.asesor-carousel {
+    overflow: hidden;
+}
+
+.asesor-carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.asesor-card {
+    min-width: 100%;
+    opacity: 0.4;
+    transform: scale(0.85);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.asesor-card.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+/* Tarjeta de Asesor - Compacta con Foto Circular */
+.asesor-card-inner {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.asesor-card.active .asesor-card-inner:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+    animation: bounce 0.6s ease;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(-8px); }
+    50% { transform: translateY(-12px); }
+}
+
+.asesor-card-image {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #dc2626;
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25);
+}
+
+.asesor-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.asesor-card-badge {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+    white-space: nowrap;
+}
+
+.asesor-card-content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 10px 0;
+}
+
+.asesor-rating {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+.asesor-rating .star {
+    color: #fbbf24;
+    width: 18px;
+    height: 18px;
+}
+
+.asesor-rating .star-empty {
+    color: #e5e7eb;
+}
+
+.asesor-rating-text {
+    font-size: 14px;
+    color: #6b7280;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.asesor-horario {
+    display: none; /* Ocultamos el horario para simplificar */
+}
+
+.asesor-select-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #25D366 0%, #20BA5A 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.asesor-select-btn:hover {
+    background: linear-gradient(135deg, #20BA5A 0%, #1da851 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
+}
+
+.asesor-select-btn:active {
+    transform: translateY(0);
+}
+
+.asesor-select-btn svg {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+}
+
+/* Botones de navegación - Más Visibles */
+.asesor-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.asesor-carousel-btn:hover {
+    background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.4);
+}
+
+.asesor-carousel-btn svg {
+    color: white;
+}
+
+.asesor-carousel-prev {
+    left: 0;
+}
+
+.asesor-carousel-next {
+    right: 0;
+}
+
+/* Indicadores */
+.asesor-carousel-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 20px;
+}
+
+.asesor-indicator {
+    width: 8px;
+    height: 8px;
+    background: #d1d5db;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.asesor-indicator.active {
+    width: 28px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .asesor-modal-content {
+        border-radius: 20px 20px 0 0;
+        max-height: 90vh;
+    }
+
+    .asesor-modal-header {
+        padding: 28px 24px 20px;
+    }
+
+    .asesor-modal-header h2 {
+        font-size: 26px;
+    }
+
+    .asesor-modal-body {
+        padding: 24px 24px 28px;
+    }
+
+    .asesor-carousel-container {
+        padding: 0 45px;
+    }
+
+    .asesor-carousel-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .asesor-card-image {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .asesor-modal {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .asesor-modal-content {
+        max-width: 100%;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .asesor-modal-header h2 {
+        font-size: 24px;
+    }
+
+    .asesor-carousel-container {
+        padding: 0 40px;
+    }
+
+    .asesor-carousel-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .asesor-card-image {
+        width: 90px;
+        height: 90px;
+    }
+
+    .asesor-option-random {
+        padding: 14px 20px;
+    }
+
+    .asesor-option-text h3 {
+        font-size: 15px;
+    }
+}

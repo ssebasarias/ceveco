@@ -28,7 +28,7 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co", "https://accounts.google.com", "https://apis.google.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Keeping unsafe-inline for styles is often necessary for frameworks unless using strict nonce/hash
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com"], // Added Google for avatars
+            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com", "*"],
             connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://unpkg.com", "https://*.google.com", "https://maps.googleapis.com"], // Allow connecting to Google OAuth & Maps & Unpkg
             frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
             upgradeInsecureRequests: null
@@ -85,11 +85,12 @@ app.get('/api/v1/hero-banners', (req, res) => {
             return res.status(500).json({ success: false, message: 'Error reading banners' });
         }
 
-        // Filtrar solo imágenes
+        // Filtrar solo imágenes y devolver rutas absolutas
         const images = files.filter(file =>
             /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
-        ).map(file => `../assets/img/banner-hero/${file}`);
+        ).map(file => `/assets/img/banner-hero/${file}`); // Ruta absoluta en lugar de relativa
 
+        console.log('📸 Banners encontrados:', images.length);
         res.json({ success: true, data: images });
     });
 });
@@ -122,6 +123,10 @@ app.get(`${API_PREFIX}/config`, (req, res) => {
 // Rutas de la API
 app.use(`${API_PREFIX}/productos`, productosRoutes);
 app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/banners`, require('./src/routes/banners.routes')); // Ruta pública
+app.use(`${API_PREFIX}/admin`, require('./src/routes/admin.routes'));
+app.use(`${API_PREFIX}/admin/banners`, require('./src/routes/banners.routes')); // Rutas admin de banners
+app.use(`${API_PREFIX}/admin/upload`, require('./src/routes/upload.routes')); // Rutas de upload
 app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
 app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
@@ -129,6 +134,7 @@ app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
 app.use(`${API_PREFIX}/sedes`, require('./src/routes/sedes.routes'));
+app.use(`${API_PREFIX}/asesores`, require('./src/routes/asesores.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {

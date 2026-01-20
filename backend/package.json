@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose"
+    "test": "cross-env NODE_ENV=test jest --detectOpenHandles --verbose",
+    "check-services": "node ../scripts/check-services.js"
   },
   "keywords": [
     "ecommerce",
@@ -29,6 +30,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "multer": "^2.0.2",
     "nodemailer": "^7.0.11",
     "pg": "^8.11.3"
   },

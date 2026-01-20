@@ -136,16 +136,51 @@ async function initHeroCarousel() {
     }
 }
 
-function startCarousel(heroImageEl, heroImages, currentHeroIndex) {
+function startCarousel(heroImageEl, heroImages, initialIndex) {
+    if (heroImages.length === 0) return;
+
+    // Usar una variable que persista entre llamadas
+    let currentHeroIndex = initialIndex;
+
+    // Establecer la primera imagen inmediatamente
+    const setImage = (index) => {
+        const imageUrl = heroImages[index];
+        if (!imageUrl) return;
+
+        // Pre-cargar la imagen para evitar mostrar imagen rota
+        const img = new Image();
+        img.onload = () => {
+            heroImageEl.src = imageUrl;
+            heroImageEl.style.opacity = '1';
+            // Mantener object-fit cover para llenar el espacio fijo
+            heroImageEl.style.objectFit = 'cover';
+            heroImageEl.style.objectPosition = 'center center';
+        };
+        img.onerror = () => {
+            console.error('Error cargando imagen de banner:', imageUrl);
+            // Si hay error, intentar con la siguiente imagen
+            if (heroImages.length > 1) {
+                const nextIndex = (index + 1) % heroImages.length;
+                if (nextIndex !== currentHeroIndex) {
+                    setImage(nextIndex);
+                }
+            }
+        };
+        img.src = imageUrl;
+    };
+
+    // Establecer la primera imagen inmediatamente
+    setImage(currentHeroIndex);
+
+    // Si solo hay una imagen, no iniciar el carrusel
     if (heroImages.length <= 1) return;
 
+    // Iniciar el carrusel para cambiar imágenes cada 5 segundos
     setInterval(() => {
         heroImageEl.style.opacity = '0';
         setTimeout(() => {
             currentHeroIndex = (currentHeroIndex + 1) % heroImages.length;
-            heroImageEl.src = heroImages[currentHeroIndex];
-            heroImageEl.onload = () => { heroImageEl.style.opacity = '0.9'; };
-            if (heroImageEl.complete) { heroImageEl.style.opacity = '0.9'; }
+            setImage(currentHeroIndex);
         }, 1000);
     }, 5000);
 }

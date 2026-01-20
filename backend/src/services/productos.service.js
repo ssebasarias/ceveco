@@ -164,6 +164,130 @@ class ProductoService {
             }
         };
     }
+
+    /**
+     * Crear un nuevo producto
+     * @param {Object} productData - Datos del producto
+     * @returns {Promise<Object>} Resultado con el producto creado
+     */
+    async createProducto(productData) {
+        try {
+            // Validar SKU único
+            const existingProduct = await ProductoModel.findBySku(productData.sku);
+            if (existingProduct) {
+                throw new Error('El SKU ya existe');
+            }
+
+            const producto = await ProductoModel.create(productData);
+
+            // Agregar imágenes si se proporcionan
+            if (productData.imagenes && Array.isArray(productData.imagenes) && productData.imagenes.length > 0) {
+                for (let i = 0; i < productData.imagenes.length; i++) {
+                    const imagenUrl = productData.imagenes[i];
+                    if (imagenUrl && imagenUrl.trim()) {
+                        await ProductoModel.addImage(
+                            producto.id_producto,
+                            imagenUrl.trim(),
+                            i === 0, // Primera imagen es principal
+                            i
+                        );
+                    }
+                }
+            }
+
+            return {
+                success: true,
+                data: producto,
+                message: 'Producto creado exitosamente'
+            };
+        } catch (error) {
+            console.error('Error en createProducto:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Actualizar un producto
+     * @param {number} id - ID del producto
+     * @param {Object} productData - Datos a actualizar
+     * @returns {Promise<Object>} Resultado con el producto actualizado
+     */
+    async updateProducto(id, productData) {
+        try {
+            // Verificar que el producto existe
+            const existingProduct = await ProductoModel.findById(id);
+            if (!existingProduct) {
+                throw new Error('Producto no encontrado');
+            }
+
+            // Si se cambia el SKU, verificar que no exista
+            if (productData.sku && productData.sku !== existingProduct.sku) {
+                const skuExists = await ProductoModel.findBySku(productData.sku);
+                if (skuExists) {
+                    throw new Error('El SKU ya existe');
+                }
+                // Agregar SKU a los campos a actualizar
+                productData.sku = productData.sku;
+            }
+
+            const producto = await ProductoModel.update(id, productData);
+
+            // Actualizar imágenes si se proporcionan
+            if (productData.imagenes !== undefined) {
+                // Eliminar imágenes existentes
+                await ProductoModel.deleteImages(id);
+
+                // Agregar nuevas imágenes
+                if (Array.isArray(productData.imagenes) && productData.imagenes.length > 0) {
+                    for (let i = 0; i < productData.imagenes.length; i++) {
+                        const imagenUrl = productData.imagenes[i];
+                        if (imagenUrl && imagenUrl.trim()) {
+                            await ProductoModel.addImage(
+                                id,
+                                imagenUrl.trim(),
+                                i === 0, // Primera imagen es principal
+                                i
+                            );
+                        }
+                    }
+                }
+            }
+
+            return {
+                success: true,
+                data: producto,
+                message: 'Producto actualizado exitosamente'
+            };
+        } catch (error) {
+            console.error('Error en updateProducto:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Eliminar un producto
+     * @param {number} id - ID del producto
+     * @returns {Promise<Object>} Resultado de la operación
+     */
+    async deleteProducto(id) {
+        try {
+            // Verificar que el producto existe
+            const existingProduct = await ProductoModel.findById(id);
+            if (!existingProduct) {
+                throw new Error('Producto no encontrado');
+            }
+
+            await ProductoModel.delete(id);
+
+            return {
+                success: true,
+                message: 'Producto eliminado exitosamente'
+            };
+        } catch (error) {
+            console.error('Error en deleteProducto:', error);
+            throw error;
+        }
+    }
 }
 
 module.exports = new ProductoService();

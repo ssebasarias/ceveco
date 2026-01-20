@@ -119,6 +119,30 @@ async function loadProducts() {
 
             const cardsHtml = (await Promise.all(response.data.map(product => window.renderProductCard(product)))).join('');
             grid.innerHTML = cardsHtml;
+            
+            // Configurar event listeners para imágenes después de insertar en el DOM
+            grid.querySelectorAll('.js-product-image').forEach(img => {
+                if (!img.dataset.listenerAttached) {
+                    img.addEventListener('error', function() {
+                        if (this.src && this.src.includes('data:image/svg')) return;
+                        const fallbackSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
+                        try {
+                            const fallbackImages = JSON.parse(this.getAttribute('data-fallback-images') || '[]');
+                            const currentIndex = fallbackImages.indexOf(this.src);
+                            if (currentIndex >= 0 && currentIndex < fallbackImages.length - 1) {
+                                this.src = fallbackImages[currentIndex + 1];
+                                return;
+                            } else if (fallbackImages.length > 0 && currentIndex === -1) {
+                                this.src = fallbackImages[0];
+                                return;
+                            }
+                        } catch(e) {}
+                        this.onerror = null;
+                        this.src = fallbackSvg;
+                    });
+                    img.dataset.listenerAttached = 'true';
+                }
+            });
 
             // Actualizar paginación
             totalPages = response.pagination.totalPages;

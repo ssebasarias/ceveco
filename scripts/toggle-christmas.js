@@ -1,146 +1,176 @@
 const fs = require('fs');
 const path = require('path');
 
-const INDEX_PATH = path.join(__dirname, '../frontend/pages/index.html');
+/**
+ * Toggle Christmas Theme Script
+ * 
+ * 1. Renames frontend/theme/christmas/loader.js -> loader.js.disabled (Global Kill Switch)
+ * 2. Scans ALL HTML files in frontend/pages/ and comments out direct references
+ */
+
+const FRONTEND_DIR = path.join(__dirname, '../frontend');
+const PAGES_DIR = path.join(FRONTEND_DIR, 'pages');
+const THEME_LOADER_PATH = path.join(FRONTEND_DIR, 'theme/christmas/loader.js');
+const THEME_LOADER_DISABLED_PATH = path.join(FRONTEND_DIR, 'theme/christmas/loader.js.disabled');
 const ENCODING = 'utf8';
 
-// The HTML for the snow container (30 flakes) to restore when enabling
-const SNOW_CONTAINER_HTML = `    <!-- Global Snow Container -->
-    <div class="global-snow-container">
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div> <!-- 20 -->
-        <!-- More Snowflakes 21-30 -->
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❄</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-        <div class="snowflake">❅</div>
-        <div class="snowflake">❆</div>
-    </div>`;
+// Helper to find all HTML files
+function getHtmlFiles(dir) {
+    let results = [];
+    const list = fs.readdirSync(dir);
+    list.forEach(file => {
+        file = path.join(dir, file);
+        const stat = fs.statSync(file);
+        if (stat && stat.isDirectory()) {
+            results = results.concat(getHtmlFiles(file));
+        } else if (file.endsWith('.html')) {
+            results.push(file);
+        }
+    });
+    return results;
+}
 
 function toggleChristmas() {
-    if (!fs.existsSync(INDEX_PATH)) {
-        console.error('Error: index.html not found at', INDEX_PATH);
-        return;
-    }
+    // Check if we are checking status or toggling based on file existence
+    const isCurrentlyEnabled = fs.existsSync(THEME_LOADER_PATH);
+    const isCurrentlyDisabled = fs.existsSync(THEME_LOADER_DISABLED_PATH);
 
-    let content = fs.readFileSync(INDEX_PATH, ENCODING);
+    // If neither exists, something is wrong, or maybe just HTMLs have it
+    // We assume if loader.js exists, it's enabled.
 
-    // Check current state by looking for the DISABLED marker we add
-    const isDisabled = content.includes('<!-- 🎄 Christmas Theme DISABLED 🎄 -->');
-
-    if (!isDisabled) {
-        console.log('🎄 Disabling Christmas Theme...');
-        disableChristmas(content);
+    if (isCurrentlyEnabled) {
+        console.log('🎄 Disabling Christmas Theme globally...');
+        disableChristmas();
+    } else if (isCurrentlyDisabled) {
+        console.log('🎅 Enabling Christmas Theme globally...');
+        enableChristmas();
     } else {
-        console.log('🎅 Enabling Christmas Theme...');
-        enableChristmas(content);
+        // Fallback: If loader files are missing/confusing, assume disabled and try to enable? 
+        // Or assume enabled (maybe implied) and try to disable?
+        // Let's check the content of index.html to guess
+        console.log('⚠️ Loader file state unclear. Checking index.html...');
+        const indexFile = path.join(PAGES_DIR, 'index.html');
+        if (fs.existsSync(indexFile)) {
+            const content = fs.readFileSync(indexFile, ENCODING);
+            if (content.includes('<!-- 🎄 Christmas Theme DISABLED 🎄 -->')) {
+                console.log('🎅 Detected DISABLED state in HTML. Enabling...');
+                enableChristmas();
+            } else {
+                console.log('🎄 Defaulting to Disable...');
+                disableChristmas();
+            }
+        } else {
+            console.error('❌ Could not determine state. Please check frontend/theme/christmas/');
+        }
     }
 }
 
-function disableChristmas(content) {
-    let newContent = content;
+function disableChristmas() {
+    // 1. Rename loader.js to loader.js.disabled (Force disable even if script tag remains)
+    if (fs.existsSync(THEME_LOADER_PATH)) {
+        try {
+            fs.renameSync(THEME_LOADER_PATH, THEME_LOADER_DISABLED_PATH);
+            console.log('✅ Renamed loader.js to loader.js.disabled');
+        } catch (e) {
+            console.error('❌ Failed to rename loader.js:', e.message);
+        }
+    }
 
-    // 1. Disable CSS Link
-    newContent = newContent.replace(
-        /<!-- 🎄 Christmas Theme 🎄 -->\s*<link rel="stylesheet" href="\.\.\/theme\/christmas\/theme\.css">/,
-        `<!-- 🎄 Christmas Theme DISABLED 🎄 -->
-    <!-- <link rel="stylesheet" href="../theme/christmas/theme.css"> -->`
-    );
+    // 2. Scan ALL HTML files and comment out the script/css if present
+    const htmlFiles = getHtmlFiles(PAGES_DIR);
+    let modifiedCount = 0;
 
-    // 2. Disable Santa Climber
-    newContent = newContent.replace(
-        /<!-- 🎅 Climbing Santa 🎅 -->\s*<img src="\.\.\/theme\/christmas\/santa-hanging\.png" class="santa-climber" alt="Santa Hanging">/,
-        `<!-- 🎅 Climbing Santa DISABLED 🎅 -->
-    <!-- <img src="../theme/christmas/santa-hanging.png" class="santa-climber" alt="Santa Hanging"> -->`
-    );
+    htmlFiles.forEach(file => {
+        let content = fs.readFileSync(file, ENCODING);
+        let originalContent = content;
 
-    // 3. Disable Garland
-    newContent = newContent.replace(
-        /<!-- 🎄 Navbar Garland Decoration 🎄 -->\s*<div class="navbar-garland"><\/div>/,
-        `<!-- 🎄 Navbar Garland Decoration DISABLED 🎄 -->
-    <!-- <div class="navbar-garland"></div> -->`
-    );
+        // Comment out loader script
+        // Matches: <script src="../theme/christmas/loader.js"></script> or similar
+        content = content.replace(
+            /(\s*)<script src="[^"]*theme\/christmas\/loader\.js"><\/script>/g,
+            '$1<!-- 🎄 Christmas Loader DISABLED 🎄 -->\n$1<!-- <script src="../theme/christmas/loader.js"></script> -->'
+        );
 
-    // 4. Disable Separator
-    newContent = newContent.replace(
-        /<!-- 🎄 Christmas Separator \(Snow Waves & Sled\) 🎄 -->\s*<div class="christmas-separator"><\/div>/,
-        `<!-- 🎄 Christmas Separator DISABLED 🎄 -->
-    <!-- <div class="christmas-separator"></div> -->`
-    );
+        // Comment out CSS if linked directly
+        content = content.replace(
+            /(\s*)<link rel="stylesheet" href="[^"]*theme\/christmas\/theme\.css">/g,
+            '$1<!-- 🎄 Christmas CSS DISABLED 🎄 -->\n$1<!-- <link rel="stylesheet" href="../theme/christmas/theme.css"> -->'
+        );
 
-    // 5. Remove Snow Container (Replace with placeholder)
-    // Regex matches indent, comments, start tag, content, and the closing div that has matching indentation
-    const snowRegex = /\s*<!-- Global Snow Container -->\s*<div class="global-snow-container">[\s\S]*?    <\/div>/;
-    newContent = newContent.replace(snowRegex, '\n    <!-- CHRISTMAS_SNOW_REMOVED -->');
+        // Remove/Comment specific decorations if they exist as static HTML
+        // Santa
+        content = content.replace(
+            /(\s*)<img src="[^"]*santa-hanging\.png"[^>]*>/g,
+            '$1<!-- 🎅 Santa DISABLED 🎅 -->\n$1<!-- $& -->'
+        );
+        // Navbar Garland
+        content = content.replace(
+            /(\s*)<div class="navbar-garland"><\/div>/g,
+            '$1<!-- 🎄 Garland DISABLED 🎄 -->\n$1<!-- $& -->'
+        );
 
-    fs.writeFileSync(INDEX_PATH, newContent, ENCODING);
-    console.log('✅ Christmas decorations removed!');
+
+        if (content !== originalContent) {
+            fs.writeFileSync(file, content, ENCODING);
+            modifiedCount++;
+            console.log(`   Processed: ${path.basename(file)}`);
+        }
+    });
+
+    console.log(`✅ Christmas decorations removed from ${modifiedCount} pages.`);
 }
 
-function enableChristmas(content) {
-    let newContent = content;
+function enableChristmas() {
+    // 1. Rename loader.js.disabled back to loader.js
+    if (fs.existsSync(THEME_LOADER_DISABLED_PATH)) {
+        try {
+            fs.renameSync(THEME_LOADER_DISABLED_PATH, THEME_LOADER_PATH);
+            console.log('✅ Renamed loader.js.disabled to loader.js');
+        } catch (e) {
+            console.error('❌ Failed to restore loader.js:', e.message);
+        }
+    }
 
-    // 1. Enable CSS Link
-    newContent = newContent.replace(
-        /<!-- 🎄 Christmas Theme DISABLED 🎄 -->\s*<!-- (<link rel="stylesheet" href="\.\.\/theme\/christmas\/theme\.css">) -->/,
-        `<!-- 🎄 Christmas Theme 🎄 -->
-    $1`
-    );
+    // 2. Scan ALL HTML files and uncomment
+    const htmlFiles = getHtmlFiles(PAGES_DIR);
+    let modifiedCount = 0;
 
-    // 2. Enable Santa
-    newContent = newContent.replace(
-        /<!-- 🎅 Climbing Santa DISABLED 🎅 -->\s*<!-- (<img src="\.\.\/theme\/christmas\/santa-hanging\.png" class="santa-climber" alt="Santa Hanging">) -->/,
-        `<!-- 🎅 Climbing Santa 🎅 -->
-    $1`
-    );
+    htmlFiles.forEach(file => {
+        let content = fs.readFileSync(file, ENCODING);
+        let originalContent = content;
 
-    // 3. Enable Garland
-    newContent = newContent.replace(
-        /<!-- 🎄 Navbar Garland Decoration DISABLED 🎄 -->\s*<!-- (<div class="navbar-garland"><\/div>) -->/,
-        `<!-- 🎄 Navbar Garland Decoration 🎄 -->
-    $1`
-    );
+        // Restore Script
+        content = content.replace(
+            /<!-- 🎄 Christmas Loader DISABLED 🎄 -->\s*<!-- (<script src="\.\.\/theme\/christmas\/loader\.js"><\/script>) -->/g,
+            '$1'
+        );
 
-    // 4. Enable Separator
-    newContent = newContent.replace(
-        /<!-- 🎄 Christmas Separator DISABLED 🎄 -->\s*<!-- (<div class="christmas-separator"><\/div>) -->/,
-        `<!-- 🎄 Christmas Separator (Snow Waves & Sled) 🎄 -->
-    $1`
-    );
+        // Restore CSS
+        content = content.replace(
+            /<!-- 🎄 Christmas CSS DISABLED 🎄 -->\s*<!-- (<link rel="stylesheet" href="\.\.\/theme\/christmas\/theme\.css">) -->/g,
+            '$1'
+        );
 
-    // 5. Restore Snow Container
-    newContent = newContent.replace(
-        /\s*<!-- CHRISTMAS_SNOW_REMOVED -->/,
-        '\n' + SNOW_CONTAINER_HTML
-    );
+        // Restore Santa
+        content = content.replace(
+            /<!-- 🎅 Santa DISABLED 🎅 -->\s*<!-- (<img src="[^"]*santa-hanging\.png"[^>]*>) -->/g,
+            '$1'
+        );
 
-    fs.writeFileSync(INDEX_PATH, newContent, ENCODING);
-    console.log('✅ Christmas decorations restored!');
+        // Restore Garland
+        content = content.replace(
+            /<!-- 🎄 Garland DISABLED 🎄 -->\s*<!-- (<div class="navbar-garland"><\/div>) -->/g,
+            '$1'
+        );
+
+        if (content !== originalContent) {
+            fs.writeFileSync(file, content, ENCODING);
+            modifiedCount++;
+            console.log(`   Restored: ${path.basename(file)}`);
+        }
+    });
+
+    console.log(`✅ Christmas decorations restored in ${modifiedCount} pages.`);
 }
 
 toggleChristmas();
