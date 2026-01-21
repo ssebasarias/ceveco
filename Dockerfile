@@ -30,6 +30,12 @@ ENV PORT=3000
 
 # Usuario no root por seguridad
 RUN addgroup -S ceveco && adduser -S ceveco -G ceveco
+
+# Create directory for uploads and fix permissions
+RUN mkdir -p /app/frontend/assets/img/banner-hero && \
+    mkdir -p /app/backend/uploads && \
+    chown -R ceveco:ceveco /app
+
 USER ceveco
 
 # Exponer puerto

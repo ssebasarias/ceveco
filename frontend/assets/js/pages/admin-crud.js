@@ -720,6 +720,7 @@ function loadAdminModals() {
         const imagenesTextarea = document.getElementById('product-crud-imagenes');
         if (imagenesTextarea) {
             imagenesTextarea.addEventListener('input', updateImagePreview);
+            imagenesTextarea.placeholder = "Ingrese una URL por línea (sin comas)";
         }
     } else {
         // Si ya existen, asegurarse de que estén ocultos
@@ -1190,7 +1191,7 @@ async function handleImageUpload(event) {
 function updateImagePreview() {
     const imagenesTextarea = document.getElementById('product-crud-imagenes');
     const previewContainer = document.getElementById('image-preview-container');
-    const urls = imagenesTextarea.value.split(/[,\n]/).map(url => url.trim()).filter(Boolean);
+    const urls = imagenesTextarea.value.split('\n').map(url => url.trim()).filter(Boolean);
 
     if (urls.length === 0) {
         previewContainer.classList.add('hidden');
@@ -1234,9 +1235,9 @@ function updateImagePreview() {
  */
 function removeImageFromPreview(index) {
     const imagenesTextarea = document.getElementById('product-crud-imagenes');
-    const urls = imagenesTextarea.value.split(/[,\n]/).map(url => url.trim()).filter(Boolean);
+    const urls = imagenesTextarea.value.split('\n').map(url => url.trim()).filter(Boolean);
     urls.splice(index, 1);
-    imagenesTextarea.value = urls.join(', ');
+    imagenesTextarea.value = urls.join('\n');
     updateImagePreview();
 }
 
@@ -1258,16 +1259,16 @@ async function saveProductFromModal(event) {
         nombre: document.getElementById('product-crud-nombre').value,
         sku: document.getElementById('product-crud-sku').value,
         precio_actual: parseFloat(document.getElementById('product-crud-precio').value),
-        precio_anterior: parseFloat(document.getElementById('product-crud-precio-anterior').value) || null,
+        precio_anterior: document.getElementById('product-crud-precio-anterior').value ? parseFloat(document.getElementById('product-crud-precio-anterior').value) : 0,
         stock: parseInt(document.getElementById('product-crud-stock').value),
         id_categoria: parseInt(document.getElementById('product-crud-categoria').value),
         id_marca: parseInt(document.getElementById('product-crud-marca').value),
-        badge: document.getElementById('product-crud-badge').value || null,
-        descripcion_corta: document.getElementById('product-crud-descripcion-corta').value || null,
-        descripcion_larga: document.getElementById('product-crud-descripcion-larga').value || null,
+        badge: document.getElementById('product-crud-badge').value || "",
+        descripcion_corta: document.getElementById('product-crud-descripcion-corta').value || "",
+        descripcion_larga: document.getElementById('product-crud-descripcion-larga').value || "",
         destacado: document.getElementById('product-crud-destacado').checked,
         activo: document.getElementById('product-crud-activo').checked,
-        imagenes: imagenes.length > 0 ? imagenes : undefined
+        imagenes: imagenes.length > 0 ? imagenes : undefined // Si no hay imágenes, no enviar el campo (el backend lo ignorará o mantendrá las actuales si es undefined?)
     };
 
     // Mostrar loading
@@ -1280,12 +1281,18 @@ async function saveProductFromModal(event) {
         const url = id ? `${API_BASE}/productos/${id}` : `${API_BASE}/productos`;
         const method = id ? 'PUT' : 'POST';
 
+        const token = window.AdminHelper.getAuthToken();
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(url, {
             method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${window.AdminHelper.getAuthToken()}`
-            },
+            credentials: 'include', // Include HttpOnly cookies
+            headers: headers,
             body: JSON.stringify(productData)
         });
 
@@ -1335,11 +1342,16 @@ async function deleteProductFromCard(id, nombre) {
     if (!confirmed) return;
 
     try {
+        const token = window.AdminHelper.getAuthToken();
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         const response = await fetch(`${API_BASE}/productos/${id}`, {
             method: 'DELETE',
-            headers: {
-                'Authorization': `Bearer ${window.AdminHelper.getAuthToken()}`
-            }
+            credentials: 'include', // Include HttpOnly cookies
+            headers: headers
         });
 
         const data = await response.json();
@@ -1495,6 +1507,7 @@ async function importProductsFromJSON() {
                 // Verificar si el producto ya existe por SKU
                 const sku = product.sku || product.referencia || `SKU-${Date.now()}-${Math.random()}`;
                 const checkResponse = await fetch(`${API_BASE}/productos?busqueda=${encodeURIComponent(sku)}`, {
+                    credentials: 'include', // Include HttpOnly cookies
                     headers: {
                         'Authorization': `Bearer ${window.AdminHelper.getAuthToken()}`
                     }
@@ -1508,6 +1521,7 @@ async function importProductsFromJSON() {
                     const existingProduct = checkData.data.find(p => p.sku === sku);
                     const updateResponse = await fetch(`${API_BASE}/productos/${existingProduct.id_producto}`, {
                         method: 'PUT',
+                        credentials: 'include', // Include HttpOnly cookies
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${window.AdminHelper.getAuthToken()}`
@@ -1537,6 +1551,7 @@ async function importProductsFromJSON() {
                     // Crear nuevo producto
                     const response = await fetch(`${API_BASE}/productos`, {
                         method: 'POST',
+                        credentials: 'include', // Include HttpOnly cookies
                         headers: {
                             'Content-Type': 'application/json',
                             'Authorization': `Bearer ${window.AdminHelper.getAuthToken()}`
@@ -1616,7 +1631,7 @@ function openBannerManager() {
         modal.style.display = 'flex';
         modal.style.visibility = 'visible';
         document.body.style.overflow = 'hidden';
-        
+
         // Cargar datos de forma asíncrona sin bloquear la UI
         Promise.all([
             loadBannersList().catch(err => {
@@ -1653,7 +1668,7 @@ async function loadBannersList() {
         console.warn('No se encontró el contenedor de banners');
         return;
     }
-    
+
     listContainer.innerHTML = '<div class="text-center text-gray-500 py-4">Cargando...</div>';
 
     // Intentar obtener token de múltiples fuentes (puede estar en cookie HttpOnly que no podemos leer)
@@ -2222,7 +2237,7 @@ async function handleBannerImageUpload(event) {
 
                 // Determinar el tipo MIME correcto basado en el blob
                 const mimeType = optimizedBlob.type || file.type || 'image/jpeg';
-                
+
                 // Crear un nuevo archivo con el blob optimizado
                 // Usar el mismo nombre pero asegurar que el tipo MIME sea correcto
                 fileToUpload = new File([optimizedBlob], file.name, {

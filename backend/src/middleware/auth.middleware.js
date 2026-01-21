@@ -28,6 +28,8 @@ const authMiddleware = (req, res, next) => {
             token = req.cookies[COOKIE_NAME];
         }
 
+
+
         if (!token) {
             return res.status(401).json({
                 success: false,

@@ -96,7 +96,7 @@ router.use('/images', imagesRouter);
  * @access  Private (Admin only)
  * NOTA: Esta ruta debe estar ANTES de /:posicion para evitar conflictos
  */
-router.get('/:id',
+router.get('/:id(\\d+)',
     authMiddleware,
     requireAdmin,
     [
@@ -144,7 +144,7 @@ router.post('/',
  * @desc    Actualizar banner existente
  * @access  Private (Admin only)
  */
-router.put('/:id',
+router.put('/:id(\\d+)',
     authMiddleware,
     requireAdmin,
     [
@@ -164,7 +164,7 @@ router.put('/:id',
  * @access  Private (Admin only)
  * @query   {boolean} permanent - Si es true, elimina permanentemente
  */
-router.delete('/:id',
+router.delete('/:id(\\d+)',
     authMiddleware,
     requireAdmin,
     [
