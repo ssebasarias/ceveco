@@ -7,7 +7,8 @@
 .hero-banner-container {
     position: relative;
     width: 100%;
-    background-color: #f9fafb; /* bg-gray-50 */
+    background-color: #f9fafb;
+    /* bg-gray-50 */
     overflow: hidden;
 }
 
@@ -25,6 +26,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Default: cover para páginas de productos */
     object-position: center center;
     opacity: 1;
     transition: opacity 1s ease-in-out;
@@ -54,14 +56,35 @@
     z-index: 1;
 }
 
-/* Dimensiones fijas del banner */
+/* Dimensiones fijas del banner - Default para páginas de productos */
 .hero-banner-container {
-    height: 250px; /* Mobile: 250px fijo */
+    height: 250px;
+    /* Mobile: 250px (original) */
 }
 
 @media (min-width: 768px) {
     .hero-banner-container {
-        height: 500px; /* Desktop: 500px fijo */
+        height: 500px;
+        /* Desktop: 500px (original) */
     }
 }
 
+/* ===================================
+   HOMEPAGE BANNER - Taller y con contain
+   =================================== */
+.hero-banner-homepage {
+    height: 450px;
+    /* Mobile: Taller para homepage */
+}
+
+@media (min-width: 768px) {
+    .hero-banner-homepage {
+        height: 700px;
+        /* Desktop: Mucho más alto para homepage */
+    }
+}
+
+/* Homepage banner image uses contain to show full image */
+.hero-banner-homepage #hero-image {
+    object-fit: contain;
+}

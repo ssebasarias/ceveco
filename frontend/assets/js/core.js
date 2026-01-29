@@ -40,10 +40,10 @@
     }
 
     // Función de diagnóstico de servicios (disponible globalmente)
-    window.checkServicesStatus = function() {
+    window.checkServicesStatus = function () {
         console.log('\n🔍 VERIFICACIÓN DE SERVICIOS CEVECO\n');
         console.log('═'.repeat(50));
-        
+
         const services = {
             'CONSTANTS': window.CONSTANTS,
             'StorageUtils': window.StorageUtils,
@@ -66,7 +66,7 @@
         });
 
         console.log('═'.repeat(50));
-        
+
         // Verificar endpoints del API
         if (window.API && window.CONSTANTS) {
             console.log('\n📡 Verificando conectividad con el backend...');
@@ -88,7 +88,7 @@
             console.log('\n⚠️  Algunos servicios no están disponibles');
             console.log('💡 Recarga la página o verifica la consola para más detalles');
         }
-        
+
         return allOk;
     };
 
@@ -216,24 +216,24 @@
 
         // Obtener imagen principal - verificar múltiples fuentes
         let imagenUrl = product.imagen_principal || product.image;
-        
+
         // Si no hay imagen_principal o es un placeholder, buscar en el array de imágenes
         const isPlaceholder = imagenUrl && (
-            imagenUrl.includes('via.placeholder.com') || 
+            imagenUrl.includes('via.placeholder.com') ||
             imagenUrl.includes('data:image/svg') ||
             imagenUrl.includes('⚠️')
         );
-        
+
         if ((!imagenUrl || isPlaceholder) && product.imagenes && Array.isArray(product.imagenes) && product.imagenes.length > 0) {
             // Buscar primera imagen válida (no placeholder)
             const validImg = product.imagenes.find(img => {
                 const url = img.url_imagen || img.url || img;
-                return url && 
-                       !url.includes('via.placeholder.com') && 
-                       !url.includes('data:image/svg') &&
-                       !url.includes('⚠️');
+                return url &&
+                    !url.includes('via.placeholder.com') &&
+                    !url.includes('data:image/svg') &&
+                    !url.includes('⚠️');
             });
-            
+
             if (validImg) {
                 imagenUrl = validImg.url_imagen || validImg.url || validImg;
             } else if (!imagenUrl) {
@@ -242,10 +242,10 @@
                 imagenUrl = firstImg.url_imagen || firstImg.url || firstImg;
             }
         }
-        
+
         // Solo usar fallback si realmente no hay imagen válida
-        if (!imagenUrl || 
-            imagenUrl.includes('via.placeholder.com') || 
+        if (!imagenUrl ||
+            imagenUrl.includes('via.placeholder.com') ||
             imagenUrl.includes('data:image/svg') ||
             imagenUrl.includes('⚠️') ||
             imagenUrl.trim() === '') {
@@ -253,7 +253,31 @@
         }
 
         const nombre = product.nombre || 'Producto sin nombre';
-        const categoria = product.categoria || product.marca || '';
+
+        // Extract Brand Name safely (Handling object or string)
+        let brandName = '';
+
+        // Debug logging
+        console.log('🔍 Product Card Debug:', {
+            nombre: product.nombre,
+            marca: product.marca,
+            categoria: product.categoria,
+            marcaType: typeof product.marca
+        });
+
+        if (product.marca) {
+            // Si es objeto, intentar obtener propiedad nombre o name, si no, stringify
+            if (typeof product.marca === 'object' && product.marca !== null) {
+                brandName = product.marca.nombre || product.marca.name || '';
+            } else if (typeof product.marca === 'string') {
+                brandName = product.marca;
+            }
+        }
+
+        console.log('✅ Extracted brand:', brandName);
+
+        // Prioritize Brand over Category as requested
+        const categoria = brandName || product.categoria || '';
 
         // HTML Blocks
         const badgeBlock = product.badge
@@ -275,29 +299,29 @@
         // Preparar array de imágenes para fallback (como JSON en data attribute)
         // Incluir todas las imágenes válidas, empezando por la principal
         const imagenesArray = [];
-        
+
         // Agregar imagen principal si es válida
         if (imagenUrl && imagenUrl !== fallbackImage && !imagenUrl.includes('via.placeholder.com') && !imagenUrl.includes('data:image/svg')) {
             imagenesArray.push(imagenUrl);
         }
-        
+
         // Agregar imágenes del array que no sean placeholders y no estén ya incluidas
         if (product.imagenes && Array.isArray(product.imagenes)) {
             product.imagenes.forEach(img => {
                 const url = img.url_imagen || img.url || img;
-                if (typeof url === 'string' && 
-                    url && 
-                    !url.includes('via.placeholder.com') && 
-                    !url.includes('data:image/svg') && 
+                if (typeof url === 'string' &&
+                    url &&
+                    !url.includes('via.placeholder.com') &&
+                    !url.includes('data:image/svg') &&
                     !url.includes('⚠️') &&
                     !imagenesArray.includes(url)) {
                     imagenesArray.push(url);
                 }
             });
         }
-        
+
         const imagenesJson = imagenesArray.length > 0 ? escapeHtml(JSON.stringify(imagenesArray)) : '[]';
-        
+
         let cardHtml = template
             .replace(/{{id}}/g, id)
             .replace(/{{image}}/g, safeImagen)
@@ -313,7 +337,7 @@
             .replace(/{{image_escaped}}/g, escapeJs(safeImagen))
             .replace(/{{badge_block}}/g, badgeBlock)
             .replace(/{{old_price_block}}/g, oldPriceBlock);
-        
+
         // Retornar HTML - los event listeners se configurarán después de insertar en el DOM
         return cardHtml;
     };
