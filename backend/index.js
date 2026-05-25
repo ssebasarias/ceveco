@@ -10,6 +10,9 @@ const { testConnection } = require('./src/config/db');
 const productosRoutes = require('./src/routes/productos.routes');
 const authRoutes = require('./src/routes/auth.routes');
 
+// Rate limiting
+const { globalApiLimiter } = require('./src/middleware/rateLimit.middleware');
+
 // Inicializar Express
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -28,13 +31,14 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://accounts.google.com", "https://apis.google.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Keeping unsafe-inline for styles is often necessary for frameworks unless using strict nonce/hash
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com", "*"],
-            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://unpkg.com", "https://*.google.com", "https://maps.googleapis.com"], // Allow connecting to Google OAuth & Maps & Unpkg
+            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com"],
+            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://apis.google.com", "https://maps.googleapis.com"],
             frameSrc: ["'self'", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
             scriptSrcAttr: ["'unsafe-inline'"],
             upgradeInsecureRequests: null
         },
     },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }
 }));
 
 // CORS - Configuración para permitir peticiones desde el frontend
@@ -121,6 +125,9 @@ app.get(`${API_PREFIX}/config`, (req, res) => {
         }
     });
 });
+
+// Global API rate limiter (200 req/min per IP)
+app.use(API_PREFIX, globalApiLimiter);
 
 // Rutas de la API
 app.use(`${API_PREFIX}/productos`, productosRoutes);
