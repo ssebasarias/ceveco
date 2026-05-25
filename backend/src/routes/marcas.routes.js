@@ -17,7 +17,6 @@ const adminValidations = {
     ],
     create: [
         body('nombre').notEmpty().withMessage('El nombre es requerido').trim(),
-        body('slug').notEmpty().withMessage('El slug es requerido').trim(),
         body('logo_url').optional({ nullable: true }).isString(),
         body('descripcion').optional({ nullable: true }).isString(),
         body('sitio_web').optional({ nullable: true }).isString(),
@@ -26,7 +25,6 @@ const adminValidations = {
     update: [
         param('id').isInt({ min: 1 }).withMessage('ID inválido'),
         body('nombre').optional().notEmpty().trim(),
-        body('slug').optional().notEmpty().trim(),
         body('logo_url').optional({ nullable: true }).isString(),
         body('descripcion').optional({ nullable: true }).isString(),
         body('sitio_web').optional({ nullable: true }).isString(),

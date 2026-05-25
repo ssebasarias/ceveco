@@ -37,13 +37,13 @@ const MarcasController = {
 
             if (q) {
                 params.push(`%${q}%`);
-                where.push(`(nombre ILIKE $${params.length} OR slug ILIKE $${params.length})`);
+                where.push(`nombre ILIKE $${params.length}`);
             }
 
             const whereSQL = where.length ? `WHERE ${where.join(' AND ')}` : '';
 
             const sql = `
-                SELECT id_marca, nombre, slug, logo_url, descripcion, sitio_web, activo, fecha_creacion
+                SELECT id_marca, nombre, logo_url, descripcion, sitio_web, activo, fecha_creacion
                 FROM marcas
                 ${whereSQL}
                 ORDER BY nombre ASC
@@ -99,12 +99,12 @@ const MarcasController = {
                 return res.status(422).json({ success: false, errors: errors.array() });
             }
 
-            const { nombre, slug, logo_url, descripcion, sitio_web, activo } = req.body;
+            const { nombre, logo_url, descripcion, sitio_web, activo } = req.body;
             const { rows } = await pool.query(
-                `INSERT INTO marcas (nombre, slug, logo_url, descripcion, sitio_web, activo)
-                 VALUES ($1, $2, $3, $4, $5, $6)
+                `INSERT INTO marcas (nombre, logo_url, descripcion, sitio_web, activo)
+                 VALUES ($1, $2, $3, $4, $5)
                  RETURNING *`,
-                [nombre, slug, logo_url || null, descripcion || null,
+                [nombre, logo_url || null, descripcion || null,
                  sitio_web || null, activo !== false]
             );
             res.status(201).json({ success: true, data: rows[0], message: 'Marca creada exitosamente' });
@@ -122,19 +122,17 @@ const MarcasController = {
                 return res.status(422).json({ success: false, errors: errors.array() });
             }
 
-            const { nombre, slug, logo_url, descripcion, sitio_web, activo } = req.body;
+            const { nombre, logo_url, descripcion, sitio_web, activo } = req.body;
             const { rows } = await pool.query(
                 `UPDATE marcas
                  SET nombre = COALESCE($1, nombre),
-                     slug = COALESCE($2, slug),
-                     logo_url = $3,
-                     descripcion = $4,
-                     sitio_web = $5,
-                     activo = COALESCE($6, activo),
-                     fecha_actualizacion = NOW()
-                 WHERE id_marca = $7
+                     logo_url = $2,
+                     descripcion = $3,
+                     sitio_web = $4,
+                     activo = COALESCE($5, activo)
+                 WHERE id_marca = $6
                  RETURNING *`,
-                [nombre || null, slug || null, logo_url || null,
+                [nombre || null, logo_url || null,
                  descripcion || null, sitio_web || null,
                  activo != null ? activo : null, req.params.id]
             );
