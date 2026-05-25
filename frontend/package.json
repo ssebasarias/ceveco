@@ -1,0 +1,12 @@
+{
+  "name": "ceveco-frontend",
+  "version": "1.0.0",
+  "description": "Ceveco frontend assets",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/tailwind.css -o ./assets/css/tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i ./src/tailwind.css -o ./assets/css/tailwind.min.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}
