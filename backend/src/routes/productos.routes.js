@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const ProductoController = require('../controllers/productos.controller');
 const { authMiddleware, requireAdmin } = require('../middleware');
-const requireAdminCookie = require('../middleware/requireAdmin');
 const { query, param, body } = require('express-validator');
 
 /**
@@ -89,7 +88,21 @@ router.get('/filtros',
  * @query   {string} categoria - Slug de categoría
  * @query   {string} marca - Slug de marca
  */
-router.get('/admin/all', requireAdminCookie, ProductoController.getAllForAdmin);
+router.get(
+    '/admin/all',
+    authMiddleware,
+    requireAdmin,
+    [
+        query('page').optional().isInt({ min: 1 }).toInt(),
+        query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+        query('q').optional().isString().trim(),
+        query('activo').optional().isIn(['true', 'false']),
+        query('destacado').optional().isIn(['true', 'false']),
+        query('categoria').optional().isString().trim(),
+        query('marca').optional().isString().trim()
+    ],
+    ProductoController.getAllForAdmin
+);
 
 /**
  * @route   GET /api/v1/productos/:id

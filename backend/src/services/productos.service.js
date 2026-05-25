@@ -1,4 +1,5 @@
 const ProductoModel = require('../models/producto.model');
+const { pool } = require('../config/db');
 
 class ProductoService {
     /**
@@ -262,6 +263,68 @@ class ProductoService {
             console.error('Error en updateProducto:', error);
             throw error;
         }
+    }
+
+    /**
+     * Obtener todos los productos para el panel admin con filtros y paginación
+     * @param {Object} options - Opciones de filtrado y paginación
+     * @returns {Promise<Object>} Filas de productos y total
+     */
+    async getAllForAdmin({ page, limit, offset, q, activo, destacado, categoria, marca }) {
+        const where = [];
+        const params = [];
+
+        if (q) {
+            params.push(`%${q}%`);
+            where.push(`(p.nombre ILIKE $${params.length} OR p.sku ILIKE $${params.length})`);
+        }
+        if (activo !== undefined) {
+            params.push(activo === 'true');
+            where.push(`p.activo = $${params.length}`);
+        }
+        if (destacado !== undefined) {
+            params.push(destacado === 'true');
+            where.push(`p.destacado = $${params.length}`);
+        }
+        if (categoria) {
+            params.push(categoria);
+            where.push(`c.slug = $${params.length}`);
+        }
+        if (marca) {
+            params.push(marca);
+            where.push(`m.slug = $${params.length}`);
+        }
+
+        const whereSQL = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+        const sql = `
+            SELECT p.id_producto, p.sku, p.nombre, p.precio_actual, p.precio_anterior,
+                   p.stock, p.activo, p.destacado, p.badge,
+                   p.id_categoria, p.id_marca, p.id_subcategoria,
+                   c.nombre AS categoria, m.nombre AS marca,
+                   (SELECT url_imagen FROM producto_imagenes
+                    WHERE id_producto = p.id_producto AND es_principal LIMIT 1) AS imagen
+            FROM productos p
+            JOIN categorias c ON c.id_categoria = p.id_categoria
+            JOIN marcas m ON m.id_marca = p.id_marca
+            ${whereSQL}
+            ORDER BY p.id_producto DESC
+            LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+        `;
+
+        const countSql = `
+            SELECT count(*) FROM productos p
+            JOIN categorias c ON c.id_categoria = p.id_categoria
+            JOIN marcas m ON m.id_marca = p.id_marca
+            ${whereSQL}
+        `;
+
+        const [{ rows }, { rows: [{ count }] }] = await Promise.all([
+            pool.query(sql, [...params, limit, offset]),
+            pool.query(countSql, params)
+        ]);
+
+        return { rows, total: parseInt(count, 10) };
     }
 
     /**
