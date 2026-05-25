@@ -958,6 +958,11 @@ function openProductModal(productId = null) {
         return;
     }
 
+    // Reset picker on every open (it will be re-initialized below if editing)
+    if (window.AdminImagePicker && typeof window.AdminImagePicker.reset === 'function') {
+        window.AdminImagePicker.reset();
+    }
+
     if (productId) {
         title.textContent = 'Editar Producto';
         document.getElementById('product-crud-id').value = productId;
@@ -1060,15 +1065,18 @@ async function loadProductData(id) {
                 document.getElementById('product-crud-marca').value = product.id_marca;
             }
 
-            // Imágenes
-            if (product.imagenes && Array.isArray(product.imagenes)) {
-                const imageUrls = product.imagenes.map(img => img.url_imagen || img.url || img).filter(Boolean);
-                document.getElementById('product-crud-imagenes').value = imageUrls.join(', ');
-            } else if (product.imagen_principal) {
-                document.getElementById('product-crud-imagenes').value = product.imagen_principal;
+            // Imágenes: el nuevo AdminImagePicker (Pista C) maneja la galería
+            // directamente contra el endpoint admin. Vaciamos el textarea legado
+            // para que saveProductFromModal envíe imagenes=undefined y el
+            // backend NO ejecute delete+re-add que destruiría lo subido por el picker.
+            const legacyImgTextarea = document.getElementById('product-crud-imagenes');
+            if (legacyImgTextarea) legacyImgTextarea.value = '';
+
+            if (window.AdminImagePicker && typeof window.AdminImagePicker.init === 'function') {
+                window.AdminImagePicker.init(id);
             }
 
-            // Actualizar vista previa
+            // Actualizar vista previa (legacy, queda para compat)
             setTimeout(() => updateImagePreview(), 100);
         }
     } catch (error) {
@@ -4850,4 +4858,17 @@ window.setupModalCloseListeners = setupModalCloseListeners;
     window.openPanelBannerModal = openPanelBannerModal;
     window.closePanelBannerModal = closePanelBannerModal;
 
+}());
+
+// Pista C: ensure AdminImagePicker is loaded for both admin.js and admin-crud.js flows.
+// The picker lives at frontend/assets/js/components/admin-image-picker.js and is wired
+// from openProductModal/loadProductData above.
+(function ensureAdminImagePickerLoaded() {
+    if (window.AdminImagePicker) return;
+    if (document.querySelector('script[data-admin-image-picker]')) return;
+    const s = document.createElement('script');
+    s.src = '../assets/js/components/admin-image-picker.js';
+    s.setAttribute('data-admin-image-picker', '1');
+    s.defer = true;
+    document.head.appendChild(s);
 }());

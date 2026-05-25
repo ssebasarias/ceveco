@@ -52,4 +52,97 @@ router.get('/stats',
     AdminController.getStats
 );
 
+// ============================================
+// IMÁGENES DE PRODUCTO (admin)
+// ============================================
+
+/**
+ * @route   GET /api/v1/admin/productos/:id/imagenes
+ * @desc    Listar imágenes de un producto (ordenadas: principal primero, luego por `orden`)
+ * @access  Private (Admin only)
+ */
+router.get('/productos/:id/imagenes',
+    authMiddleware,
+    requireAdmin,
+    [param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido')],
+    AdminController.listImagenes.bind(AdminController)
+);
+
+/**
+ * @route   POST /api/v1/admin/productos/:id/imagenes
+ * @desc    Subir una imagen para el producto. Campo multipart: "imagen".
+ *          La primera imagen del producto se marca automáticamente como principal.
+ * @access  Private (Admin only)
+ */
+router.post('/productos/:id/imagenes',
+    authMiddleware,
+    requireAdmin,
+    [param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido')],
+    (req, res, next) => {
+        AdminController.productImageUpload.single('imagen')(req, res, (err) => {
+            if (err) {
+                // Mapear errores de multer a mensajes amigables para administradores no técnicos
+                if (err.code === 'LIMIT_FILE_SIZE') {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'El archivo es muy grande (máx 5 MB).'
+                    });
+                }
+                return res.status(400).json({
+                    success: false,
+                    message: err.message || 'Error al subir el archivo'
+                });
+            }
+            next();
+        });
+    },
+    AdminController.uploadImagen.bind(AdminController)
+);
+
+/**
+ * @route   DELETE /api/v1/admin/productos/:id/imagenes/:imageId
+ * @desc    Eliminar una imagen de un producto. Si era principal, se promueve la siguiente.
+ * @access  Private (Admin only)
+ */
+router.delete('/productos/:id/imagenes/:imageId',
+    authMiddleware,
+    requireAdmin,
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        param('imageId').isInt({ min: 1 }).withMessage('ID de imagen inválido')
+    ],
+    AdminController.deleteImagen.bind(AdminController)
+);
+
+/**
+ * @route   PATCH /api/v1/admin/productos/:id/imagen-principal
+ * @desc    Marcar una imagen como principal para un producto
+ * @access  Private (Admin only)
+ */
+router.patch('/productos/:id/imagen-principal',
+    authMiddleware,
+    requireAdmin,
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        body('imagen_id').isInt({ min: 1 }).withMessage('imagen_id debe ser un entero válido')
+    ],
+    AdminController.setImagenPrincipal.bind(AdminController)
+);
+
+/**
+ * @route   PATCH /api/v1/admin/productos/:id/imagenes/orden
+ * @desc    Reordenar la galería de imágenes
+ * @body    { orden: [id_imagen, ...] }
+ * @access  Private (Admin only)
+ */
+router.patch('/productos/:id/imagenes/orden',
+    authMiddleware,
+    requireAdmin,
+    [
+        param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
+        body('orden').isArray({ min: 1 }).withMessage('orden debe ser un array no vacío')
+    ],
+    AdminController.reordenarImagenes.bind(AdminController)
+);
+
 module.exports = router;

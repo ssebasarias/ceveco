@@ -52,7 +52,7 @@ async function loadProductDetails() {
 
         if (response.success && response.data) {
             currentProduct = response.data;
-            renderProduct(currentProduct);
+            await renderProduct(currentProduct);
             loadRelatedProducts(currentProduct.id_producto);
         } else {
             showError();
@@ -69,8 +69,25 @@ async function loadProductDetails() {
     }
 }
 
+// Filtra imágenes rotas haciendo preload de cada URL
+async function filterValidImages(images) {
+    if (!Array.isArray(images) || images.length === 0) return [];
+    const checks = images.map(img => new Promise(resolve => {
+        const url = img.url_imagen || img.url;
+        if (!url) return resolve(null);
+        const test = new Image();
+        let done = false;
+        const timer = setTimeout(() => { if (!done) { done = true; resolve(null); } }, 5000);
+        test.onload = () => { if (!done) { done = true; clearTimeout(timer); resolve(img); } };
+        test.onerror = () => { if (!done) { done = true; clearTimeout(timer); resolve(null); } };
+        test.src = url;
+    }));
+    const results = await Promise.all(checks);
+    return results.filter(Boolean);
+}
+
 // Renderizar información del producto
-function renderProduct(product) {
+async function renderProduct(product) {
     // Mostrar contenido
     dom.content().classList.remove('hidden');
     dom.tabs().classList.remove('hidden');
@@ -84,14 +101,16 @@ function renderProduct(product) {
     // Breadcrumbs
     const breadCategory = document.getElementById('breadcrumb-category');
     if (breadCategory) {
-        breadCategory.textContent = product.categoria;
-        breadCategory.href = `productos.html?categoria=${product.categoria_slug}`;
+        const catDisplay = typeof product.categoria === 'object' ? (product.categoria?.nombre || '') : (product.categoria || '');
+        breadCategory.textContent = catDisplay;
+        breadCategory.href = `productos.html?categoria=${product.categoria_slug || ''}`;
     }
     const breadProduct = document.getElementById('breadcrumb-product');
     if (breadProduct) breadProduct.textContent = product.nombre;
 
     // Info básica
-    setText('product-brand', product.marca);
+    const marcaDisplay = typeof product.marca === 'object' ? (product.marca?.nombre || '') : (product.marca || '');
+    setText('product-brand', marcaDisplay);
     setText('product-name', product.nombre);
     setText('product-short-desc', product.descripcion_corta || '');
 
@@ -131,10 +150,19 @@ function renderProduct(product) {
         }
     }
 
-    // Imágenes - Buscar la imagen principal correctamente
-    let images = product.imagenes || [];
+    // Imágenes - filtrar imágenes rotas antes de renderizar y ordenar por es_principal + orden
+    let rawImages = product.imagenes || [];
 
-    // Buscar imagen principal (es_principal = true) o tomar la primera
+    // Sort: es_principal first, then by orden ascending
+    rawImages = rawImages.slice().sort((a, b) => {
+        if (a.es_principal && !b.es_principal) return -1;
+        if (!a.es_principal && b.es_principal) return 1;
+        return (a.orden || 0) - (b.orden || 0);
+    });
+
+    // Filter broken images by trying to load each
+    const images = await filterValidImages(rawImages);
+
     const fallbackSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
     let mainImgUrl = fallbackSvg;
     if (images.length > 0) {
@@ -145,57 +173,56 @@ function renderProduct(product) {
     const mainImage = dom.mainImage();
     if (mainImage) {
         mainImage.src = mainImgUrl;
-        // Manejar errores de carga de imagen
         mainImage.onerror = function() {
-            this.onerror = null; // Evitar loop infinito
-            this.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
+            this.onerror = null;
+            this.src = fallbackSvg;
         };
     }
 
-    // Renderizar thumbnails
+    // Renderizar thumbnails (solo las válidas)
     const thumbnailsContainer = dom.thumbnails();
 
     if (images.length > 0 && thumbnailsContainer) {
-        const placeholderSvg = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'400\' viewBox=\'0 0 400 400\'%3E%3Crect fill=\'%23f3f4f6\' width=\'400\' height=\'400\'/%3E%3Ctext fill=\'%239ca3af\' font-family=\'sans-serif\' font-size=\'24\' font-weight=\'bold\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\'%3ESin Imagen%3C/text%3E%3C/svg%3E';
         thumbnailsContainer.innerHTML = images.map((img, index) => {
-            const imgUrl = img.url_imagen || img.url || placeholderSvg;
+            const imgUrl = img.url_imagen || img.url || fallbackSvg;
             return `
             <button data-url="${imgUrl}" data-index="${index}"
                 class="thumbnail ${index === 0 ? 'active border-primary' : 'border-gray-200'} border-2 rounded-lg overflow-hidden aspect-square hover:border-primary transition-all">
-                <img src="${imgUrl}" alt="Vista ${index + 1}" 
-                    onerror="this.onerror=null;this.src='${placeholderSvg}';"
+                <img src="${imgUrl}" alt="Vista ${index + 1}"
+                    onerror="this.onerror=null;this.src='${fallbackSvg}';"
                     class="w-full h-full object-contain p-1 pointer-events-none">
             </button>
         `;
         }).join('');
+    } else if (thumbnailsContainer) {
+        thumbnailsContainer.innerHTML = '';
     }
 
-    // Descripción larga
-    // TODO: Integrate DOMPurify for rich-text support when admin-authored HTML is needed.
+    // Descripción: prefer descripcion_larga (scraped), fallback to descripcion or descripcion_corta
     const fullDesc = document.getElementById('full-description');
-    if (fullDesc) fullDesc.innerHTML = `<p>${escHtml(product.descripcion_larga || product.descripcion_corta || '')}</p>`;
+    const descripcion = product.descripcion_larga || product.descripcion || product.descripcion_corta || '';
+    if (fullDesc) {
+        if (descripcion) {
+            fullDesc.innerHTML = `<p>${escHtml(descripcion)}</p>`;
+        } else {
+            fullDesc.innerHTML = `<p class="text-gray-400 italic">Sin descripción disponible.</p>`;
+        }
+    }
 
-    // Especificaciones
+    // Especificaciones (soporta product.specs JSONB del scraper Y product.especificaciones legacy)
     renderSpecs(product);
 
-    // WhatsApp Button - use cotizarProducto utility
+    // WhatsApp / Cotizar Button — wire data-* para que asesor-modal.js (event delegation .js-quote-product) lo capture
     const whatsappBtn = document.getElementById('whatsapp-btn');
     if (whatsappBtn) {
-        whatsappBtn.onclick = (e) => {
-            e.preventDefault();
-            if (typeof window.cotizarProducto === 'function') {
-                window.cotizarProducto(product);
-            } else {
-                // Fallback direct wa.me
-                const wa = '573216453672';
-                const precio = product.precio_actual
-                    ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.precio_actual)
-                    : 'consultar';
-                const url = `${location.origin}/pages/detalle-producto.html?id=${product.id_producto}`;
-                const msg = `Hola Ceveco, quiero cotizar:\n\n*${product.nombre}*\nSKU: ${product.sku || '-'}\nPrecio listado: ${precio}\n\n${url}\n\n¿Está disponible y cuáles son los métodos de pago?`;
-                window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
-            }
-        };
+        whatsappBtn.dataset.id = product.id_producto;
+        whatsappBtn.dataset.name = product.nombre || '';
+        whatsappBtn.dataset.image = (product.imagenes?.[0]?.url_imagen) || '';
+        const marca = typeof product.marca === 'object' ? (product.marca?.nombre || '') : (product.marca || '');
+        whatsappBtn.dataset.brand = marca;
+        // Cache producto para que asesor-modal pueda recuperarlo si hace falta
+        window.__productosCache = window.__productosCache || {};
+        window.__productosCache[product.id_producto] = product;
     }
 
     // Favorite Button Setup
@@ -211,39 +238,50 @@ function renderProduct(product) {
     }
 }
 
-// Helper para renderizar especificaciones
+// Helper para renderizar especificaciones (soporta product.specs JSONB del scraper Y product.especificaciones legacy)
 function renderSpecs(product) {
     const specsContainer = document.getElementById('specs-container');
     if (!specsContainer) return;
 
-    // Si hay especificaciones (atributos) de la BD
-    if (product.especificaciones && product.especificaciones.length > 0) {
-        const renderList = (specs) => specs.map(spec => {
+    const rowHtml = (k, v) => `
+        <div class="flex justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded">
+            <span class="font-semibold text-gray-700">${escHtml(k)}:</span>
+            <span class="text-gray-900 font-medium">${escHtml(v)}</span>
+        </div>
+    `;
+
+    // 1) Prefer product.specs (JSONB scraped — object con clave/valor)
+    if (product.specs && typeof product.specs === 'object' && Object.keys(product.specs).length > 0) {
+        const entries = Object.entries(product.specs).filter(([k, v]) => k && v != null && String(v).trim() !== '');
+        if (entries.length > 0) {
+            const html = entries.map(([k, v]) => rowHtml(k, String(v))).join('');
+            specsContainer.innerHTML = `<div class="space-y-1">${html}</div>`;
+            return;
+        }
+    }
+
+    // 2) Legacy: product.especificaciones (array)
+    if (Array.isArray(product.especificaciones) && product.especificaciones.length > 0) {
+        const html = product.especificaciones.map(spec => {
             const valor = spec.valor || 'N/A';
             const unidad = spec.unidad ? ` ${spec.unidad}` : '';
-
-            return `
-                <div class="flex justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded">
-                    <span class="font-semibold text-gray-700">${escHtml(spec.nombre)}:</span>
-                    <span class="text-gray-900 font-medium">${escHtml(valor)}${escHtml(unidad)}</span>
-                </div>
-            `;
+            return rowHtml(spec.nombre, `${valor}${unidad}`);
         }).join('');
-
-        specsContainer.innerHTML = `<div class="space-y-1">${renderList(product.especificaciones)}</div>`;
-    } else {
-        // Fallback si no hay especificaciones
-        specsContainer.innerHTML = `
-            <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
-                <svg class="w-12 h-12 mx-auto mb-3 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <p class="text-sm text-yellow-800 font-medium">
-                    Las especificaciones técnicas detalladas estarán disponibles próximamente.
-                </p>
-            </div>
-        `;
+        specsContainer.innerHTML = `<div class="space-y-1">${html}</div>`;
+        return;
     }
+
+    // 3) Fallback: ocultar elegantemente o mensaje suave
+    specsContainer.innerHTML = `
+        <div class="p-6 bg-gray-50 border border-gray-100 rounded-lg text-center">
+            <svg class="w-10 h-10 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <p class="text-sm text-gray-500">
+                Especificaciones técnicas no disponibles. Contacta a un asesor para más información.
+            </p>
+        </div>
+    `;
 }
 
 function setText(id, text) {

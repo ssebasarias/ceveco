@@ -193,70 +193,128 @@
         }
     }
 
-    // Helper for rich card HTML generation (sync, no template needed)
+    // Single source of truth para la tarjeta de producto.
+    // Genera el MISMO HTML que ve el catálogo (productos.js usa esta función
+    // directamente); detalle-producto y favoritos también la consumen vía
+    // window.renderProductCard. Mirror exacto de frontend/components/card-producto.html.
+    //
+    // Modelo "solo cotización vía WhatsApp": sin precio, sin "Ver detalle"
+    // (toda el área de imagen es link hacia detalle), una sola CTA roja
+    // "Cotizar producto". Imagen con fallback global a placeholder si falla.
+    function _escHtmlCard(s) {
+        return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
     window.createProductCard = function (product) {
-        const _escHtml = (s) => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        function _formatCOP(n) {
-            if (n == null) return 'Consultar precio';
-            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
-        }
-
         const id = product.id_producto || product.id || '';
+        const nombre = product.nombre || '';
 
-        // Cache product for cotizar
+        // Cache para que el modal de cotización pueda recuperar el producto.
         if (id) {
             window.__productosCache = window.__productosCache || {};
             window.__productosCache[id] = product;
         }
 
-        const imagenWebp = product.imagen || (product.imagenes && product.imagenes[0]?.url_imagen) || '/images/productos/placeholder.webp';
-        const imagenJpg = imagenWebp.replace(/\.webp$/i, '.jpg');
-        const precioActual = _formatCOP(product.precio_actual);
-        const precioAnt = product.precio_anterior && +product.precio_anterior > +product.precio_actual
-            ? `<span class="text-xs text-gray-400 line-through">${_formatCOP(product.precio_anterior)}</span>` : '';
-
-        let badge = '';
-        if (product.destacado) {
-            badge = `<span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1 bg-[#FE2418] text-white text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-md shadow-md"><i data-lucide="flame" class="w-3 h-3"></i> Destacado</span>`;
-        } else if (product.badge) {
-            badge = `<span class="absolute top-3 left-3 z-10 bg-[#FFD23F] text-[#091C49] text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-md shadow-md">${_escHtml(product.badge)}</span>`;
-        }
-
-        const stars = +product.total_resenas > 0
-            ? `<div class="flex items-center gap-1 text-xs text-gray-600"><i data-lucide="star" class="w-3.5 h-3.5 fill-[#FFD23F] text-[#FFD23F]"></i> ${(+product.calificacion_promedio).toFixed(1)} <span class="text-gray-400">(${product.total_resenas})</span></div>` : '';
+        const imagen = product.imagen_principal
+            || product.imagen
+            || (product.imagenes && product.imagenes[0]?.url_imagen)
+            || (Array.isArray(product.imagenes) && typeof product.imagenes[0] === 'string' ? product.imagenes[0] : null)
+            || '/images/productos/placeholder.webp';
 
         const marcaName = typeof product.marca === 'object' ? (product.marca?.nombre || '') : (product.marca || '');
+        const categoria = (typeof product.categoria === 'object' ? (product.categoria?.nombre || '') : (product.categoria || '')) || marcaName;
 
-        return `<article class="product-card relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all border border-gray-100 group flex flex-col">
-    ${badge}
-    <button type="button" class="favorite-btn absolute top-3 right-3 z-10 w-9 h-9 bg-white/95 backdrop-blur rounded-full flex items-center justify-center text-gray-400 hover:text-[#FE2418] shadow-sm transition" data-action="toggle-favorite" data-product-id="${id}" aria-label="Agregar a favoritos">
-      <i data-lucide="heart" class="w-5 h-5"></i>
+        let badgeBlock = '';
+        if (product.destacado) {
+            badgeBlock = `<span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1 bg-[#FE2418] text-white text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-md shadow-md"><i data-lucide="flame" class="w-3 h-3"></i> Destacado</span>`;
+        } else if (product.badge) {
+            badgeBlock = `<span class="absolute top-3 left-3 z-10 bg-[#FFD23F] text-[#091C49] text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-md shadow-md">${_escHtmlCard(product.badge)}</span>`;
+        }
+
+        // Fallback images JSON consumido por el handler global de imágenes (abajo).
+        const fallbackImages = Array.isArray(product.imagenes)
+            ? product.imagenes.map(i => (typeof i === 'string' ? i : i?.url_imagen)).filter(Boolean)
+            : [];
+        const fallbackAttr = _escHtmlCard(JSON.stringify(fallbackImages));
+
+        return `<div class="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group h-full flex flex-col relative cursor-pointer js-product-card"
+    data-product-id="${id}">
+
+    <button type="button"
+        class="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-sm hover:shadow-md hover:bg-white transition-all z-20 btn-favorite transform transition-transform duration-200 js-toggle-favorite"
+        data-id="${id}">
+        <i data-lucide="heart" class="w-4 h-4 text-gray-400 transition-colors pointer-events-none"></i>
     </button>
-    <a href="/pages/detalle-producto.html?id=${id}" class="block aspect-square bg-gray-50 overflow-hidden">
-      <picture>
-        <source srcset="${_escHtml(imagenWebp)}" type="image/webp">
-        <img src="${_escHtml(imagenJpg)}" alt="${_escHtml(product.nombre || '')}" loading="lazy" decoding="async" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='/images/productos/placeholder.webp'">
-      </picture>
-    </a>
-    <div class="p-4 flex-1 flex flex-col">
-      <p class="text-[10px] font-bold text-[#00458E] uppercase tracking-widest">${_escHtml(marcaName)}</p>
-      <h3 class="text-sm font-bold text-[#091C49] line-clamp-2 my-1 min-h-[2.5rem] leading-snug">${_escHtml(product.nombre || '')}</h3>
-      ${stars}
-      <div class="mt-2 mb-3">
-        ${precioAnt}
-        <p class="text-xl font-extrabold text-[#FE2418]">${precioActual}</p>
-      </div>
-      <div class="mt-auto flex gap-2">
-        <button type="button" class="flex-1 bg-[#FE2418] hover:bg-[#d91b10] text-white text-xs font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm hover:shadow" data-action="cotizar" data-product-id="${id}" aria-label="Cotizar por WhatsApp">
-          <i data-lucide="message-circle" class="w-4 h-4"></i> Cotizar
+
+    <div class="admin-product-controls absolute top-3 left-3 z-20 hidden flex gap-2" style="display: none !important; visibility: hidden !important;">
+        <button type="button" class="js-edit-product p-2 bg-blue-600 text-white rounded-full shadow-md hover:bg-blue-700 transition-all"
+                data-id="${id}" title="Editar producto">
+            <i data-lucide="edit" class="w-4 h-4"></i>
         </button>
-        <a href="/pages/detalle-producto.html?id=${id}" class="flex-1 border border-gray-300 hover:border-[#091C49] hover:text-[#091C49] text-gray-700 text-xs font-bold py-2.5 rounded-lg text-center transition-colors flex items-center justify-center">
-          Ver detalle
-        </a>
-      </div>
+        <button type="button" class="js-delete-product p-2 bg-red-600 text-white rounded-full shadow-md hover:bg-red-700 transition-all"
+                data-id="${id}" data-name="${_escHtmlCard(nombre)}" title="Eliminar producto">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+        </button>
     </div>
-  </article>`;
+
+    <a href="/pages/detalle-producto.html?id=${id}" class="block relative pt-[100%] overflow-hidden bg-gray-50 rounded-t-xl">
+        <img src="${_escHtmlCard(imagen)}" alt="${_escHtmlCard(nombre)}" loading="lazy" decoding="async"
+            data-fallback-images="${fallbackAttr}"
+            class="js-product-image absolute top-0 left-0 w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500">
+        ${badgeBlock}
+    </a>
+
+    <div class="p-4 flex flex-col flex-1">
+        <div class="mb-1">
+            <p class="text-[10px] text-gray-500 uppercase tracking-wider line-clamp-1">${_escHtmlCard(categoria)}</p>
+        </div>
+
+        <h3 class="font-semibold text-sm text-gray-900 mb-2 line-clamp-3 min-h-[3.5rem] overflow-hidden group-hover:text-primary transition-colors leading-snug"
+            title="${_escHtmlCard(nombre)}">
+            ${_escHtmlCard(nombre)}
+        </h3>
+
+        <div class="mt-auto">
+            <div class="flex items-center gap-2">
+                <button type="button"
+                    class="w-full h-10 px-4 bg-primary text-white rounded-full hover:bg-primary-dark transition-colors flex items-center justify-center gap-2 shadow-md transform active:scale-95 js-quote-product"
+                    data-id="${id}" data-name="${_escHtmlCard(nombre)}" data-image="${_escHtmlCard(imagen)}"
+                    data-brand="${_escHtmlCard(marcaName)}">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.008-.57-.008-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
+                    <span class="text-sm font-bold pointer-events-none">Cotizar producto</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>`;
     };
+
+    // Handler global de fallback de imágenes para .js-product-image en cualquier
+    // página. Si la URL principal falla, intenta cada URL de data-fallback-images
+    // (array JSON); si todas fallan, cae a /images/productos/placeholder.webp.
+    document.addEventListener('error', function (e) {
+        const img = e.target;
+        if (!(img instanceof HTMLImageElement)) return;
+        if (!img.classList.contains('js-product-image')) return;
+        if (img.dataset.fallbackTried === 'final') return;
+
+        let queue;
+        try { queue = JSON.parse(img.getAttribute('data-fallback-images') || '[]'); }
+        catch (_) { queue = []; }
+
+        // Filtrar URLs ya probadas
+        const current = img.src;
+        const next = queue.find(u => u && u !== current);
+        if (next) {
+            img.dataset.fallbackTried = next;
+            img.src = next;
+        } else {
+            img.dataset.fallbackTried = 'final';
+            img.src = '/images/productos/placeholder.webp';
+        }
+    }, true);
 
     window.renderProductCard = async function (product) {
         // Cache product for cotizar

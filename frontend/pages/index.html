@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ceveco - Renueva tu hogar</title>
-    <link rel="stylesheet" href="/assets/css/tailwind.min.css">
+    <link rel="stylesheet" href="../assets/css/tailwind.min.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -28,30 +28,14 @@
     <div id="navbar-root"></div>
 
     <!-- Hero Section -->
-    <section class="hero-banner-container hero-banner-homepage relative md:h-[700px] h-[450px] overflow-hidden">
+    <section class="hero-banner-container hero-banner-homepage relative md:h-[700px] h-[450px]">
         <!-- Image Container -->
         <div class="hero-image-wrapper absolute inset-0 w-full h-full">
-            <img id="hero-image" alt="" loading="eager">
-        </div>
-        <!-- Gradient overlay for text legibility -->
-        <div class="hero-gradient absolute inset-0 pointer-events-none"></div>
-        <!-- Text content overlay -->
-        <div class="hero-content relative z-10 h-full container mx-auto px-4 lg:px-8 flex items-end pb-10 md:pb-16">
-            <div class="max-w-2xl text-white">
-                <p class="hero-eyebrow text-xs md:text-sm font-bold uppercase tracking-[0.3em] mb-3 opacity-90">50 años contigo</p>
-                <h1 class="hero-title text-4xl md:text-6xl font-extrabold leading-[1.05] mb-4 drop-shadow-lg">Renueva tu hogar</h1>
-                <p class="hero-subtitle text-base md:text-xl text-white/90 mb-6 max-w-xl">Electrodomésticos, muebles, motos y herramientas con la mejor garantía y respaldo de Riosucio para toda Colombia.</p>
-                <div class="flex flex-wrap gap-3">
-                    <a href="/pages/productos.html" class="inline-flex items-center gap-2 bg-[#FE2418] hover:bg-[#d91b10] text-white font-bold px-6 py-3.5 rounded-full shadow-lg shadow-red-500/20 transition-all hover:scale-105">
-                        Ver catálogo
-                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </a>
-                    <a href="https://wa.me/573216453672" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white/15 backdrop-blur hover:bg-white/25 text-white font-bold px-6 py-3.5 rounded-full transition-all border border-white/30">
-                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                        Hablar con asesor
-                    </a>
-                </div>
-            </div>
+            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Hero Banner">
+            <!-- Desktop Gradient Overlay -->
+            <div class="hero-gradient-overlay hidden md:block"></div>
+            <!-- Mobile Gradient (Bottom Fade) -->
+            <div class="hero-gradient-overlay-mobile md:hidden"></div>
         </div>
     </section>
 
@@ -257,9 +241,10 @@
     <!-- Modal de Selección de Asesor -->
     <script src="../assets/js/asesor-modal.js" defer></script>
 
-    <!-- UX Polish: scroll fade-in + navbar shadow -->
+    <!-- UX Polish: scroll fade-in + navbar shadow + search autocomplete (redundancy in case navbar.html script tags don't execute via innerHTML) -->
     <script src="../assets/js/utils/scroll-observer.js" defer></script>
     <script src="../assets/js/components/navbar-scroll-shadow.js" defer></script>
+    <script src="../assets/js/components/search-autocomplete.js" defer></script>
 </body>
 
 </html>

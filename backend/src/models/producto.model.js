@@ -25,11 +25,14 @@ class ProductoModel {
     } = filters;
 
     let queryText = `
-      SELECT 
+      SELECT
         p.id_producto,
         p.sku,
         p.nombre,
         p.descripcion_corta,
+        p.descripcion_larga,
+        p.specs,
+        p.componentes,
         p.precio_actual,
         p.precio_anterior,
         p.stock,
@@ -43,13 +46,13 @@ class ProductoModel {
         m.nombre AS marca,
         m.logo_url AS marca_logo,
         (
-          SELECT url_imagen 
-          FROM producto_imagenes 
-          WHERE id_producto = p.id_producto AND es_principal = TRUE 
+          SELECT url_imagen
+          FROM producto_imagenes
+          WHERE id_producto = p.id_producto AND es_principal = TRUE
           LIMIT 1
         ) AS imagen_principal,
         (
-          SELECT json_agg(url_imagen ORDER BY orden)
+          SELECT json_agg(url_imagen ORDER BY es_principal DESC, orden ASC)
           FROM producto_imagenes
           WHERE id_producto = p.id_producto
         ) AS imagenes
@@ -190,8 +193,11 @@ class ProductoModel {
    * @returns {Promise<Object|null>} Producto encontrado o null
    */
   static async findById(id) {
+    // NOTA: p.* incluye automáticamente las columnas añadidas por la
+    // migración 20260525 (descripcion_larga, specs, componentes,
+    // manual_override, fuente_scrape, ultima_actualizacion_scrape).
     const queryText = `
-      SELECT 
+      SELECT
         p.*,
         c.nombre AS categoria,
         c.slug AS categoria_slug,
@@ -208,7 +214,7 @@ class ProductoModel {
               'alt', alt_text,
               'orden', orden,
               'es_principal', es_principal
-            ) ORDER BY orden
+            ) ORDER BY es_principal DESC, orden ASC
           )
           FROM producto_imagenes
           WHERE id_producto = p.id_producto

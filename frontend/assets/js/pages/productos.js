@@ -434,71 +434,13 @@ async function loadProducts() {
 }
 
 // ============================================================
-// PRODUCT CARD (Rich version)
+// PRODUCT CARD
+// La plantilla canónica vive en core.js (window.createProductCard) y la
+// comparten catálogo, detalle (productos relacionados) y favoritos para que
+// las tarjetas se vean idénticas en todas las páginas.
 // ============================================================
-function formatCOP(amount) {
-    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(amount);
-}
-
 function createProductCard(product) {
-    const id = product.id_producto;
-    const imagen = product.imagen_principal || (product.imagenes && product.imagenes[0]?.url_imagen) || '/images/placeholder.webp';
-    const precioFormat = product.precio_actual != null ? formatCOP(product.precio_actual) : 'Consultar precio';
-    const precioAnterior = product.precio_anterior && +product.precio_anterior > +product.precio_actual
-        ? `<span class="text-gray-400 line-through text-xs mr-1">${formatCOP(product.precio_anterior)}</span>` : '';
-
-    let badge = '';
-    if (product.destacado) {
-        badge = `<span class="absolute top-2 left-2 z-10 bg-[#FE2418] text-white text-[10px] font-bold px-2 py-0.5 rounded">DESTACADO</span>`;
-    } else if (product.badge) {
-        badge = `<span class="absolute top-2 left-2 z-10 bg-[#FFD23F] text-[#091C49] text-[10px] font-bold px-2 py-0.5 rounded">${escapeHtml(product.badge)}</span>`;
-    }
-
-    const stars = (product.total_resenas > 0 && product.calificacion_promedio)
-        ? `<div class="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
-               <span class="text-yellow-400">&#9733;</span>
-               ${(+product.calificacion_promedio).toFixed(1)}
-               <span class="text-gray-400">(${product.total_resenas})</span>
-           </div>` : '';
-
-    const marcaName = typeof product.marca === 'object' ? (product.marca?.nombre || '') : (product.marca || '');
-
-    return `<article class="product-card relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group flex flex-col">
-    ${badge}
-    <button class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-gray-300 hover:text-[#FE2418] z-10 transition-colors"
-        data-product-id="${id}" data-action="toggle-favorite" aria-label="Agregar a favoritos">
-        <i data-lucide="heart" class="w-4 h-4"></i>
-    </button>
-    <a href="/pages/detalle-producto.html?id=${id}" class="block">
-        <div class="aspect-square bg-gray-50 overflow-hidden">
-            <img src="${imagen}"
-                alt="${escapeHtml(product.nombre || '')}"
-                loading="lazy" decoding="async"
-                class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                onerror="this.onerror=null;this.src='/images/placeholder.webp'">
-        </div>
-    </a>
-    <div class="p-3 flex flex-col flex-1">
-        <p class="text-xs font-semibold text-[#00458E] uppercase tracking-wide mb-0.5">${escapeHtml(marcaName)}</p>
-        <h3 class="text-sm font-bold text-[#091C49] leading-tight mb-1 min-h-[2.5rem] line-clamp-2">${escapeHtml(product.nombre || '')}</h3>
-        ${stars}
-        <div class="mt-1.5 mb-2">
-            ${precioAnterior}
-            <p class="text-lg font-extrabold text-[#FE2418] leading-tight">${precioFormat}</p>
-        </div>
-        <div class="flex gap-1.5 mt-auto">
-            <button class="flex-1 bg-[#FE2418] hover:bg-[#d91b10] text-white text-xs font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1"
-                data-action="cotizar" data-product-id="${id}" aria-label="Cotizar por WhatsApp">
-                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                Cotizar
-            </button>
-            <a href="/pages/detalle-producto.html?id=${id}"
-                class="flex-1 border border-gray-300 hover:border-[#091C49] text-[#091C49] text-xs font-bold py-2 rounded-lg text-center transition-colors flex items-center justify-center">
-                Ver detalle
-            </a>
-        </div>
-    </div>
-</article>`;
+    return window.createProductCard(product);
 }
 
 function escapeHtml(str) {
