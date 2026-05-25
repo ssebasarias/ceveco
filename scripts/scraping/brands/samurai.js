@@ -1,12 +1,10 @@
 // scripts/scraping/brands/samurai.js
 // Adaptador para Samurai (parrillas / cocina).
-// Host: https://www.samurai.com.co
-//
-// TODO: refinar selectores con prueba real.
+// Host: https://www.samuraicolombia.com (samurai.com.co no existe).
 
 const { genericSearch } = require('./_brand-helpers');
 
-const HOST = 'https://www.samurai.com.co';
+const HOST = 'https://www.samuraicolombia.com';
 
 const SEARCH_URLS_FOR = (product) => {
     const q = encodeURIComponent(product.nombre);

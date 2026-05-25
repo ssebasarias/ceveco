@@ -86,13 +86,15 @@ async function upsertMainImage(idProducto, urlImagen, altText) {
                 [idProducto, urlImagen, altText]
             );
         } else {
+            // urlImagen not needed — we already matched on it in the SELECT.
+            // Passing only typed params Postgres can bind.
             await client.query(
                 `UPDATE producto_imagenes
                     SET es_principal = true,
-                        alt_text     = COALESCE($3, alt_text),
+                        alt_text     = COALESCE($2::text, alt_text),
                         orden        = 0
                   WHERE id_imagen = $1`,
-                [existing.rows[0].id_imagen, urlImagen, altText]
+                [existing.rows[0].id_imagen, altText]
             );
         }
         await client.query('COMMIT');
@@ -127,12 +129,14 @@ async function upsertExtraImage(idProducto, urlImagen, altText, orden) {
  * `ultima_actualizacion_scrape` se reescriben en cada corrida.
  */
 async function updateProductData(idProducto, { descripcion_larga, specs, componentes, fuente }) {
+    // Explicit ::text on $2 and $5 so Postgres can determine parameter types
+    // when the value is NULL (otherwise: "could not determine type of parameter").
     const sql = `
         UPDATE productos
-           SET descripcion_larga          = COALESCE($2, descripcion_larga),
+           SET descripcion_larga          = COALESCE($2::text, descripcion_larga),
                specs                      = COALESCE($3::jsonb, specs),
                componentes                = COALESCE($4::jsonb, componentes),
-               fuente_scrape              = $5,
+               fuente_scrape              = $5::text,
                ultima_actualizacion_scrape = NOW()
          WHERE id_producto = $1
            AND COALESCE(manual_override, FALSE) = FALSE

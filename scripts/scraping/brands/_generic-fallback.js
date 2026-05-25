@@ -8,23 +8,43 @@
 // Retorna SOLO imágenes; descripción/specs quedan null porque Google Images
 // no expone texto estructurado del producto.
 
+// Real BD brand → official domain(s) mapping. Verified against Ceveco's
+// actual product catalog. STIHL, Kalley, furniture brands added because
+// they have products in BD that the original list didn't cover.
 const BRAND_DOMAINS = {
-    honda: ['honda.com.co', 'hondamotos.com.co'],
-    suzuki: ['suzuki.com.co', 'suzukimotos.com.co'],
+    // Motos
+    honda: ['motos.honda.com.co', 'honda.com.co'],
+    suzuki: ['suzukimotos.com.co', 'suzuki.com.co'],
     akt: ['aktmotos.com'],
     yamaha: ['yamaha-motor.com.co', 'yamaha.com.co'],
-    samurai: ['samurai.com.co'],
-    whirlpool: ['whirlpool.com.co'],
+    hyundai: ['hyundai.com.co'],
+
+    // Herramientas (STIHL = 44 productos en BD)
+    stihl: ['stihl.com.co', 'stihl.com'],
+
+    // Cocina / parrillas
+    samurai: ['samuraicolombia.com'],
+
+    // Electrodomésticos
     lg: ['lg.com'],
     samsung: ['samsung.com'],
+    whirlpool: ['whirlpool.com.co'],
     mabe: ['mabe.com.co'],
     haceb: ['haceb.com'],
-    challenger: ['challenger.com.co']
+    challenger: ['challenger.com.co'],
+    kalley: ['kalley.com.co'],
+
+    // Muebles
+    comodisimos: ['comodisimos.com', 'comodisimos.com.co'],
+    maximuebles: ['maximuebles.com.co'],
+    inval: ['inval.com.co']
 };
 
 function brandKey(marca) {
     const m = (marca || '').toLowerCase().trim();
-    return Object.keys(BRAND_DOMAINS).find(k => m.includes(k)) || null;
+    // Handle accents in 'Comodísimos' → 'comodisimos'
+    const ascii = m.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    return Object.keys(BRAND_DOMAINS).find(k => m.includes(k) || ascii.includes(k)) || null;
 }
 
 async function search(product, browser, { newPage }) {

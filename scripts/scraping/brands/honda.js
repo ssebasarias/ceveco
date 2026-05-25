@@ -9,18 +9,24 @@
 
 const { genericSearch } = require('./_brand-helpers');
 
-const HOST = 'https://www.hondamotos.com.co';
+// Verified host with Playwright MCP: www.hondamotos.com.co does NOT resolve;
+// the canonical host for Honda Colombia motos catalog is motos.honda.com.co.
+const HOST = 'https://motos.honda.com.co';
 
+// Honda site uses /motos-honda/{categoria}/{modelo} URLs. Search box doesn't
+// exist; we hit the master listing page and the category landings.
 const SEARCH_URLS_FOR = (product) => {
-    const q = encodeURIComponent(product.nombre);
     return [
-        `${HOST}/buscar?q=${q}`,
-        `${HOST}/motos`,
-        `${HOST}/`
+        `${HOST}/motos-honda`,
+        `${HOST}/motos-honda/motos-sport`,
+        `${HOST}/motos-honda/scooter-y-semiautomatica`,
+        `${HOST}/motos-honda/todo-terreno`,
+        `${HOST}/motos-honda/aventura`
     ];
 };
 
 const LINK_SELECTORS = [
+    'a[href*="/motos-honda/"][href*="/"]',
     'a[href*="/motos/"]',
     'a[href*="/producto/"]',
     'a[href*="/moto-"]'
