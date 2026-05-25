@@ -1,0 +1,50 @@
+/**
+ * COMPONENT - Brand Carousel
+ * Smooth infinite scrolling carousel with mask-image fade and hover pause
+ */
+
+.brand-carousel-section {
+    overflow: hidden;
+}
+
+.brand-carousel-mask {
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+
+.brand-carousel-track {
+    display: flex;
+    gap: 56px;
+    align-items: center;
+    animation: brand-scroll 35s linear infinite;
+    width: max-content;
+}
+
+.brand-carousel-mask:hover .brand-carousel-track {
+    animation-play-state: paused;
+}
+
+.brand-carousel-track img,
+.brand-carousel-track span {
+    flex-shrink: 0;
+    height: 32px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.brand-carousel-mask:hover .brand-carousel-track span,
+.brand-carousel-mask:hover .brand-carousel-track img {
+    opacity: 1;
+}
+
+@keyframes brand-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
