@@ -31,6 +31,7 @@ app.use(helmet({
             imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com", "*"],
             connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://unpkg.com", "https://*.google.com", "https://maps.googleapis.com"], // Allow connecting to Google OAuth & Maps & Unpkg
             frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
             upgradeInsecureRequests: null
         },
     },
