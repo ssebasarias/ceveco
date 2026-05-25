@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { body, query, param } = require('express-validator');
-const MarcasController = require('../controllers/marcas.controller');
+const CategoriasController = require('../controllers/categorias.controller');
 const { authMiddleware, requireAdmin } = require('../middleware');
 
 // ── Public ─────────────────────────────────────────────────
-// GET /api/v1/marcas
-router.get('/', MarcasController.getActivas);
+// GET /api/v1/categorias  — active categories only
+router.get('/', CategoriasController.getActivas);
 
 // ── Admin ──────────────────────────────────────────────────
 const adminValidations = {
@@ -18,27 +18,29 @@ const adminValidations = {
     create: [
         body('nombre').notEmpty().withMessage('El nombre es requerido').trim(),
         body('slug').notEmpty().withMessage('El slug es requerido').trim(),
-        body('logo_url').optional({ nullable: true }).isString(),
         body('descripcion').optional({ nullable: true }).isString(),
-        body('sitio_web').optional({ nullable: true }).isString(),
+        body('imagen_url').optional({ nullable: true }).isString(),
+        body('icono').optional({ nullable: true }).isString(),
+        body('orden').optional({ nullable: true }).isInt({ min: 0 }),
         body('activo').optional().isBoolean()
     ],
     update: [
         param('id').isInt({ min: 1 }).withMessage('ID inválido'),
         body('nombre').optional().notEmpty().trim(),
         body('slug').optional().notEmpty().trim(),
-        body('logo_url').optional({ nullable: true }).isString(),
         body('descripcion').optional({ nullable: true }).isString(),
-        body('sitio_web').optional({ nullable: true }).isString(),
+        body('imagen_url').optional({ nullable: true }).isString(),
+        body('icono').optional({ nullable: true }).isString(),
+        body('orden').optional({ nullable: true }).isInt({ min: 0 }),
         body('activo').optional().isBoolean()
     ],
     id: [param('id').isInt({ min: 1 }).withMessage('ID inválido')]
 };
 
-router.get('/admin/all', authMiddleware, requireAdmin, adminValidations.list, MarcasController.adminList);
-router.get('/admin/:id', authMiddleware, requireAdmin, adminValidations.id, MarcasController.adminGetById);
-router.post('/admin', authMiddleware, requireAdmin, adminValidations.create, MarcasController.adminCreate);
-router.put('/admin/:id', authMiddleware, requireAdmin, adminValidations.update, MarcasController.adminUpdate);
-router.delete('/admin/:id', authMiddleware, requireAdmin, adminValidations.id, MarcasController.adminDelete);
+router.get('/admin/all', authMiddleware, requireAdmin, adminValidations.list, CategoriasController.adminList);
+router.get('/admin/:id', authMiddleware, requireAdmin, adminValidations.id, CategoriasController.adminGetById);
+router.post('/admin', authMiddleware, requireAdmin, adminValidations.create, CategoriasController.adminCreate);
+router.put('/admin/:id', authMiddleware, requireAdmin, adminValidations.update, CategoriasController.adminUpdate);
+router.delete('/admin/:id', authMiddleware, requireAdmin, adminValidations.id, CategoriasController.adminDelete);
 
 module.exports = router;

@@ -130,6 +130,7 @@ app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
 app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
+app.use(`${API_PREFIX}/categorias`, require('./src/routes/categorias.routes'));
 app.use(`${API_PREFIX}/sedes`, require('./src/routes/sedes.routes'));
 app.use(`${API_PREFIX}/asesores`, require('./src/routes/asesores.routes'));
 
