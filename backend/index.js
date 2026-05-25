@@ -131,6 +131,7 @@ app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
 app.use(`${API_PREFIX}/categorias`, require('./src/routes/categorias.routes'));
 app.use(`${API_PREFIX}/sedes`, require('./src/routes/sedes.routes'));
 app.use(`${API_PREFIX}/asesores`, require('./src/routes/asesores.routes'));
+app.use(`${API_PREFIX}/search`, require('./src/routes/search.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {
