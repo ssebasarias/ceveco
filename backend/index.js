@@ -25,12 +25,12 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co", "https://accounts.google.com", "https://apis.google.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://accounts.google.com", "https://apis.google.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Keeping unsafe-inline for styles is often necessary for frameworks unless using strict nonce/hash
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com", "*"],
             connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://unpkg.com", "https://*.google.com", "https://maps.googleapis.com"], // Allow connecting to Google OAuth & Maps & Unpkg
-            frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
+            frameSrc: ["'self'", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
             scriptSrcAttr: ["'unsafe-inline'"],
             upgradeInsecureRequests: null
         },
@@ -126,7 +126,6 @@ app.use(`${API_PREFIX}/admin/upload`, require('./src/routes/upload.routes')); //
 app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
 app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
-// Wompi webhook removed (cotización-only model — no checkout)
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
 app.use(`${API_PREFIX}/categorias`, require('./src/routes/categorias.routes'));
