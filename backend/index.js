@@ -39,11 +39,17 @@ app.use(helmet({
 
 // CORS - Configuración para permitir peticiones desde el frontend
 
+const ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://ceveco.com.co',
+    'https://www.ceveco.com.co'
+];
 const corsOptions = {
     origin: function (origin, callback) {
-        // Permitir requests sin origen (como apps móviles, curl o postman)
-        if (!origin) return callback(null, true);
-        callback(null, true);
+        if (!origin) return callback(null, true); // allow curl/Postman/server-to-server
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true,
     optionsSuccessStatus: 200

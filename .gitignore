@@ -40,3 +40,9 @@ coverage/
 .agent/
 debug_log.txt
 *.ps1
+
+# Database backups
+backups/
+*.sql
+*.backup
+*.dump

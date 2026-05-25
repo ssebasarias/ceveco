@@ -1,11 +1,11 @@
 const { validationResult } = require('express-validator');
 const ProductoModel = require('../models/producto.model');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const path = require('path');
 const fs = require('fs').promises;
 const { promisify } = require('util');
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 class AdminController {
   /**
@@ -31,15 +31,18 @@ class AdminController {
       const backupFileName = `ceveco_backup_${timestamp}.sql`;
       const backupPath = path.join(backupsDir, backupFileName);
 
-      // Comando pg_dump
-      const pgDumpCommand = `pg_dump -h ${dbConfig.host} -p ${dbConfig.port} -U ${dbConfig.user} -d ${dbConfig.database} -F c -f "${backupPath}"`;
-
       // Configurar variable de entorno para la contraseña
       const env = { ...process.env, PGPASSWORD: dbConfig.password };
 
       try {
-        await execAsync(pgDumpCommand, { env, maxBuffer: 1024 * 1024 * 10 });
-        
+        await execFileAsync('pg_dump', [
+          '-h', dbConfig.host,
+          '-p', String(dbConfig.port || 5432),
+          '-U', dbConfig.user,
+          '-d', dbConfig.database,
+          '-f', backupPath
+        ], { env, maxBuffer: 1024 * 1024 * 10 });
+
         // Obtener información del archivo
         const stats = await fs.stat(backupPath);
         const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
@@ -49,19 +52,23 @@ class AdminController {
           message: 'Backup generado exitosamente',
           data: {
             filename: backupFileName,
-            path: backupPath,
             size: `${fileSizeInMB} MB`,
             timestamp: new Date().toISOString()
           }
         });
       } catch (error) {
         console.error('Error ejecutando pg_dump:', error);
-        
-        // Intentar método alternativo con formato SQL plano
-        const sqlDumpCommand = `pg_dump -h ${dbConfig.host} -p ${dbConfig.port} -U ${dbConfig.user} -d ${dbConfig.database} > "${backupPath}"`;
-        
+
+        // Intentar método alternativo con formato SQL plano (-F p y -f para ruta segura)
         try {
-          await execAsync(sqlDumpCommand, { env, maxBuffer: 1024 * 1024 * 10 });
+          await execFileAsync('pg_dump', [
+            '-h', dbConfig.host,
+            '-p', String(dbConfig.port || 5432),
+            '-U', dbConfig.user,
+            '-d', dbConfig.database,
+            '-F', 'p',
+            '-f', backupPath
+          ], { env, maxBuffer: 1024 * 1024 * 10 });
           const stats = await fs.stat(backupPath);
           const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
 
@@ -70,7 +77,6 @@ class AdminController {
             message: 'Backup generado exitosamente',
             data: {
               filename: backupFileName,
-              path: backupPath,
               size: `${fileSizeInMB} MB`,
               timestamp: new Date().toISOString()
             }
