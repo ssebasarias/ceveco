@@ -356,6 +356,74 @@ class ProductoController {
     }
 
     /**
+     * Acción masiva sobre productos (Admin only)
+     * POST /api/v1/productos/admin/bulk-action
+     */
+    async bulkAction(req, res) {
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    errors: errors.array()
+                });
+            }
+
+            const { action, ids } = req.body;
+
+            if (!Array.isArray(ids) || ids.length === 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Se requiere al menos un ID de producto'
+                });
+            }
+
+            const { pool } = require('../config/db');
+            let sql;
+            let params = [ids];
+
+            switch (action) {
+                case 'activate':
+                    sql = 'UPDATE productos SET activo = TRUE, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id_producto = ANY($1::int[])';
+                    break;
+                case 'deactivate':
+                    sql = 'UPDATE productos SET activo = FALSE, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id_producto = ANY($1::int[])';
+                    break;
+                case 'destacar':
+                    sql = 'UPDATE productos SET destacado = TRUE, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id_producto = ANY($1::int[])';
+                    break;
+                case 'undestacar':
+                    sql = 'UPDATE productos SET destacado = FALSE, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id_producto = ANY($1::int[])';
+                    break;
+                case 'delete':
+                    sql = 'UPDATE productos SET activo = FALSE, fecha_actualizacion = CURRENT_TIMESTAMP WHERE id_producto = ANY($1::int[])';
+                    break;
+                default:
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Acción no válida'
+                    });
+            }
+
+            const result = await pool.query(sql, params);
+
+            res.json({
+                success: true,
+                message: `Acción '${action}' aplicada correctamente`,
+                affected_count: result.rowCount
+            });
+
+        } catch (error) {
+            console.error('Error en bulkAction:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Error al ejecutar acción masiva',
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
+        }
+    }
+
+    /**
      * Actualizar stock del producto (Admin only)
      * PATCH /api/v1/productos/:id/stock
      */

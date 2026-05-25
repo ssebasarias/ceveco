@@ -152,6 +152,29 @@ router.get('/:id/stock',
 // ============================================
 
 /**
+ * @route   POST /api/v1/productos/admin/bulk-action
+ * @desc    Acción masiva sobre productos
+ * @access  Private (Admin only)
+ */
+router.post(
+    '/admin/bulk-action',
+    authMiddleware,
+    requireAdmin,
+    [
+        body('action')
+            .isIn(['activate', 'deactivate', 'destacar', 'undestacar', 'delete'])
+            .withMessage('Acción debe ser activate, deactivate, destacar, undestacar o delete'),
+        body('ids')
+            .isArray({ min: 1 })
+            .withMessage('Se requiere un array de IDs con al menos un elemento'),
+        body('ids.*')
+            .isInt({ min: 1 })
+            .withMessage('Cada ID debe ser un entero positivo')
+    ],
+    ProductoController.bulkAction
+);
+
+/**
  * @route   POST /api/v1/productos
  * @desc    Crear nuevo producto
  * @access  Private (Admin only)
@@ -184,10 +207,15 @@ router.put('/:id',
     [
         param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
         body('nombre').optional().isString(),
-        body('descripcion').optional().isString(),
+        body('sku').optional().isString(),
+        body('descripcion_corta').optional().isString(),
+        body('descripcion_larga').optional().isString(),
         body('precio_actual').optional().isFloat({ min: 0 }),
         body('precio_anterior').optional().isFloat({ min: 0 }),
         body('stock').optional().isInt({ min: 0 }),
+        body('id_categoria').optional().isInt({ min: 1 }),
+        body('id_subcategoria').optional().isInt({ min: 1 }),
+        body('id_marca').optional().isInt({ min: 1 }),
         body('activo').optional().isBoolean(),
         body('destacado').optional().isBoolean(),
         body('badge').optional().isString()
