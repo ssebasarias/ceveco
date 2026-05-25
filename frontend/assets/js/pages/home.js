@@ -3,6 +3,26 @@
  * Maneja la lógica específica de la página de inicio (Carruseles, Productos Destacados)
  */
 
+/**
+ * Renders N skeleton product cards into the given container.
+ * @param {HTMLElement} container
+ * @param {number} n
+ */
+function renderSkeletonCards(container, n = 6) {
+    container.innerHTML = Array(n).fill(0).map(() => `
+        <article class="skeleton-card" style="min-width:240px;width:240px">
+            <div class="skeleton skeleton-image"></div>
+            <div class="skeleton-body">
+                <div class="skeleton skeleton-text short"></div>
+                <div class="skeleton skeleton-text long"></div>
+                <div class="skeleton skeleton-text long"></div>
+                <div class="skeleton skeleton-text price"></div>
+                <div class="skeleton skeleton-button skeleton"></div>
+            </div>
+        </article>
+    `).join('');
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('Home Page Logic Initializing...');
 
@@ -40,6 +60,9 @@ async function waitForGlobal(name, timeout = 5000) {
 async function loadFeaturedProducts() {
     const container = document.getElementById('featured-products');
     if (!container) return;
+
+    // Show skeleton loaders immediately
+    renderSkeletonCards(container, 6);
 
     try {
         // Reducir a 6 productos para no saturar
@@ -99,16 +122,18 @@ async function loadBrands() {
 
         if (response.success && response.data.length > 0) {
             const brands = response.data;
+            // Build one set of brand elements
             const brandElements = brands.map(marca =>
-                `<span class="text-base md:text-2xl font-bold text-gray-400 uppercase whitespace-nowrap px-4 md:px-8">${marca.nombre}</span>`
+                `<span>${marca.nombre}</span>`
             ).join('');
-            container.innerHTML = brandElements.repeat(4);
+            // Duplicate exactly once so translateX(-50%) creates a seamless loop
+            container.innerHTML = brandElements + brandElements;
         } else {
-            container.innerHTML = '<span class="text-xl font-bold text-gray-400">No hay marcas disponibles</span>';
+            container.innerHTML = '<span>No hay marcas disponibles</span>';
         }
     } catch (error) {
         console.error('Error loading brands:', error);
-        container.innerHTML = '<span class="text-xl font-bold text-gray-400">Error al cargar marcas</span>';
+        container.innerHTML = '<span>Error al cargar marcas</span>';
     }
 }
 

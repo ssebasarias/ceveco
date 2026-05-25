@@ -128,3 +128,45 @@
 .animate-slide-in-left {
     animation: slideInLeft 0.3s ease-out;
 }
+
+/* ===================================
+   SCROLL-TRIGGERED FADE-IN
+   Requires scroll-observer.js + data-fade-in attribute
+   =================================== */
+[data-fade-in] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+[data-fade-in].in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+[data-fade-in][data-delay="100"] { transition-delay: 0.1s; }
+[data-fade-in][data-delay="200"] { transition-delay: 0.2s; }
+[data-fade-in][data-delay="300"] { transition-delay: 0.3s; }
+[data-fade-in][data-delay="400"] { transition-delay: 0.4s; }
+
+@media (prefers-reduced-motion: reduce) {
+    [data-fade-in] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ===================================
+   NAVBAR SHADOW ON SCROLL
+   Controlled by navbar-scroll-shadow.js
+   =================================== */
+#main-header,
+header[role="banner"],
+header {
+    transition: box-shadow 0.25s ease, background-color 0.25s ease;
+}
+
+.navbar-scrolled {
+    box-shadow: 0 4px 20px -8px rgba(9, 28, 73, 0.18);
+}
