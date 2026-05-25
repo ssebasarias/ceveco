@@ -20,7 +20,7 @@ class OrderModel {
             INSERT INTO usuarios (
                 email, nombre, apellido, telefono,
                 rol, activo, auth_method, password_hash
-            ) VALUES ($1, $2, $3, $4, 'cliente', TRUE, 'local', '$2b$10$GUEST_PLACEHOLDER_HASH_DO_NOT_USE')
+            ) VALUES ($1, $2, $3, $4, 'cliente', TRUE, 'local', NULL)
             RETURNING id_usuario
           `;
 

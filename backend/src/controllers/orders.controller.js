@@ -62,7 +62,7 @@ class OrdersController {
             res.status(500).json({
                 success: false,
                 message: 'Error al procesar el pedido',
-                error: error.message
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
     }
