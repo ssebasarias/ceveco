@@ -196,58 +196,66 @@
     // Helper for rich card HTML generation (sync, no template needed)
     window.createProductCard = function (product) {
         const _escHtml = (s) => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        const _formatCOP = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
+        function _formatCOP(n) {
+            if (n == null) return 'Consultar precio';
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+        }
 
         const id = product.id_producto || product.id || '';
-        const imagen = product.imagen_principal || (product.imagenes && (product.imagenes[0]?.url_imagen || product.imagenes[0]?.url)) || '/images/placeholder.webp';
-        const precioFormat = product.precio_actual != null ? _formatCOP(product.precio_actual) : 'Consultar precio';
-        const precioAnterior = product.precio_anterior && +product.precio_anterior > +product.precio_actual
-            ? `<span class="text-gray-400 line-through text-xs mr-1">${_formatCOP(product.precio_anterior)}</span>` : '';
+
+        // Cache product for cotizar
+        if (id) {
+            window.__productosCache = window.__productosCache || {};
+            window.__productosCache[id] = product;
+        }
+
+        const imagenWebp = product.imagen || (product.imagenes && product.imagenes[0]?.url_imagen) || '/images/productos/placeholder.webp';
+        const imagenJpg = imagenWebp.replace(/\.webp$/i, '.jpg');
+        const precioActual = _formatCOP(product.precio_actual);
+        const precioAnt = product.precio_anterior && +product.precio_anterior > +product.precio_actual
+            ? `<span class="text-xs text-gray-400 line-through">${_formatCOP(product.precio_anterior)}</span>` : '';
 
         let badge = '';
         if (product.destacado) {
-            badge = `<span class="absolute top-2 left-2 z-10 bg-[#FE2418] text-white text-[10px] font-bold px-2 py-0.5 rounded">DESTACADO</span>`;
+            badge = `<span class="absolute top-3 left-3 z-10 inline-flex items-center gap-1 bg-[#FE2418] text-white text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-md shadow-md"><i data-lucide="flame" class="w-3 h-3"></i> Destacado</span>`;
         } else if (product.badge) {
-            badge = `<span class="absolute top-2 left-2 z-10 bg-[#FFD23F] text-[#091C49] text-[10px] font-bold px-2 py-0.5 rounded">${_escHtml(product.badge)}</span>`;
+            badge = `<span class="absolute top-3 left-3 z-10 bg-[#FFD23F] text-[#091C49] text-[10px] font-extrabold uppercase tracking-wide px-2 py-1 rounded-md shadow-md">${_escHtml(product.badge)}</span>`;
         }
 
-        const stars = (product.total_resenas > 0 && product.calificacion_promedio)
-            ? `<div class="flex items-center gap-1 text-xs text-gray-500 mt-0.5"><span class="text-yellow-400">&#9733;</span>${(+product.calificacion_promedio).toFixed(1)}<span class="text-gray-400">(${product.total_resenas})</span></div>` : '';
+        const stars = +product.total_resenas > 0
+            ? `<div class="flex items-center gap-1 text-xs text-gray-600"><i data-lucide="star" class="w-3.5 h-3.5 fill-[#FFD23F] text-[#FFD23F]"></i> ${(+product.calificacion_promedio).toFixed(1)} <span class="text-gray-400">(${product.total_resenas})</span></div>` : '';
 
         const marcaName = typeof product.marca === 'object' ? (product.marca?.nombre || '') : (product.marca || '');
 
-        return `<article class="product-card relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group flex flex-col">
+        return `<article class="product-card relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all border border-gray-100 group flex flex-col">
     ${badge}
-    <button class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-gray-300 hover:text-[#FE2418] z-10 transition-colors"
-        data-product-id="${id}" data-action="toggle-favorite" aria-label="Agregar a favoritos">
-        <i data-lucide="heart" class="w-4 h-4"></i>
+    <button type="button" class="favorite-btn absolute top-3 right-3 z-10 w-9 h-9 bg-white/95 backdrop-blur rounded-full flex items-center justify-center text-gray-400 hover:text-[#FE2418] shadow-sm transition" data-action="toggle-favorite" data-product-id="${id}" aria-label="Agregar a favoritos">
+      <i data-lucide="heart" class="w-5 h-5"></i>
     </button>
-    <a href="/pages/detalle-producto.html?id=${id}" class="block">
-        <div class="aspect-square bg-gray-50 overflow-hidden">
-            <img src="${_escHtml(imagen)}"
-                alt="${_escHtml(product.nombre || '')}"
-                loading="lazy" decoding="async"
-                class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                onerror="this.onerror=null;this.src='/images/placeholder.webp'">
-        </div>
+    <a href="/pages/detalle-producto.html?id=${id}" class="block aspect-square bg-gray-50 overflow-hidden">
+      <picture>
+        <source srcset="${_escHtml(imagenWebp)}" type="image/webp">
+        <img src="${_escHtml(imagenJpg)}" alt="${_escHtml(product.nombre || '')}" loading="lazy" decoding="async" class="w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='/images/productos/placeholder.webp'">
+      </picture>
     </a>
-    <div class="p-3 flex flex-col flex-1">
-        <p class="text-xs font-semibold text-[#00458E] uppercase tracking-wide mb-0.5">${_escHtml(marcaName)}</p>
-        <h3 class="text-sm font-bold text-[#091C49] leading-tight mb-1 min-h-[2.5rem] line-clamp-2">${_escHtml(product.nombre || '')}</h3>
-        ${stars}
-        <div class="mt-1.5 mb-2">${precioAnterior}<p class="text-lg font-extrabold text-[#FE2418] leading-tight">${precioFormat}</p></div>
-        <div class="flex gap-1.5 mt-auto">
-            <button class="flex-1 bg-[#FE2418] hover:bg-[#d91b10] text-white text-xs font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1"
-                data-action="cotizar" data-product-id="${id}" aria-label="Cotizar por WhatsApp">
-                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>Cotizar
-            </button>
-            <a href="/pages/detalle-producto.html?id=${id}"
-                class="flex-1 border border-gray-300 hover:border-[#091C49] text-[#091C49] text-xs font-bold py-2 rounded-lg text-center transition-colors flex items-center justify-center">
-                Ver detalle
-            </a>
-        </div>
+    <div class="p-4 flex-1 flex flex-col">
+      <p class="text-[10px] font-bold text-[#00458E] uppercase tracking-widest">${_escHtml(marcaName)}</p>
+      <h3 class="text-sm font-bold text-[#091C49] line-clamp-2 my-1 min-h-[2.5rem] leading-snug">${_escHtml(product.nombre || '')}</h3>
+      ${stars}
+      <div class="mt-2 mb-3">
+        ${precioAnt}
+        <p class="text-xl font-extrabold text-[#FE2418]">${precioActual}</p>
+      </div>
+      <div class="mt-auto flex gap-2">
+        <button type="button" class="flex-1 bg-[#FE2418] hover:bg-[#d91b10] text-white text-xs font-bold py-2.5 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm hover:shadow" data-action="cotizar" data-product-id="${id}" aria-label="Cotizar por WhatsApp">
+          <i data-lucide="message-circle" class="w-4 h-4"></i> Cotizar
+        </button>
+        <a href="/pages/detalle-producto.html?id=${id}" class="flex-1 border border-gray-300 hover:border-[#091C49] hover:text-[#091C49] text-gray-700 text-xs font-bold py-2.5 rounded-lg text-center transition-colors flex items-center justify-center">
+          Ver detalle
+        </a>
+      </div>
     </div>
-</article>`;
+  </article>`;
     };
 
     window.renderProductCard = async function (product) {

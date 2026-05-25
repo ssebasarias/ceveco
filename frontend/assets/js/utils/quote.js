@@ -1,14 +1,24 @@
-/**
- * Ceveco - WhatsApp Quote Utility
- * Abre un link wa.me con mensaje pre-llenado para cotizar un producto
- */
-
-window.cotizarProducto = function (producto) {
-    const wa = '573216453672';
-    const precio = producto.precio_actual
-        ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(producto.precio_actual)
-        : 'consultar';
+(function () {
+  const WHATSAPP = '573216453672';
+  function formatCOP(n) {
+    if (n == null) return 'consultar';
+    return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);
+  }
+  window.cotizarProducto = function (producto) {
+    if (!producto) return;
+    const precio = formatCOP(producto.precio_actual);
     const url = `${location.origin}/pages/detalle-producto.html?id=${producto.id_producto}`;
-    const msg = `Hola Ceveco, quiero cotizar:\n\n*${producto.nombre}*\nSKU: ${producto.sku || '-'}\nPrecio listado: ${precio}\n\n${url}\n\n¿Está disponible y cuáles son los métodos de pago?`;
-    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
-};
+    const sku = producto.sku ? `\nSKU: ${producto.sku}` : '';
+    const marca = producto.marca ? `\nMarca: ${producto.marca}` : '';
+    const msg =
+`Hola Ceveco, quiero cotizar:
+
+*${producto.nombre}*${marca}${sku}
+Precio listado: ${precio}
+
+${url}
+
+¿Está disponible? ¿Cuáles son los métodos de pago?`;
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+  };
+})();
