@@ -2893,18 +2893,27 @@ window.setupModalCloseListeners = setupModalCloseListeners;
     async function panelLoadBanners() {
         const grid = document.getElementById('banners-grid');
         if (!grid) return;
-        grid.innerHTML = '<div class="text-center text-gray-500 py-8">Cargando banners...</div>';
+        grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">Cargando banners...</div>';
+
+        // Wire up "+ Nuevo Banner" button
+        const newBannerBtn = document.querySelector('button[onclick="openBannerModal()"]');
+        if (newBannerBtn && !newBannerBtn.dataset.panelBannerListenerAttached) {
+            newBannerBtn.removeAttribute('onclick');
+            newBannerBtn.addEventListener('click', () => openPanelBannerModal());
+            newBannerBtn.dataset.panelBannerListenerAttached = 'true';
+        }
+
         try {
             const response = await fetch(`${API_BASE}/admin/banners`, { credentials: 'include' });
             const data = await response.json();
             if (data.success) {
                 panelRenderBannersGrid(data.data || []);
             } else {
-                grid.innerHTML = `<div class="text-red-500 py-4">Error: ${data.message}</div>`;
+                grid.innerHTML = `<div class="col-span-full text-red-500 py-4">Error: ${data.message}</div>`;
             }
         } catch (err) {
             console.error('Error cargando banners:', err);
-            grid.innerHTML = '<div class="text-red-500 py-4">Error al cargar banners</div>';
+            grid.innerHTML = '<div class="col-span-full text-red-500 py-4">Error al cargar banners</div>';
         }
     }
 
@@ -2915,27 +2924,78 @@ window.setupModalCloseListeners = setupModalCloseListeners;
             grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">No hay banners.</div>';
             return;
         }
+
+        const posicionColors = {
+            hero: 'bg-blue-100 text-blue-800',
+            sidebar: 'bg-purple-100 text-purple-800',
+            footer: 'bg-gray-100 text-gray-700',
+            popup: 'bg-orange-100 text-orange-800'
+        };
+
         grid.innerHTML = banners.map(b => `
-            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                <img src="${b.imagen_url}" alt="${b.titulo}" class="w-full h-32 object-cover rounded mb-3"
-                     onerror="this.src='/assets/img/no-image.svg'">
-                <h3 class="font-semibold text-gray-800 mb-1">${b.titulo}</h3>
-                <p class="text-sm text-gray-600 mb-2">${b.posicion} - Orden: ${b.orden}</p>
-                <span class="px-2 py-1 text-xs rounded-full ${b.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                    ${b.activo ? 'Activo' : 'Inactivo'}
-                </span>
-                <div class="flex gap-2 mt-3">
-                    <button class="panel-edit-banner flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700" data-id="${b.id_banner}">Editar</button>
-                    <button class="panel-delete-banner flex-1 bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" data-id="${b.id_banner}" data-titulo="${(b.titulo || '').replace(/"/g, '&quot;')}">Eliminar</button>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" data-banner-id="${b.id_banner}">
+                <!-- Image preview 16:9 -->
+                <div class="relative w-full" style="padding-top:56.25%; max-height:200px;">
+                    <img src="${b.imagen_url || '/assets/img/no-image.svg'}" alt="${(b.titulo || '').replace(/"/g, '&quot;')}"
+                         class="absolute inset-0 w-full h-full object-cover"
+                         onerror="this.src='/assets/img/no-image.svg'">
+                </div>
+                <div class="p-4">
+                    <!-- Title -->
+                    <h3 class="font-semibold text-gray-900 truncate mb-2" title="${(b.titulo || '').replace(/"/g, '&quot;')}">${b.titulo || 'Sin título'}</h3>
+
+                    <!-- Badges row -->
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="px-2 py-0.5 text-xs rounded-full font-medium ${posicionColors[b.posicion] || 'bg-gray-100 text-gray-700'}">
+                            ${b.posicion}
+                        </span>
+                        <span class="banner-activo-badge px-2 py-0.5 text-xs rounded-full font-medium ${b.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                            ${b.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </div>
+
+                    <!-- Order input -->
+                    <div class="flex items-center gap-2 mb-3">
+                        <label class="text-xs text-gray-500 whitespace-nowrap">Orden:</label>
+                        <input type="number" min="0"
+                               class="banner-orden-input w-20 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               value="${b.orden != null ? b.orden : 0}"
+                               data-id="${b.id_banner}"
+                               data-original="${b.orden != null ? b.orden : 0}">
+                    </div>
+
+                    <!-- Toggle activo switch -->
+                    <div class="flex items-center gap-2 mb-4">
+                        <label class="text-xs text-gray-500">Activo:</label>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="banner-activo-toggle sr-only" data-id="${b.id_banner}" ${b.activo ? 'checked' : ''}>
+                            <div class="w-10 h-5 rounded-full transition-colors ${b.activo ? 'bg-green-500' : 'bg-gray-300'}"></div>
+                            <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${b.activo ? 'translate-x-5' : 'translate-x-0'}"></div>
+                        </label>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2">
+                        <button class="panel-edit-banner flex-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-blue-700 transition font-medium"
+                                data-id="${b.id_banner}">Editar</button>
+                        <button class="panel-delete-banner flex-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition font-medium"
+                                data-id="${b.id_banner}" data-titulo="${(b.titulo || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                    </div>
                 </div>
             </div>
         `).join('');
 
+        // Edit button listeners
+        grid.querySelectorAll('.panel-edit-banner').forEach(btn => {
+            btn.addEventListener('click', () => openPanelBannerModal(parseInt(btn.dataset.id)));
+        });
+
+        // Delete button listeners
         grid.querySelectorAll('.panel-delete-banner').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.dataset.id;
                 const titulo = btn.dataset.titulo;
-                const ok = await showConfirmDialog('Eliminar banner', `¿Eliminar "${titulo}"?`, 'Eliminar', 'Cancelar');
+                const ok = await showConfirmDialog('Eliminar banner', `¿Eliminar "${titulo}"? Esta acción no se puede deshacer.`, 'Eliminar', 'Cancelar');
                 if (!ok) return;
                 try {
                     const r = await fetch(`${API_BASE}/admin/banners/${id}`, { method: 'DELETE', credentials: 'include' });
@@ -2945,6 +3005,446 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                 } catch (e) { showNotification('Error de conexión', 'error'); }
             });
         });
+
+        // Toggle activo listeners
+        grid.querySelectorAll('.banner-activo-toggle').forEach(toggle => {
+            toggle.addEventListener('change', async () => {
+                const id = toggle.dataset.id;
+                const newValue = toggle.checked;
+                const card = toggle.closest('[data-banner-id]');
+                try {
+                    const r = await fetch(`${API_BASE}/admin/banners/${id}`, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ activo: newValue })
+                    });
+                    const d = await r.json();
+                    if (r.ok && d.success) {
+                        // Update badge text and color without full reload
+                        const badge = card.querySelector('.banner-activo-badge');
+                        const track = toggle.nextElementSibling;
+                        const thumb = track.nextElementSibling;
+                        if (badge) {
+                            badge.textContent = newValue ? 'Activo' : 'Inactivo';
+                            badge.className = `banner-activo-badge px-2 py-0.5 text-xs rounded-full font-medium ${newValue ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`;
+                        }
+                        if (track) track.className = `w-10 h-5 rounded-full transition-colors ${newValue ? 'bg-green-500' : 'bg-gray-300'}`;
+                        if (thumb) thumb.className = `absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${newValue ? 'translate-x-5' : 'translate-x-0'}`;
+                        showNotification(`Banner ${newValue ? 'activado' : 'desactivado'}`, 'success');
+                    } else {
+                        // Revert toggle
+                        toggle.checked = !newValue;
+                        showNotification(d.message || 'Error al actualizar', 'error');
+                    }
+                } catch (e) {
+                    toggle.checked = !newValue;
+                    showNotification('Error de conexión', 'error');
+                }
+            });
+        });
+
+        // Orden input blur listeners (save on blur)
+        grid.querySelectorAll('.banner-orden-input').forEach(input => {
+            input.addEventListener('blur', async () => {
+                const id = input.dataset.id;
+                const newOrden = parseInt(input.value);
+                const original = parseInt(input.dataset.original);
+                if (isNaN(newOrden) || newOrden === original) return;
+                try {
+                    const r = await fetch(`${API_BASE}/admin/banners/${id}`, {
+                        method: 'PUT',
+                        credentials: 'include',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orden: newOrden })
+                    });
+                    const d = await r.json();
+                    if (r.ok && d.success) {
+                        input.dataset.original = newOrden;
+                        showNotification('Orden guardado', 'success');
+                    } else {
+                        input.value = original;
+                        showNotification(d.message || 'Error al guardar orden', 'error');
+                    }
+                } catch (e) {
+                    input.value = original;
+                    showNotification('Error de conexión', 'error');
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') input.blur();
+                if (e.key === 'Escape') { input.value = input.dataset.original; input.blur(); }
+            });
+        });
+    }
+
+    // --------------------------------------------------------
+    // Banner CRUD Modal (for admin panel)
+    // --------------------------------------------------------
+    function ensurePanelBannerModal() {
+        if (document.getElementById('panel-banner-crud-modal')) return;
+
+        const html = `
+        <div id="panel-banner-crud-modal" class="hidden fixed inset-0 items-center justify-center p-4"
+             style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:9999;">
+            <div id="panel-banner-crud-modal-content" class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl" style="z-index:10000;">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 flex justify-between items-center" style="z-index:10001;">
+                    <h3 class="text-2xl font-bold text-gray-900" id="panel-banner-modal-title">Nuevo Banner</h3>
+                    <button id="close-panel-banner-modal-btn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-700">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <form id="panel-banner-crud-form" class="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+                    <input type="hidden" id="panel-banner-crud-id">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <!-- Título -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Título <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-banner-titulo" required placeholder="Ej: Ofertas de Temporada"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Subtítulo -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subtítulo</label>
+                            <input type="text" id="panel-banner-subtitulo" placeholder="Ej: Hasta 50% de descuento"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Descripción -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                            <textarea id="panel-banner-descripcion" rows="3" placeholder="Descripción del banner..."
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                        </div>
+
+                        <!-- Enlace URL -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">URL de Enlace</label>
+                            <input type="text" id="panel-banner-enlace-url" placeholder="Ej: /pages/productos.html?categoria=electro"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Texto Botón -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Texto Botón</label>
+                            <input type="text" id="panel-banner-texto-boton" placeholder="Ej: Ver Ofertas"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Posición -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Posición</label>
+                            <select id="panel-banner-posicion"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
+                                <option value="hero">Hero (Principal)</option>
+                                <option value="sidebar">Sidebar</option>
+                                <option value="footer">Footer</option>
+                                <option value="popup">Popup</option>
+                            </select>
+                        </div>
+
+                        <!-- Orden -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Orden</label>
+                            <input type="number" id="panel-banner-orden" min="0" value="0"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Fecha Inicio -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
+                            <input type="datetime-local" id="panel-banner-fecha-inicio"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Fecha Fin -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
+                            <input type="datetime-local" id="panel-banner-fecha-fin"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <!-- Activo -->
+                        <div class="md:col-span-2 flex items-center gap-3 pt-1">
+                            <input type="checkbox" id="panel-banner-activo" checked
+                                   class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                            <label for="panel-banner-activo" class="text-sm font-medium text-gray-700 cursor-pointer">Activo</label>
+                        </div>
+
+                        <!-- Imagen -->
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Imagen</label>
+                            <div class="flex items-center gap-3 mb-3">
+                                <input type="file" id="panel-banner-image-file" accept="image/*" class="hidden">
+                                <button type="button" id="panel-banner-select-img-btn"
+                                        class="px-4 py-2 bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200 transition text-sm font-medium text-gray-700">
+                                    Seleccionar imagen...
+                                </button>
+                                <span id="panel-banner-upload-status" class="text-xs text-gray-500"></span>
+                            </div>
+                            <!-- Preview -->
+                            <div id="panel-banner-img-preview" class="hidden">
+                                <img id="panel-banner-img-preview-img" src="" alt="Preview"
+                                     class="w-full max-h-48 object-cover rounded-xl border border-gray-200">
+                            </div>
+                            <!-- Hidden field for resolved imagen_url -->
+                            <input type="hidden" id="panel-banner-imagen-url">
+                            <p class="mt-2 text-xs text-gray-500">Formatos: JPEG, PNG, GIF, WEBP. Máx 5MB.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex gap-3 pt-6 border-t border-gray-200">
+                        <button type="submit" id="panel-banner-submit-btn"
+                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium shadow-md">
+                            Guardar Banner
+                        </button>
+                        <button type="button" id="cancel-panel-banner-modal-btn"
+                                class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition font-medium">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>`;
+
+        document.body.insertAdjacentHTML('beforeend', html);
+
+        const modal = document.getElementById('panel-banner-crud-modal');
+        const content = document.getElementById('panel-banner-crud-modal-content');
+
+        // Prevent click propagation inside content
+        content.addEventListener('click', e => e.stopPropagation());
+
+        // Close on backdrop click
+        modal.addEventListener('click', e => { if (e.target === modal) closePanelBannerModal(); });
+
+        // Close button
+        document.getElementById('close-panel-banner-modal-btn').addEventListener('click', closePanelBannerModal);
+        document.getElementById('cancel-panel-banner-modal-btn').addEventListener('click', closePanelBannerModal);
+
+        // File picker
+        const fileInput = document.getElementById('panel-banner-image-file');
+        document.getElementById('panel-banner-select-img-btn').addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handlePanelBannerFileSelect);
+
+        // Form submit
+        document.getElementById('panel-banner-crud-form').addEventListener('submit', savePanelBanner);
+
+        // ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closePanelBannerModal();
+        });
+
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function openPanelBannerModal(bannerId = null) {
+        ensurePanelBannerModal();
+
+        const modal = document.getElementById('panel-banner-crud-modal');
+        const title = document.getElementById('panel-banner-modal-title');
+        const form = document.getElementById('panel-banner-crud-form');
+
+        // Reset form
+        form.reset();
+        document.getElementById('panel-banner-crud-id').value = '';
+        document.getElementById('panel-banner-imagen-url').value = '';
+        document.getElementById('panel-banner-activo').checked = true;
+        document.getElementById('panel-banner-orden').value = '0';
+
+        const preview = document.getElementById('panel-banner-img-preview');
+        const previewImg = document.getElementById('panel-banner-img-preview-img');
+        preview.classList.add('hidden');
+        previewImg.src = '';
+
+        const statusEl = document.getElementById('panel-banner-upload-status');
+        statusEl.textContent = '';
+
+        if (bannerId) {
+            title.textContent = 'Editar Banner';
+            document.getElementById('panel-banner-crud-id').value = bannerId;
+
+            // Load banner data
+            try {
+                const r = await fetch(`${API_BASE}/admin/banners/${bannerId}`, { credentials: 'include' });
+                const d = await r.json();
+                if (r.ok && d.success && d.data) {
+                    const b = d.data;
+                    document.getElementById('panel-banner-titulo').value = b.titulo || '';
+                    document.getElementById('panel-banner-subtitulo').value = b.subtitulo || '';
+                    document.getElementById('panel-banner-descripcion').value = b.descripcion || '';
+                    document.getElementById('panel-banner-enlace-url').value = b.enlace_url || '';
+                    document.getElementById('panel-banner-texto-boton').value = b.texto_boton || '';
+                    document.getElementById('panel-banner-posicion').value = b.posicion || 'hero';
+                    document.getElementById('panel-banner-orden').value = b.orden != null ? b.orden : 0;
+                    document.getElementById('panel-banner-activo').checked = b.activo !== false;
+                    document.getElementById('panel-banner-imagen-url').value = b.imagen_url || '';
+
+                    // Format datetime-local
+                    if (b.fecha_inicio) {
+                        const fi = new Date(b.fecha_inicio);
+                        document.getElementById('panel-banner-fecha-inicio').value = fi.toISOString().slice(0, 16);
+                    }
+                    if (b.fecha_fin) {
+                        const ff = new Date(b.fecha_fin);
+                        document.getElementById('panel-banner-fecha-fin').value = ff.toISOString().slice(0, 16);
+                    }
+
+                    // Show existing image preview
+                    if (b.imagen_url) {
+                        previewImg.src = b.imagen_url;
+                        preview.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error('Error cargando banner:', err);
+                showNotification('Error al cargar datos del banner', 'error');
+            }
+        } else {
+            title.textContent = 'Nuevo Banner';
+        }
+
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePanelBannerModal() {
+        const modal = document.getElementById('panel-banner-crud-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            modal.style.visibility = 'hidden';
+            document.body.style.overflow = '';
+        }
+    }
+
+    async function handlePanelBannerFileSelect(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const statusEl = document.getElementById('panel-banner-upload-status');
+        const preview = document.getElementById('panel-banner-img-preview');
+        const previewImg = document.getElementById('panel-banner-img-preview-img');
+
+        // Show local preview immediately
+        const localUrl = URL.createObjectURL(file);
+        previewImg.src = localUrl;
+        preview.classList.remove('hidden');
+
+        statusEl.textContent = 'Subiendo imagen...';
+        statusEl.className = 'text-xs text-blue-600';
+
+        try {
+            // Optimize if > 1MB
+            let fileToUpload = file;
+            if (file.size > 1024 * 1024) {
+                try {
+                    const blob = await optimizeImage(file, 1920, 0.85);
+                    fileToUpload = new File([blob], file.name, { type: blob.type || file.type, lastModified: Date.now() });
+                } catch (e) {
+                    console.warn('Image optimization failed, using original:', e);
+                }
+            }
+
+            const formData = new FormData();
+            formData.append('image', fileToUpload);
+
+            const r = await fetch(`${API_BASE}/admin/banners/images/upload`, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData
+            });
+            const d = await r.json();
+
+            if (r.ok && d.success) {
+                document.getElementById('panel-banner-imagen-url').value = d.data.url;
+                previewImg.src = d.data.url;
+                statusEl.textContent = 'Imagen subida correctamente';
+                statusEl.className = 'text-xs text-green-600';
+            } else {
+                statusEl.textContent = 'Error: ' + (d.message || 'No se pudo subir');
+                statusEl.className = 'text-xs text-red-600';
+                document.getElementById('panel-banner-imagen-url').value = '';
+            }
+        } catch (err) {
+            console.error('Error uploading banner image:', err);
+            statusEl.textContent = 'Error al subir imagen';
+            statusEl.className = 'text-xs text-red-600';
+        } finally {
+            event.target.value = '';
+        }
+    }
+
+    async function savePanelBanner(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('panel-banner-crud-id').value;
+        const imagenUrl = document.getElementById('panel-banner-imagen-url').value;
+        const titulo = document.getElementById('panel-banner-titulo').value.trim();
+
+        if (!titulo) {
+            showNotification('El título es requerido', 'error');
+            return;
+        }
+
+        if (!imagenUrl) {
+            showNotification('Debes seleccionar una imagen para el banner', 'error');
+            return;
+        }
+
+        const fechaInicioVal = document.getElementById('panel-banner-fecha-inicio').value;
+        const fechaFinVal = document.getElementById('panel-banner-fecha-fin').value;
+
+        const bannerData = {
+            titulo: titulo,
+            subtitulo: document.getElementById('panel-banner-subtitulo').value.trim() || null,
+            descripcion: document.getElementById('panel-banner-descripcion').value.trim() || null,
+            imagen_url: imagenUrl,
+            enlace_url: document.getElementById('panel-banner-enlace-url').value.trim() || null,
+            texto_boton: document.getElementById('panel-banner-texto-boton').value.trim() || null,
+            posicion: document.getElementById('panel-banner-posicion').value,
+            orden: parseInt(document.getElementById('panel-banner-orden').value) || 0,
+            activo: document.getElementById('panel-banner-activo').checked,
+            fecha_inicio: fechaInicioVal ? new Date(fechaInicioVal).toISOString() : null,
+            fecha_fin: fechaFinVal ? new Date(fechaFinVal).toISOString() : null
+        };
+
+        const submitBtn = document.getElementById('panel-banner-submit-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+
+        try {
+            const url = id ? `${API_BASE}/admin/banners/${id}` : `${API_BASE}/admin/banners`;
+            const method = id ? 'PUT' : 'POST';
+
+            const r = await fetch(url, {
+                method,
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(bannerData)
+            });
+            const d = await r.json();
+
+            if (r.ok && d.success) {
+                showNotification(id ? 'Banner actualizado exitosamente' : 'Banner creado exitosamente', 'success');
+                closePanelBannerModal();
+                panelLoadBanners();
+            } else {
+                showNotification(d.message || 'Error al guardar banner', 'error');
+            }
+        } catch (err) {
+            console.error('Error guardando banner:', err);
+            showNotification('Error al guardar banner', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
     }
 
     async function panelLoadFeaturedProducts() {
@@ -3153,6 +3653,8 @@ window.setupModalCloseListeners = setupModalCloseListeners;
     window.switchTab = panelSwitchTab; // compatibilidad con onclick en admin.html
     window.searchProducts = () => panelLoadProducts(1);
     window.generateBackup = () => panelLoadBackups();
-    window.openBannerModal = () => openBannerManager();
+    window.openBannerModal = () => openPanelBannerModal();
+    window.openPanelBannerModal = openPanelBannerModal;
+    window.closePanelBannerModal = closePanelBannerModal;
 
 }());
