@@ -1,45 +1,17 @@
 /**
  * LAYOUT - Grid
- * Sistema de grid responsive
+ *
+ * NOTE: .grid and .grid-cols-N utilities are now provided by Tailwind
+ * (tailwind.min.css). Removing the duplicates here lets Tailwind's
+ * responsive variants (sm:/md:/lg:/xl:) actually win the cascade.
+ * The previous local definitions came BEFORE Tailwind in import order
+ * but the bundled main.css was linked AFTER tailwind.min.css in HTML,
+ * so they were silently overriding lg:grid-cols-4 → forced 2-col layout
+ * on desktop. Kept only the auto-fit/auto-fill helpers Tailwind doesn't have.
  */
 
 /* ===================================
-   GRID BASE
-   =================================== */
-.grid {
-    display: grid;
-    gap: var(--spacing-6);
-}
-
-/* ===================================
-   GRID COLUMNS
-   =================================== */
-.grid-cols-1 {
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.grid-cols-3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.grid-cols-4 {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.grid-cols-5 {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.grid-cols-6 {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-}
-
-/* ===================================
-   AUTO FIT
+   AUTO FIT / AUTO FILL — Tailwind doesn't ship these
    =================================== */
 .grid-auto-fit {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
