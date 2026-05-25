@@ -2395,3 +2395,764 @@ window.handleImageUpload = handleImageUpload;
 window.updateImagePreview = updateImagePreview;
 window.removeImageFromPreview = removeImageFromPreview;
 window.setupModalCloseListeners = setupModalCloseListeners;
+
+// ============================================================
+// ADMIN PANEL — Página admin.html
+// Se activa solo cuando la URL contiene "admin.html"
+// ============================================================
+
+(function () {
+    if (!window.location.pathname.includes('admin')) return;
+
+    // Estado del panel
+    const adminPanel = {
+        currentPage: 1,
+        currentTab: 'productos',
+        searchTimeout: null,
+        selectedIds: new Set()
+    };
+
+    // --------------------------------------------------------
+    // Inicialización del panel admin
+    // --------------------------------------------------------
+    async function initAdminPanel() {
+        // Ocultar modales al arrancar (los estáticos del HTML)
+        ['product-modal', 'banner-modal', 'loading-overlay'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.add('hidden');
+                el.style.display = 'none';
+                el.style.visibility = 'hidden';
+            }
+        });
+
+        // Verificar autenticación admin
+        await checkAdminPanelAccess();
+
+        // Cargar navbar
+        loadAdminNavbar();
+
+        // Inyectar modales de admin-crud (product-crud-modal, banner-manager-modal, etc.)
+        isAdminMode = true;
+        loadAdminModals();
+
+        // Sobreescribir saveProductFromModal para que refresque la tabla en lugar de redirigir
+        overrideSaveProduct();
+
+        // Configurar tabla de productos mejorada
+        upgradeProductsTable();
+
+        // Escuchar hash
+        const hash = window.location.hash.replace('#', '');
+        if (hash && ['productos', 'banners', 'destacados', 'backup'].includes(hash)) {
+            panelSwitchTab(hash);
+        } else {
+            panelSwitchTab('productos');
+        }
+
+        // Configurar tabs para que llamen a panelSwitchTab
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tab = btn.getAttribute('data-tab');
+                panelSwitchTab(tab);
+            });
+        });
+
+        // Botón "+ Nuevo Producto"
+        const newProductBtn = document.querySelector('button[onclick="openProductModal()"]');
+        if (newProductBtn) {
+            newProductBtn.removeAttribute('onclick');
+            newProductBtn.addEventListener('click', () => {
+                isAdminMode = true;
+                openProductModal();
+            });
+        }
+
+        // Búsqueda con Enter y botón
+        const searchInput = document.getElementById('product-search');
+        const searchBtn = document.querySelector('button[onclick="searchProducts()"]');
+        if (searchInput) {
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') panelLoadProducts(1);
+            });
+            searchInput.addEventListener('input', () => {
+                clearTimeout(adminPanel.searchTimeout);
+                adminPanel.searchTimeout = setTimeout(() => panelLoadProducts(1), 400);
+            });
+        }
+        if (searchBtn) {
+            searchBtn.removeAttribute('onclick');
+            searchBtn.addEventListener('click', () => panelLoadProducts(1));
+        }
+    }
+
+    // --------------------------------------------------------
+    // Verificar acceso admin
+    // --------------------------------------------------------
+    async function checkAdminPanelAccess() {
+        try {
+            const response = await fetch('/api/v1/productos/admin/all?limit=1', {
+                credentials: 'include'
+            });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/pages/login.html?redirect=admin';
+            }
+        } catch (err) {
+            console.error('Error verificando acceso admin:', err);
+            window.location.href = '/pages/login.html?redirect=admin';
+        }
+    }
+
+    // --------------------------------------------------------
+    // Cargar navbar
+    // --------------------------------------------------------
+    function loadAdminNavbar() {
+        fetch('../components/navbar.html')
+            .then(r => r.text())
+            .then(html => {
+                const container = document.getElementById('navbar-container');
+                if (container) container.innerHTML = html;
+                if (typeof initNavbar === 'function') initNavbar();
+            })
+            .catch(err => console.error('Error cargando navbar:', err));
+    }
+
+    // --------------------------------------------------------
+    // Cambiar tab
+    // --------------------------------------------------------
+    function panelSwitchTab(tabName) {
+        adminPanel.currentTab = tabName;
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            const tab = btn.getAttribute('data-tab');
+            if (tab === tabName) {
+                btn.classList.add('border-blue-500', 'text-blue-600');
+                btn.classList.remove('border-transparent', 'text-gray-500');
+            } else {
+                btn.classList.remove('border-blue-500', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            }
+        });
+
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        const tabEl = document.getElementById(`tab-${tabName}`);
+        if (tabEl) tabEl.classList.add('active');
+
+        switch (tabName) {
+            case 'productos': panelLoadProducts(1); break;
+            case 'banners': panelLoadBanners(); break;
+            case 'destacados': panelLoadFeaturedProducts(); break;
+            case 'backup': panelLoadBackups(); break;
+        }
+    }
+
+    // --------------------------------------------------------
+    // Actualizar cabecera de tabla con columnas admin
+    // --------------------------------------------------------
+    function upgradeProductsTable() {
+        // Reemplazar thead con columnas enriquecidas
+        const table = document.querySelector('#tab-productos table');
+        if (!table) return;
+
+        const thead = table.querySelector('thead tr');
+        if (thead) {
+            thead.innerHTML = `
+                <th class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    <input type="checkbox" id="select-all-products" class="w-4 h-4 rounded">
+                </th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Img</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">SKU</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Marca</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Destacado</th>
+                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+            `;
+        }
+
+        // Inyectar barra de filtros y acciones masivas justo sobre la tabla
+        const tableWrapper = document.querySelector('#tab-productos .overflow-x-auto');
+        if (tableWrapper) {
+            const filterBar = document.createElement('div');
+            filterBar.id = 'admin-filter-bar';
+            filterBar.className = 'mb-4 flex flex-wrap gap-3 items-center';
+            filterBar.innerHTML = `
+                <select id="filter-activo" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todos los estados</option>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+                <select id="filter-destacado" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                    <option value="">Todos</option>
+                    <option value="true">Destacados</option>
+                    <option value="false">No destacados</option>
+                </select>
+                <div id="bulk-actions-bar" class="hidden flex items-center gap-2">
+                    <span id="selected-count" class="text-sm text-gray-600 font-medium">0 seleccionados</span>
+                    <select id="bulk-action-select" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option value="">Acción masiva...</option>
+                        <option value="activate">Activar</option>
+                        <option value="deactivate">Desactivar</option>
+                        <option value="destacar">Marcar destacado</option>
+                        <option value="undestacar">Quitar destacado</option>
+                        <option value="delete">Eliminar (soft)</option>
+                    </select>
+                    <button id="apply-bulk-action-btn" class="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition font-medium">
+                        Aplicar
+                    </button>
+                </div>
+            `;
+            tableWrapper.parentNode.insertBefore(filterBar, tableWrapper);
+
+            // Listeners de filtros
+            document.getElementById('filter-activo').addEventListener('change', () => panelLoadProducts(1));
+            document.getElementById('filter-destacado').addEventListener('change', () => panelLoadProducts(1));
+
+            // Listener acción masiva
+            document.getElementById('apply-bulk-action-btn').addEventListener('click', applyBulkAction);
+
+            // Select all
+            document.getElementById('select-all-products').addEventListener('change', (e) => {
+                const checked = e.target.checked;
+                document.querySelectorAll('.row-checkbox').forEach(cb => {
+                    cb.checked = checked;
+                    const id = parseInt(cb.dataset.id);
+                    if (checked) adminPanel.selectedIds.add(id);
+                    else adminPanel.selectedIds.delete(id);
+                });
+                updateBulkBar();
+            });
+        }
+    }
+
+    // --------------------------------------------------------
+    // Cargar productos (tabla admin)
+    // --------------------------------------------------------
+    async function panelLoadProducts(page = 1) {
+        adminPanel.currentPage = page;
+        adminPanel.selectedIds.clear();
+        updateBulkBar();
+
+        const tbody = document.getElementById('products-table-body');
+        if (tbody) {
+            tbody.innerHTML = '<tr><td colspan="12" class="px-6 py-4 text-center text-gray-500">Cargando productos...</td></tr>';
+        }
+
+        const params = new URLSearchParams({ page, limit: 25 });
+
+        const searchVal = document.getElementById('product-search')?.value?.trim();
+        if (searchVal) params.set('q', searchVal);
+
+        const activoVal = document.getElementById('filter-activo')?.value;
+        if (activoVal !== '' && activoVal !== null && activoVal !== undefined) params.set('activo', activoVal);
+
+        const destacadoVal = document.getElementById('filter-destacado')?.value;
+        if (destacadoVal !== '' && destacadoVal !== null && destacadoVal !== undefined) params.set('destacado', destacadoVal);
+
+        try {
+            const response = await fetch(`${API_BASE}/productos/admin/all?${params}`, {
+                credentials: 'include'
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/pages/login.html?redirect=admin';
+                return;
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                panelRenderProductsTable(data.data || []);
+                panelRenderPagination(data.pagination, panelLoadProducts);
+            } else {
+                showAdminPanelError('Error al cargar productos: ' + (data.message || ''));
+            }
+        } catch (err) {
+            console.error('Error cargando productos admin:', err);
+            showAdminPanelError('Error de conexión al cargar productos');
+        }
+    }
+
+    // --------------------------------------------------------
+    // Renderizar tabla de productos
+    // --------------------------------------------------------
+    function panelRenderProductsTable(products) {
+        const tbody = document.getElementById('products-table-body');
+        if (!tbody) return;
+
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="12" class="px-6 py-8 text-center text-gray-500">No se encontraron productos</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = products.map(p => {
+            const imgUrl = p.imagen || '/assets/img/no-image.svg';
+            const activoBadge = p.activo
+                ? '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Activo</span>'
+                : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>';
+            const destacadoBadge = p.destacado
+                ? '<span class="px-2 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">Si</span>'
+                : '<span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-600 font-medium">No</span>';
+            const precio = p.precio_actual != null
+                ? '$' + parseFloat(p.precio_actual).toLocaleString('es-CO')
+                : '-';
+
+            return `
+                <tr class="hover:bg-gray-50" data-product-id="${p.id_producto}">
+                    <td class="px-3 py-3 text-center">
+                        <input type="checkbox" class="row-checkbox w-4 h-4 rounded" data-id="${p.id_producto}">
+                    </td>
+                    <td class="px-3 py-2">
+                        <img src="${imgUrl}" alt="${p.nombre}" class="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                             onerror="this.src='/assets/img/no-image.svg'">
+                    </td>
+                    <td class="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">${p.id_producto}</td>
+                    <td class="px-3 py-3 text-sm text-gray-700 whitespace-nowrap font-mono">${p.sku || '-'}</td>
+                    <td class="px-3 py-3 text-sm text-gray-900 max-w-xs truncate" title="${p.nombre}">${p.nombre}</td>
+                    <td class="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">${p.categoria || '-'}</td>
+                    <td class="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">${p.marca || '-'}</td>
+                    <td class="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">${precio}</td>
+                    <td class="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">${p.stock != null ? p.stock : '-'}</td>
+                    <td class="px-3 py-3 whitespace-nowrap">${activoBadge}</td>
+                    <td class="px-3 py-3 whitespace-nowrap">${destacadoBadge}</td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">
+                        <button class="panel-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${p.id_producto}">Editar</button>
+                        <button class="panel-delete-btn text-red-600 hover:text-red-900 font-medium" data-id="${p.id_producto}" data-name="${p.nombre.replace(/"/g, '&quot;')}">Eliminar</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        // Listeners para filas
+        tbody.querySelectorAll('.panel-edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.dataset.id);
+                isAdminMode = true;
+                openProductModal(id);
+            });
+        });
+
+        tbody.querySelectorAll('.panel-delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = parseInt(btn.dataset.id);
+                const name = btn.dataset.name || 'este producto';
+                panelDeleteProduct(id, name);
+            });
+        });
+
+        tbody.querySelectorAll('.row-checkbox').forEach(cb => {
+            cb.addEventListener('change', (e) => {
+                const id = parseInt(cb.dataset.id);
+                if (e.target.checked) adminPanel.selectedIds.add(id);
+                else adminPanel.selectedIds.delete(id);
+                updateBulkBar();
+            });
+        });
+    }
+
+    // --------------------------------------------------------
+    // Paginación panel
+    // --------------------------------------------------------
+    function panelRenderPagination(pagination, callback) {
+        const container = document.getElementById('products-pagination');
+        if (!container || !pagination || pagination.totalPages <= 1) {
+            if (container) container.innerHTML = '';
+            return;
+        }
+
+        const { page, totalPages } = pagination;
+        const pages = [];
+        const start = Math.max(1, page - 2);
+        const end = Math.min(totalPages, page + 2);
+        for (let i = start; i <= end; i++) pages.push(i);
+
+        container.innerHTML = `
+            <button class="panel-page-btn px-3 py-2 border rounded text-sm ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>Anterior</button>
+            ${pages.map(p => `
+                <button class="panel-page-btn px-3 py-2 border rounded text-sm ${p === page ? 'bg-blue-600 text-white' : 'hover:bg-gray-50'}" data-page="${p}">${p}</button>
+            `).join('')}
+            <button class="panel-page-btn px-3 py-2 border rounded text-sm ${page >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>Siguiente</button>
+        `;
+
+        container.querySelectorAll('.panel-page-btn:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', () => callback(parseInt(btn.dataset.page)));
+        });
+    }
+
+    // --------------------------------------------------------
+    // Eliminar producto desde panel
+    // --------------------------------------------------------
+    async function panelDeleteProduct(id, name) {
+        const confirmed = await showConfirmDialog(
+            'Eliminar producto',
+            `¿Eliminar "${name}"? Esta acción es reversible desde la base de datos (soft delete).`,
+            'Eliminar', 'Cancelar'
+        );
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/productos/${id}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                showNotification('Producto eliminado', 'success');
+                panelLoadProducts(adminPanel.currentPage);
+            } else {
+                showNotification(data.message || 'Error al eliminar', 'error');
+            }
+        } catch (err) {
+            console.error('Error eliminando producto:', err);
+            showNotification('Error de conexión', 'error');
+        }
+    }
+
+    // --------------------------------------------------------
+    // Acciones masivas
+    // --------------------------------------------------------
+    function updateBulkBar() {
+        const bar = document.getElementById('bulk-actions-bar');
+        const countEl = document.getElementById('selected-count');
+        const selectAll = document.getElementById('select-all-products');
+        if (!bar) return;
+
+        const count = adminPanel.selectedIds.size;
+        if (count > 0) {
+            bar.classList.remove('hidden');
+            bar.style.display = 'flex';
+            if (countEl) countEl.textContent = `${count} seleccionado${count !== 1 ? 's' : ''}`;
+        } else {
+            bar.classList.add('hidden');
+            bar.style.display = 'none';
+        }
+
+        // Actualizar checkbox "select all"
+        if (selectAll) {
+            const allCheckboxes = document.querySelectorAll('.row-checkbox');
+            selectAll.indeterminate = count > 0 && count < allCheckboxes.length;
+            selectAll.checked = count > 0 && count === allCheckboxes.length;
+        }
+    }
+
+    async function applyBulkAction() {
+        const action = document.getElementById('bulk-action-select')?.value;
+        if (!action) {
+            showNotification('Selecciona una acción', 'error');
+            return;
+        }
+        if (adminPanel.selectedIds.size === 0) {
+            showNotification('Selecciona al menos un producto', 'error');
+            return;
+        }
+
+        const ids = Array.from(adminPanel.selectedIds);
+        const actionLabels = {
+            activate: 'activar',
+            deactivate: 'desactivar',
+            destacar: 'marcar como destacado',
+            undestacar: 'quitar de destacados',
+            delete: 'eliminar (soft)'
+        };
+
+        const confirmed = await showConfirmDialog(
+            'Acción masiva',
+            `¿Deseas ${actionLabels[action] || action} los ${ids.length} productos seleccionados?`,
+            'Aplicar', 'Cancelar'
+        );
+        if (!confirmed) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/productos/admin/bulk-action`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action, ids })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                showNotification(`${data.affected_count} productos actualizados`, 'success');
+                adminPanel.selectedIds.clear();
+                panelLoadProducts(adminPanel.currentPage);
+            } else {
+                showNotification(data.message || 'Error en acción masiva', 'error');
+            }
+        } catch (err) {
+            console.error('Error en acción masiva:', err);
+            showNotification('Error de conexión', 'error');
+        }
+    }
+
+    // --------------------------------------------------------
+    // Tabs Banners, Destacados, Backup (reutilizan funciones del admin.js original)
+    // --------------------------------------------------------
+    async function panelLoadBanners() {
+        const grid = document.getElementById('banners-grid');
+        if (!grid) return;
+        grid.innerHTML = '<div class="text-center text-gray-500 py-8">Cargando banners...</div>';
+        try {
+            const response = await fetch(`${API_BASE}/admin/banners`, { credentials: 'include' });
+            const data = await response.json();
+            if (data.success) {
+                panelRenderBannersGrid(data.data || []);
+            } else {
+                grid.innerHTML = `<div class="text-red-500 py-4">Error: ${data.message}</div>`;
+            }
+        } catch (err) {
+            console.error('Error cargando banners:', err);
+            grid.innerHTML = '<div class="text-red-500 py-4">Error al cargar banners</div>';
+        }
+    }
+
+    function panelRenderBannersGrid(banners) {
+        const grid = document.getElementById('banners-grid');
+        if (!grid) return;
+        if (banners.length === 0) {
+            grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">No hay banners.</div>';
+            return;
+        }
+        grid.innerHTML = banners.map(b => `
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <img src="${b.imagen_url}" alt="${b.titulo}" class="w-full h-32 object-cover rounded mb-3"
+                     onerror="this.src='/assets/img/no-image.svg'">
+                <h3 class="font-semibold text-gray-800 mb-1">${b.titulo}</h3>
+                <p class="text-sm text-gray-600 mb-2">${b.posicion} - Orden: ${b.orden}</p>
+                <span class="px-2 py-1 text-xs rounded-full ${b.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                    ${b.activo ? 'Activo' : 'Inactivo'}
+                </span>
+                <div class="flex gap-2 mt-3">
+                    <button class="panel-edit-banner flex-1 bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700" data-id="${b.id_banner}">Editar</button>
+                    <button class="panel-delete-banner flex-1 bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" data-id="${b.id_banner}" data-titulo="${(b.titulo || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                </div>
+            </div>
+        `).join('');
+
+        grid.querySelectorAll('.panel-delete-banner').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const id = btn.dataset.id;
+                const titulo = btn.dataset.titulo;
+                const ok = await showConfirmDialog('Eliminar banner', `¿Eliminar "${titulo}"?`, 'Eliminar', 'Cancelar');
+                if (!ok) return;
+                try {
+                    const r = await fetch(`${API_BASE}/admin/banners/${id}`, { method: 'DELETE', credentials: 'include' });
+                    const d = await r.json();
+                    if (r.ok && d.success) { showNotification('Banner eliminado', 'success'); panelLoadBanners(); }
+                    else showNotification(d.message || 'Error', 'error');
+                } catch (e) { showNotification('Error de conexión', 'error'); }
+            });
+        });
+    }
+
+    async function panelLoadFeaturedProducts() {
+        const grid = document.getElementById('featured-products-grid');
+        if (!grid) return;
+        grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">Cargando...</div>';
+        try {
+            const response = await fetch(`${API_BASE}/productos/admin/all?destacado=true&limit=50`, { credentials: 'include' });
+            const data = await response.json();
+            if (data.success) {
+                const products = data.data || [];
+                if (products.length === 0) {
+                    grid.innerHTML = '<div class="col-span-full text-center text-gray-500 py-8">No hay productos destacados.</div>';
+                    return;
+                }
+                grid.innerHTML = products.map(p => `
+                    <div class="bg-white rounded-lg border border-gray-200 p-4">
+                        <img src="${p.imagen || '/assets/img/no-image.svg'}" alt="${p.nombre}" class="w-full h-32 object-cover rounded mb-2"
+                             onerror="this.src='/assets/img/no-image.svg'">
+                        <h3 class="font-semibold text-gray-800 mb-1 text-sm truncate">${p.nombre}</h3>
+                        <p class="text-sm text-gray-600 mb-2">$${parseFloat(p.precio_actual).toLocaleString('es-CO')}</p>
+                        <button class="panel-toggle-featured w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition"
+                                data-id="${p.id_producto}">Quitar de Destacados</button>
+                    </div>
+                `).join('');
+
+                grid.querySelectorAll('.panel-toggle-featured').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        try {
+                            const r = await fetch(`${API_BASE}/productos/${btn.dataset.id}`, {
+                                method: 'PUT',
+                                credentials: 'include',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ destacado: false })
+                            });
+                            const d = await r.json();
+                            if (r.ok && d.success) { showNotification('Producto actualizado', 'success'); panelLoadFeaturedProducts(); }
+                            else showNotification(d.message || 'Error', 'error');
+                        } catch (e) { showNotification('Error', 'error'); }
+                    });
+                });
+            }
+        } catch (err) {
+            console.error('Error cargando destacados:', err);
+            grid.innerHTML = '<div class="col-span-full text-red-500 py-8">Error al cargar</div>';
+        }
+    }
+
+    async function panelLoadBackups() {
+        const list = document.getElementById('backups-list');
+        if (!list) return;
+        list.innerHTML = '<div class="text-center text-gray-500 py-4">Cargando backups...</div>';
+        try {
+            const response = await fetch(`${API_BASE}/admin/backups`, { credentials: 'include' });
+            const data = await response.json();
+            if (data.success && data.data && data.data.length > 0) {
+                list.innerHTML = data.data.map(b => `
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-semibold text-gray-800">${b.filename}</h4>
+                            <p class="text-sm text-gray-600">${b.size} - ${new Date(b.created).toLocaleString()}</p>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                list.innerHTML = '<div class="text-center text-gray-500 py-8">No hay backups disponibles</div>';
+            }
+        } catch (err) {
+            list.innerHTML = '<div class="text-center text-red-500 py-4">Error al cargar backups</div>';
+        }
+
+        // Botón generar backup
+        const genBtn = document.querySelector('button[onclick="generateBackup()"]');
+        if (genBtn && !genBtn.dataset.panelListenerAttached) {
+            genBtn.removeAttribute('onclick');
+            genBtn.addEventListener('click', async () => {
+                if (!confirm('¿Generar backup ahora?')) return;
+                try {
+                    const r = await fetch(`${API_BASE}/admin/backup`, { method: 'POST', credentials: 'include' });
+                    const d = await r.json();
+                    if (r.ok && d.success) { showNotification('Backup generado', 'success'); panelLoadBackups(); }
+                    else showNotification(d.message || 'Error', 'error');
+                } catch (e) { showNotification('Error', 'error'); }
+            });
+            genBtn.dataset.panelListenerAttached = 'true';
+        }
+    }
+
+    // --------------------------------------------------------
+    // Override saveProductFromModal para refrescar tabla en admin.html
+    // --------------------------------------------------------
+    function overrideSaveProduct() {
+        const origSave = window.saveProductFromModal;
+        window.saveProductFromModal = async function (event) {
+            if (event) event.preventDefault();
+
+            const id = document.getElementById('product-crud-id')?.value;
+            const fileInput = document.getElementById('product-crud-image-upload');
+            const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+
+            // Recoger datos del formulario
+            const productData = {
+                nombre: document.getElementById('product-crud-nombre')?.value,
+                sku: document.getElementById('product-crud-sku')?.value,
+                precio_actual: parseFloat(document.getElementById('product-crud-precio')?.value),
+                precio_anterior: document.getElementById('product-crud-precio-anterior')?.value
+                    ? parseFloat(document.getElementById('product-crud-precio-anterior').value)
+                    : null,
+                stock: parseInt(document.getElementById('product-crud-stock')?.value),
+                id_categoria: parseInt(document.getElementById('product-crud-categoria')?.value),
+                id_marca: parseInt(document.getElementById('product-crud-marca')?.value),
+                badge: document.getElementById('product-crud-badge')?.value || null,
+                descripcion_corta: document.getElementById('product-crud-descripcion-corta')?.value || null,
+                descripcion_larga: document.getElementById('product-crud-descripcion-larga')?.value || null,
+                destacado: document.getElementById('product-crud-destacado')?.checked || false,
+                activo: document.getElementById('product-crud-activo')?.checked !== false
+            };
+
+            // Si hay URLs en el textarea, incluirlas
+            const imagenesText = document.getElementById('product-crud-imagenes')?.value;
+            if (imagenesText && imagenesText.trim()) {
+                const imagenes = imagenesText.split(/[,\n]/).map(u => u.trim()).filter(Boolean);
+                if (imagenes.length > 0) productData.imagenes = imagenes;
+            }
+
+            const submitBtn = event?.target?.querySelector('button[type="submit"]')
+                || document.querySelector('#product-crud-form button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.textContent : '';
+            if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Guardando...'; }
+
+            try {
+                const url = id ? `${API_BASE}/productos/${id}` : `${API_BASE}/productos`;
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    showNotification(data.message || 'Error al guardar producto', 'error');
+                    return;
+                }
+
+                const savedId = id || data.data?.id_producto;
+
+                // Si hay archivo de imagen, subirlo ahora
+                if (hasFile && savedId) {
+                    if (submitBtn) submitBtn.textContent = 'Subiendo imagen...';
+                    const formData = new FormData();
+                    formData.append('imagen', fileInput.files[0]);
+
+                    try {
+                        const uploadResp = await fetch(`${API_BASE}/admin/upload/producto/${savedId}`, {
+                            method: 'POST',
+                            credentials: 'include',
+                            body: formData
+                        });
+                        const uploadData = await uploadResp.json();
+                        if (!uploadResp.ok || !uploadData.success) {
+                            console.warn('Error subiendo imagen:', uploadData.message);
+                            showNotification('Producto guardado pero hubo un error al subir la imagen', 'error');
+                        }
+                    } catch (uploadErr) {
+                        console.error('Error subiendo imagen de producto:', uploadErr);
+                    }
+                }
+
+                showNotification(id ? 'Producto actualizado exitosamente' : 'Producto creado exitosamente', 'success');
+                closeProductModal();
+                panelLoadProducts(adminPanel.currentPage);
+
+            } catch (err) {
+                console.error('Error guardando producto:', err);
+                showNotification('Error al guardar producto', 'error');
+            } finally {
+                if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = originalText; }
+            }
+        };
+    }
+
+    // --------------------------------------------------------
+    // Error helper
+    // --------------------------------------------------------
+    function showAdminPanelError(msg) {
+        const tbody = document.getElementById('products-table-body');
+        if (tbody) tbody.innerHTML = `<tr><td colspan="12" class="px-6 py-4 text-center text-red-500">${msg}</td></tr>`;
+    }
+
+    // --------------------------------------------------------
+    // Iniciar cuando el DOM esté listo
+    // --------------------------------------------------------
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initAdminPanel);
+    } else {
+        initAdminPanel();
+    }
+
+    // Exportar funciones del panel
+    window.panelSwitchTab = panelSwitchTab;
+    window.panelLoadProducts = panelLoadProducts;
+    window.switchTab = panelSwitchTab; // compatibilidad con onclick en admin.html
+    window.searchProducts = () => panelLoadProducts(1);
+    window.generateBackup = () => panelLoadBackups();
+    window.openBannerModal = () => openBannerManager();
+
+}());
