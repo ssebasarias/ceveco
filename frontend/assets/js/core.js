@@ -99,10 +99,6 @@
                 if (window.StorageUtils) window.StorageUtils.removeUser();
             });
         }
-        // Initialize cart from storage if not in memory
-        if (!window.cart && window.StorageUtils) {
-            window.cart = window.StorageUtils.getCart();
-        }
     }
 
     // ==========================================
@@ -197,149 +193,70 @@
         }
     }
 
-    window.renderProductCard = async function (product) {
-        const template = await getProductCardTemplate();
-        const formatter = window.formatPrice;
+    // Helper for rich card HTML generation (sync, no template needed)
+    window.createProductCard = function (product) {
+        const _escHtml = (s) => String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const _formatCOP = (v) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
 
-        // Fallback if template missing
-        if (!template) {
-            return `<div class="p-4 border">Error template: ${product.nombre}</div>`;
-        }
-
-        // Normalize Data
         const id = product.id_producto || product.id || '';
-        const precio = product.precio_actual || product.price || 0;
-        const precioAnterior = product.precio_anterior || product.oldPrice || 0;
+        const imagen = product.imagen_principal || (product.imagenes && (product.imagenes[0]?.url_imagen || product.imagenes[0]?.url)) || '/images/placeholder.webp';
+        const precioFormat = product.precio_actual != null ? _formatCOP(product.precio_actual) : 'Consultar precio';
+        const precioAnterior = product.precio_anterior && +product.precio_anterior > +product.precio_actual
+            ? `<span class="text-gray-400 line-through text-xs mr-1">${_formatCOP(product.precio_anterior)}</span>` : '';
 
-        // Fallback Image
-        const fallbackImage = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 400 400'%3E%3Crect fill='%23f3f4f6' width='400' height='400'/%3E%3Ctext fill='%239ca3af' font-family='sans-serif' font-size='24' font-weight='bold' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ESin Imagen%3C/text%3E%3C/svg%3E";
-
-        // Obtener imagen principal - verificar múltiples fuentes
-        let imagenUrl = product.imagen_principal || product.image;
-
-        // Si no hay imagen_principal o es un placeholder, buscar en el array de imágenes
-        const isPlaceholder = imagenUrl && (
-            imagenUrl.includes('via.placeholder.com') ||
-            imagenUrl.includes('data:image/svg') ||
-            imagenUrl.includes('⚠️')
-        );
-
-        if ((!imagenUrl || isPlaceholder) && product.imagenes && Array.isArray(product.imagenes) && product.imagenes.length > 0) {
-            // Buscar primera imagen válida (no placeholder)
-            const validImg = product.imagenes.find(img => {
-                const url = img.url_imagen || img.url || img;
-                return url &&
-                    !url.includes('via.placeholder.com') &&
-                    !url.includes('data:image/svg') &&
-                    !url.includes('⚠️');
-            });
-
-            if (validImg) {
-                imagenUrl = validImg.url_imagen || validImg.url || validImg;
-            } else if (!imagenUrl) {
-                // Si no hay ninguna válida, usar la primera disponible
-                const firstImg = product.imagenes[0];
-                imagenUrl = firstImg.url_imagen || firstImg.url || firstImg;
-            }
+        let badge = '';
+        if (product.destacado) {
+            badge = `<span class="absolute top-2 left-2 z-10 bg-[#FE2418] text-white text-[10px] font-bold px-2 py-0.5 rounded">DESTACADO</span>`;
+        } else if (product.badge) {
+            badge = `<span class="absolute top-2 left-2 z-10 bg-[#FFD23F] text-[#091C49] text-[10px] font-bold px-2 py-0.5 rounded">${_escHtml(product.badge)}</span>`;
         }
 
-        // Solo usar fallback si realmente no hay imagen válida
-        if (!imagenUrl ||
-            imagenUrl.includes('via.placeholder.com') ||
-            imagenUrl.includes('data:image/svg') ||
-            imagenUrl.includes('⚠️') ||
-            imagenUrl.trim() === '') {
-            imagenUrl = fallbackImage;
+        const stars = (product.total_resenas > 0 && product.calificacion_promedio)
+            ? `<div class="flex items-center gap-1 text-xs text-gray-500 mt-0.5"><span class="text-yellow-400">&#9733;</span>${(+product.calificacion_promedio).toFixed(1)}<span class="text-gray-400">(${product.total_resenas})</span></div>` : '';
+
+        const marcaName = typeof product.marca === 'object' ? (product.marca?.nombre || '') : (product.marca || '');
+
+        return `<article class="product-card relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group flex flex-col">
+    ${badge}
+    <button class="favorite-btn absolute top-2 right-2 w-8 h-8 bg-white/90 backdrop-blur rounded-full flex items-center justify-center text-gray-300 hover:text-[#FE2418] z-10 transition-colors"
+        data-product-id="${id}" data-action="toggle-favorite" aria-label="Agregar a favoritos">
+        <i data-lucide="heart" class="w-4 h-4"></i>
+    </button>
+    <a href="/pages/detalle-producto.html?id=${id}" class="block">
+        <div class="aspect-square bg-gray-50 overflow-hidden">
+            <img src="${_escHtml(imagen)}"
+                alt="${_escHtml(product.nombre || '')}"
+                loading="lazy" decoding="async"
+                class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                onerror="this.onerror=null;this.src='/images/placeholder.webp'">
+        </div>
+    </a>
+    <div class="p-3 flex flex-col flex-1">
+        <p class="text-xs font-semibold text-[#00458E] uppercase tracking-wide mb-0.5">${_escHtml(marcaName)}</p>
+        <h3 class="text-sm font-bold text-[#091C49] leading-tight mb-1 min-h-[2.5rem] line-clamp-2">${_escHtml(product.nombre || '')}</h3>
+        ${stars}
+        <div class="mt-1.5 mb-2">${precioAnterior}<p class="text-lg font-extrabold text-[#FE2418] leading-tight">${precioFormat}</p></div>
+        <div class="flex gap-1.5 mt-auto">
+            <button class="flex-1 bg-[#FE2418] hover:bg-[#d91b10] text-white text-xs font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1"
+                data-action="cotizar" data-product-id="${id}" aria-label="Cotizar por WhatsApp">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>Cotizar
+            </button>
+            <a href="/pages/detalle-producto.html?id=${id}"
+                class="flex-1 border border-gray-300 hover:border-[#091C49] text-[#091C49] text-xs font-bold py-2 rounded-lg text-center transition-colors flex items-center justify-center">
+                Ver detalle
+            </a>
+        </div>
+    </div>
+</article>`;
+    };
+
+    window.renderProductCard = async function (product) {
+        // Cache product for cotizar
+        if (product.id_producto) {
+            window.__productosCache = window.__productosCache || {};
+            window.__productosCache[product.id_producto] = product;
         }
-
-        const nombre = product.nombre || 'Producto sin nombre';
-
-        // Extract Brand Name safely (Handling object or string)
-        let brandName = '';
-
-        // Debug logging
-        console.log('🔍 Product Card Debug:', {
-            nombre: product.nombre,
-            marca: product.marca,
-            categoria: product.categoria,
-            marcaType: typeof product.marca
-        });
-
-        if (product.marca) {
-            // Si es objeto, intentar obtener propiedad nombre o name, si no, stringify
-            if (typeof product.marca === 'object' && product.marca !== null) {
-                brandName = product.marca.nombre || product.marca.name || '';
-            } else if (typeof product.marca === 'string') {
-                brandName = product.marca;
-            }
-        }
-
-        console.log('✅ Extracted brand:', brandName);
-
-        // Prioritize Brand over Category as requested
-        const categoria = brandName || product.categoria || '';
-
-        // HTML Blocks
-        const badgeBlock = product.badge
-            ? `<span class="absolute top-3 left-3 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm z-10">${product.badge}</span>`
-            : '';
-
-        const oldPriceBlock = precioAnterior && precioAnterior > precio
-            ? `<span class="text-sm text-gray-400 line-through">${formatter(precioAnterior)}</span>`
-            : '';
-
-        // Safe Strings
-        const safeNombre = String(nombre);
-        const safeImagen = String(imagenUrl);
-        const safeCategoria = String(categoria);
-
-        const escapeJs = (str) => str.replace(/'/g, "\\'").replace(/"/g, '\\"');
-        const escapeHtml = (str) => str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-
-        // Preparar array de imágenes para fallback (como JSON en data attribute)
-        // Incluir todas las imágenes válidas, empezando por la principal
-        const imagenesArray = [];
-
-        // Agregar imagen principal si es válida
-        if (imagenUrl && imagenUrl !== fallbackImage && !imagenUrl.includes('via.placeholder.com') && !imagenUrl.includes('data:image/svg')) {
-            imagenesArray.push(imagenUrl);
-        }
-
-        // Agregar imágenes del array que no sean placeholders y no estén ya incluidas
-        if (product.imagenes && Array.isArray(product.imagenes)) {
-            product.imagenes.forEach(img => {
-                const url = img.url_imagen || img.url || img;
-                if (typeof url === 'string' &&
-                    url &&
-                    !url.includes('via.placeholder.com') &&
-                    !url.includes('data:image/svg') &&
-                    !url.includes('⚠️') &&
-                    !imagenesArray.includes(url)) {
-                    imagenesArray.push(url);
-                }
-            });
-        }
-
-        const imagenesJson = imagenesArray.length > 0 ? escapeHtml(JSON.stringify(imagenesArray)) : '[]';
-
-        let cardHtml = template
-            .replace(/{{id}}/g, id)
-            .replace(/{{image}}/g, safeImagen)
-            .replace(/{{image_attr}}/g, escapeHtml(safeImagen))
-            .replace(/{{imagenes_fallback}}/g, imagenesJson)
-            .replace(/{{name}}/g, safeNombre)
-            .replace(/{{name_escaped}}/g, escapeJs(safeNombre))
-            .replace(/{{name_attr}}/g, escapeHtml(safeNombre))
-            .replace(/{{category}}/g, safeCategoria)
-            .replace(/{{category_attr}}/g, escapeHtml(safeCategoria))
-            .replace(/{{price}}/g, formatter(precio))
-            .replace(/{{price_raw}}/g, precio)
-            .replace(/{{image_escaped}}/g, escapeJs(safeImagen))
-            .replace(/{{badge_block}}/g, badgeBlock)
-            .replace(/{{old_price_block}}/g, oldPriceBlock);
-
-        // Retornar HTML - los event listeners se configurarán después de insertar en el DOM
-        return cardHtml;
+        return window.createProductCard(product);
     };
 
     // ==========================================
@@ -364,10 +281,9 @@
         };
 
         try {
-            const [navbarHtml, footerHtml, cartHtml] = await Promise.all([
+            const [navbarHtml, footerHtml] = await Promise.all([
                 fetchText('/components/navbar.html'),
                 fetchText('/components/footer.html'),
-                fetchText('/components/cart.html'),
                 getProductCardTemplate() // Preload
             ]);
 
@@ -393,13 +309,6 @@
                 footerRoot.innerHTML = footerHtml;
             }
 
-            // Cart Sidebar injection
-            if (cartHtml && !document.getElementById('cart-sidebar')) {
-                const div = document.createElement('div');
-                div.innerHTML = cartHtml;
-                while (div.firstChild) document.body.appendChild(div.firstChild);
-            }
-
             // Init Components
             if (window.lucide) window.lucide.createIcons();
             document.dispatchEvent(new CustomEvent('components:loaded'));
@@ -407,9 +316,6 @@
             // Init Auth UI
             if (typeof window.updateAuthUI === 'function') window.updateAuthUI();
             else if (typeof window.setupUserMenu === 'function') window.setupUserMenu();
-
-            // Init Cart Logic
-            if (typeof window.loadCart === 'function') window.loadCart();
 
             console.log('✅ Shared Components Loaded');
 
@@ -526,7 +432,31 @@
                 window.goToProduct(card.dataset.productId);
             }
 
-            // Quote Product (WhatsApp) - Ahora abre modal de asesores
+            // Quote Product (WhatsApp) - data-action="cotizar" (new rich cards)
+            const cotizarBtn = e.target.closest('[data-action="cotizar"]');
+            if (cotizarBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                const id = cotizarBtn.dataset.productId;
+                const product = window.__productosCache?.[id];
+                if (product) {
+                    if (typeof window.cotizarProducto === 'function') window.cotizarProducto(product);
+                } else if (id) {
+                    fetch(`/api/v1/productos/${id}`)
+                        .then(r => r.json())
+                        .then(d => {
+                            if (d.success && d.data) {
+                                window.__productosCache = window.__productosCache || {};
+                                window.__productosCache[id] = d.data;
+                                if (typeof window.cotizarProducto === 'function') window.cotizarProducto(d.data);
+                            }
+                        })
+                        .catch(err => console.error('Error fetching product for quote:', err));
+                }
+                return;
+            }
+
+            // Quote Product (legacy .js-quote-product) - Ahora abre modal de asesores
             const quoteBtn = e.target.closest('.js-quote-product');
             if (quoteBtn) {
                 e.preventDefault();
@@ -542,7 +472,6 @@
                 if (typeof abrirModalAsesor === 'function') {
                     abrirModalAsesor(productInfo);
                 } else {
-                    // Fallback al comportamiento anterior si el modal no está disponible
                     console.warn('Modal de asesores no disponible, usando WhatsApp directo');
                     let phone = '573001234567';
                     if (window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.whatsapp) {
