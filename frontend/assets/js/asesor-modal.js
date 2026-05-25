@@ -262,7 +262,16 @@ class AsesorModal {
 
     buildWhatsAppMessage(nombreAsesor) {
         if (this.productInfo) {
-            return `Hola, me interesa el producto *${this.productInfo.nombre}*. ¿Podrías darme más información?`;
+            const p = this.productInfo;
+            const nombre = p.nombre || p.name || '';
+            const marca = (typeof p.marca === 'object' ? p.marca?.nombre : p.marca) || p.brand || '';
+            const id = p.id_producto || p.id || '';
+            const saludo = nombreAsesor ? `Hola ${nombreAsesor}` : 'Hola';
+            return `${saludo}, estoy interesado en cotizar el siguiente producto:\n\n` +
+                   `Producto: ${nombre}\n` +
+                   (marca ? `Marca: ${marca}\n` : '') +
+                   (id ? `ID: ${id}\n` : '') +
+                   `\n¿Podrías darme más información?`;
         } else {
             return `Hola, me gustaría recibir información sobre sus productos.`;
         }
@@ -299,3 +308,24 @@ function abrirModalAsesor(productInfo = null) {
         asesorModalInstance.open(productInfo);
     }
 }
+window.abrirModalAsesor = abrirModalAsesor;
+
+// Event delegation: cualquier botón con clase .js-quote-product (template aprobado)
+// o data-action="cotizar" (legacy createProductCard de core.js) abre el modal.
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.js-quote-product, [data-action="cotizar"]');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Buscar id en data-id (aprobado) o data-product-id (legacy)
+    const id = btn.dataset.id || btn.dataset.productId;
+    const cached = (window.__productosCache && id) ? window.__productosCache[id] : null;
+    const productInfo = cached || {
+        id_producto: id,
+        nombre: btn.dataset.name || '',
+        marca: btn.dataset.brand || '',
+        imagen: btn.dataset.image || ''
+    };
+    abrirModalAsesor(productInfo);
+});
