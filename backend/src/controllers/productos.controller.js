@@ -1,5 +1,6 @@
 const ProductoService = require('../services/productos.service');
 const { validationResult } = require('express-validator');
+const { pool } = require('../config/db');
 
 class ProductoController {
     /**
@@ -317,6 +318,81 @@ class ProductoController {
                 message: 'Error al eliminar producto',
                 error: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
+        }
+    }
+
+    /**
+     * Obtener todos los productos para panel admin (Admin only)
+     * GET /api/v1/productos/admin/all
+     * Soporta filtros: q, activo, destacado, categoria (slug), marca (slug)
+     * Soporta paginación: page, limit
+     */
+    async getAllForAdmin(req, res) {
+        const { page = 1, limit = 25, q, activo, destacado, categoria, marca } = req.query;
+        const offset = (page - 1) * limit;
+        const where = [];
+        const params = [];
+
+        if (q) {
+            params.push(`%${q}%`);
+            where.push(`(p.nombre ILIKE $${params.length} OR p.sku ILIKE $${params.length})`);
+        }
+        if (activo !== undefined) {
+            params.push(activo === 'true');
+            where.push(`p.activo = $${params.length}`);
+        }
+        if (destacado !== undefined) {
+            params.push(destacado === 'true');
+            where.push(`p.destacado = $${params.length}`);
+        }
+        if (categoria) {
+            params.push(categoria);
+            where.push(`c.slug = $${params.length}`);
+        }
+        if (marca) {
+            params.push(marca);
+            where.push(`m.slug = $${params.length}`);
+        }
+        const whereSQL = where.length ? `WHERE ${where.join(' AND ')}` : '';
+
+        const sql = `
+            SELECT p.id_producto, p.sku, p.nombre, p.precio_actual, p.precio_anterior,
+                   p.stock, p.activo, p.destacado, p.badge,
+                   p.id_categoria, p.id_marca, p.id_subcategoria,
+                   c.nombre AS categoria, m.nombre AS marca,
+                   (SELECT url_imagen FROM producto_imagenes
+                    WHERE id_producto = p.id_producto AND es_principal LIMIT 1) AS imagen
+            FROM productos p
+            JOIN categorias c ON c.id_categoria = p.id_categoria
+            JOIN marcas m ON m.id_marca = p.id_marca
+            ${whereSQL}
+            ORDER BY p.id_producto DESC
+            LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+        `;
+
+        const countSql = `
+            SELECT count(*) FROM productos p
+            JOIN categorias c ON c.id_categoria = p.id_categoria
+            JOIN marcas m ON m.id_marca = p.id_marca
+            ${whereSQL}
+        `;
+
+        try {
+            const { rows } = await pool.query(sql, [...params, limit, offset]);
+            const { rows: [{ count }] } = await pool.query(countSql, params);
+            res.json({
+                success: true,
+                data: rows,
+                pagination: {
+                    page: +page,
+                    limit: +limit,
+                    total: +count,
+                    totalPages: Math.ceil(count / limit)
+                }
+            });
+        } catch (err) {
+            console.error('getAllForAdmin error:', err);
+            res.status(500).json({ success: false, message: 'Error al cargar productos' });
         }
     }
 

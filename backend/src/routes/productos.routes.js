@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ProductoController = require('../controllers/productos.controller');
 const { authMiddleware, requireAdmin } = require('../middleware');
+const requireAdminCookie = require('../middleware/requireAdmin');
 const { query, param, body } = require('express-validator');
 
 /**
@@ -75,6 +76,20 @@ router.get('/filtros',
     ],
     ProductoController.getFilters
 );
+
+/**
+ * @route   GET /api/v1/productos/admin/all
+ * @desc    Obtener todos los productos con campos completos para el panel admin
+ * @access  Private (Admin only - JWT cookie)
+ * @query   {number} page - Número de página (default: 1)
+ * @query   {number} limit - Productos por página (default: 25)
+ * @query   {string} q - Búsqueda por nombre o SKU
+ * @query   {boolean} activo - Filtrar por estado activo
+ * @query   {boolean} destacado - Filtrar por destacado
+ * @query   {string} categoria - Slug de categoría
+ * @query   {string} marca - Slug de marca
+ */
+router.get('/admin/all', requireAdminCookie, ProductoController.getAllForAdmin);
 
 /**
  * @route   GET /api/v1/productos/:id
