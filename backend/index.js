@@ -10,6 +10,9 @@ const { testConnection } = require('./src/config/db');
 const productosRoutes = require('./src/routes/productos.routes');
 const authRoutes = require('./src/routes/auth.routes');
 
+// Rate limiting
+const { globalApiLimiter } = require('./src/middleware/rateLimit.middleware');
+
 // Inicializar Express
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,24 +28,32 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://checkout.wompi.co", "https://accounts.google.com", "https://apis.google.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://accounts.google.com", "https://apis.google.com"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Keeping unsafe-inline for styles is often necessary for frameworks unless using strict nonce/hash
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com", "*"],
-            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://unpkg.com", "https://*.google.com", "https://maps.googleapis.com"], // Allow connecting to Google OAuth & Maps & Unpkg
-            frameSrc: ["'self'", "https://checkout.wompi.co", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
+            imgSrc: ["'self'", "data:", "https://via.placeholder.com", "https://ceveco.com.co", "https://lh3.googleusercontent.com"],
+            connectSrc: ["'self'", "https://accounts.google.com", "https://oauth2.googleapis.com", "https://apis.google.com", "https://maps.googleapis.com"],
+            frameSrc: ["'self'", "https://accounts.google.com", "https://maps.google.com", "https://www.google.com"],
+            scriptSrcAttr: ["'unsafe-inline'"],
             upgradeInsecureRequests: null
         },
     },
+    hsts: { maxAge: 31536000, includeSubDomains: true, preload: true }
 }));
 
 // CORS - Configuración para permitir peticiones desde el frontend
 
+const ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'https://ceveco.com.co',
+    'https://www.ceveco.com.co'
+];
 const corsOptions = {
     origin: function (origin, callback) {
-        // Permitir requests sin origen (como apps móviles, curl o postman)
-        if (!origin) return callback(null, true);
-        callback(null, true);
+        if (!origin) return callback(null, true); // allow curl/Postman/server-to-server
+        if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+        return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true,
     optionsSuccessStatus: 200
@@ -73,26 +84,22 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend/pages')));
 
-const fs = require('fs');
-
-// Endpoint para obtener banners dinámicos
-app.get('/api/v1/hero-banners', (req, res) => {
-    const bannersDir = path.join(__dirname, '../frontend/assets/img/banner-hero');
-
-    fs.readdir(bannersDir, (err, files) => {
-        if (err) {
-            console.error('Error reading banner directory:', err);
-            return res.status(500).json({ success: false, message: 'Error reading banners' });
-        }
-
-        // Filtrar solo imágenes y devolver rutas absolutas
-        const images = files.filter(file =>
-            /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
-        ).map(file => `/assets/img/banner-hero/${file}`); // Ruta absoluta en lugar de relativa
-
-        console.log('📸 Banners encontrados:', images.length);
+// Endpoint para obtener banners dinámicos (lee desde la tabla banners en DB)
+app.get('/api/v1/hero-banners', async (req, res) => {
+    try {
+        const { pool } = require('./src/config/db');
+        const { rows } = await pool.query(
+            `SELECT imagen_url FROM banners
+             WHERE posicion = 'hero' AND activo = true
+             ORDER BY orden ASC, id_banner ASC`
+        );
+        const images = rows.map(r => r.imagen_url);
+        console.log('📸 Banners encontrados en DB:', images.length);
         res.json({ success: true, data: images });
-    });
+    } catch (err) {
+        console.error('Error en /hero-banners:', err);
+        res.status(500).json({ success: false, message: 'Error al cargar banners' });
+    }
 });
 
 // ============================================
@@ -114,11 +121,13 @@ app.get(`${API_PREFIX}/config`, (req, res) => {
     res.json({
         success: true,
         data: {
-            wompiPublicKey: process.env.WOMPI_PUBLIC_KEY || 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf',
             googleClientId: process.env.GOOGLE_CLIENT_ID || 'PENDING_GOOGLE_CLIENT_ID'
         }
     });
 });
+
+// Global API rate limiter (200 req/min per IP)
+app.use(API_PREFIX, globalApiLimiter);
 
 // Rutas de la API
 app.use(`${API_PREFIX}/productos`, productosRoutes);
@@ -130,11 +139,12 @@ app.use(`${API_PREFIX}/admin/upload`, require('./src/routes/upload.routes')); //
 app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
 app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
-app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
+app.use(`${API_PREFIX}/categorias`, require('./src/routes/categorias.routes'));
 app.use(`${API_PREFIX}/sedes`, require('./src/routes/sedes.routes'));
 app.use(`${API_PREFIX}/asesores`, require('./src/routes/asesores.routes'));
+app.use(`${API_PREFIX}/search`, require('./src/routes/search.routes'));
 
 // Ruta 404 - No encontrada
 app.use((req, res) => {

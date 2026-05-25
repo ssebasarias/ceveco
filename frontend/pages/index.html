@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ceveco - Renueva tu hogar</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/tailwind.min.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -28,14 +28,30 @@
     <div id="navbar-root"></div>
 
     <!-- Hero Section -->
-    <section class="hero-banner-container hero-banner-homepage relative md:h-[700px] h-[450px]">
+    <section class="hero-banner-container hero-banner-homepage relative md:h-[700px] h-[450px] overflow-hidden">
         <!-- Image Container -->
         <div class="hero-image-wrapper absolute inset-0 w-full h-full">
-            <img id="hero-image" src="../assets/img/banner-hero/hero_main.jpg" alt="Hero Banner">
-            <!-- Desktop Gradient Overlay -->
-            <div class="hero-gradient-overlay hidden md:block"></div>
-            <!-- Mobile Gradient (Bottom Fade) -->
-            <div class="hero-gradient-overlay-mobile md:hidden"></div>
+            <img id="hero-image" alt="" loading="eager">
+        </div>
+        <!-- Gradient overlay for text legibility -->
+        <div class="hero-gradient absolute inset-0 pointer-events-none"></div>
+        <!-- Text content overlay -->
+        <div class="hero-content relative z-10 h-full container mx-auto px-4 lg:px-8 flex items-end pb-10 md:pb-16">
+            <div class="max-w-2xl text-white">
+                <p class="hero-eyebrow text-xs md:text-sm font-bold uppercase tracking-[0.3em] mb-3 opacity-90">50 años contigo</p>
+                <h1 class="hero-title text-4xl md:text-6xl font-extrabold leading-[1.05] mb-4 drop-shadow-lg">Renueva tu hogar</h1>
+                <p class="hero-subtitle text-base md:text-xl text-white/90 mb-6 max-w-xl">Electrodomésticos, muebles, motos y herramientas con la mejor garantía y respaldo de Riosucio para toda Colombia.</p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="/pages/productos.html" class="inline-flex items-center gap-2 bg-[#FE2418] hover:bg-[#d91b10] text-white font-bold px-6 py-3.5 rounded-full shadow-lg shadow-red-500/20 transition-all hover:scale-105">
+                        Ver catálogo
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                    <a href="https://wa.me/573216453672" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white/15 backdrop-blur hover:bg-white/25 text-white font-bold px-6 py-3.5 rounded-full transition-all border border-white/30">
+                        <i data-lucide="message-circle" class="w-4 h-4"></i>
+                        Hablar con asesor
+                    </a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -62,12 +78,12 @@
     <!-- Categories Showcase -->
     <main class="w-full">
         <div class="container mx-auto px-4 py-8 md:py-16">
-            <div class="text-center mb-8 md:mb-12">
+            <div class="text-center mb-8 md:mb-12" data-fade-in>
                 <h2 class="text-2xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">Explora Nuestras Categorías</h2>
                 <p class="text-sm md:text-lg text-gray-600">Encuentra todo lo que necesitas para tu hogar</p>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8" data-fade-in data-delay="200">
                 <!-- Electro Hogar -->
                 <a href="productos.html?categoria=electro-hogar" class="group">
                     <div
@@ -143,21 +159,21 @@
         </div>
 
         <!-- Brand Carousel -->
-        <div class="mt-10 md:mt-20 mb-6 md:mb-12 overflow-hidden bg-white py-4 md:py-8 border-y border-gray-100">
-            <div class="container mx-auto px-4 mb-6 text-center">
-                <h3 class="text-xl font-bold text-gray-500 uppercase tracking-widest">Nuestras Marcas Aliadas</h3>
-            </div>
-            <div class="relative w-full overflow-hidden">
-                <div id="brands-carousel" class="flex animate-scroll gap-12 items-center w-max">
-                    <!-- Loading state -->
-                    <span class="text-xl font-bold text-gray-400">Cargando marcas...</span>
+        <section class="brand-carousel-section bg-white py-10 md:py-14 border-y border-gray-100" data-fade-in>
+            <div class="container mx-auto px-4">
+                <p class="text-center text-xs font-bold tracking-[0.3em] text-gray-400 uppercase mb-6">Nuestras marcas aliadas</p>
+                <div class="brand-carousel-mask">
+                    <div id="brands-carousel" class="brand-carousel-track">
+                        <!-- Loading state — replaced by JS -->
+                        <span class="text-base font-bold text-gray-400 uppercase whitespace-nowrap px-4">Cargando marcas...</span>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Featured Products Section -->
         <div class="container mx-auto px-4 pb-8 md:pb-16">
-            <div class="mt-20">
+            <div class="mt-20" data-fade-in>
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="text-3xl font-bold text-gray-900">Productos Destacados</h2>
                     <div class="flex items-center gap-4">
@@ -221,7 +237,7 @@
 
     <!-- UI Logic -->
 
-    <script src="../assets/js/components/cart-sidebar.js" defer></script>
+
 
     <!-- Modules -->
     <script type="module" src="../assets/js/auth/index.js"></script>
@@ -240,6 +256,10 @@
 
     <!-- Modal de Selección de Asesor -->
     <script src="../assets/js/asesor-modal.js" defer></script>
+
+    <!-- UX Polish: scroll fade-in + navbar shadow -->
+    <script src="../assets/js/utils/scroll-observer.js" defer></script>
+    <script src="../assets/js/components/navbar-scroll-shadow.js" defer></script>
 </body>
 
 </html>

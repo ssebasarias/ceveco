@@ -1,0 +1,74 @@
+/**
+ * COMPONENT - Skeleton Loaders
+ * Shimmer loading placeholders for cards and content
+ */
+
+@keyframes skeleton-shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+    background-size: 1000px 100%;
+    animation: skeleton-shimmer 2s infinite linear;
+    border-radius: 8px;
+    color: transparent !important;
+}
+
+/* ===================================
+   PRODUCT CARD SKELETON
+   =================================== */
+.skeleton-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.skeleton-card .skeleton-image {
+    aspect-ratio: 1 / 1;
+}
+
+.skeleton-card .skeleton-body {
+    padding: 16px;
+}
+
+.skeleton-card .skeleton-text {
+    height: 12px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.skeleton-card .skeleton-text.short {
+    width: 40%;
+    height: 10px;
+}
+
+.skeleton-card .skeleton-text.long {
+    width: 90%;
+    height: 14px;
+}
+
+.skeleton-card .skeleton-text.price {
+    width: 60%;
+    height: 18px;
+    margin-top: 12px;
+}
+
+.skeleton-card .skeleton-button {
+    height: 36px;
+    margin-top: 14px;
+    border-radius: 8px;
+}
+
+/* ===================================
+   CATEGORY CARD SKELETON
+   =================================== */
+.skeleton-category {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    aspect-ratio: 4 / 5;
+}

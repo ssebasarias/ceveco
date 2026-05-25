@@ -2,6 +2,11 @@
  * Logica de la pagina de Detalle de Producto
  */
 
+function escHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 // Variables globales para el producto actual
 let currentProduct = null;
 let currentQuantity = 1;
@@ -101,7 +106,7 @@ function renderProduct(product) {
     // Badge
     if (product.badge) {
         const badgeContainer = document.getElementById('product-badge');
-        if (badgeContainer) badgeContainer.innerHTML = `<span class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">${product.badge}</span>`;
+        if (badgeContainer) badgeContainer.innerHTML = `<span class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">${escHtml(product.badge)}</span>`;
     }
 
     // Stock
@@ -166,29 +171,29 @@ function renderProduct(product) {
     }
 
     // Descripción larga
+    // TODO: Integrate DOMPurify for rich-text support when admin-authored HTML is needed.
     const fullDesc = document.getElementById('full-description');
-    if (fullDesc) fullDesc.innerHTML = product.descripcion_larga || `<p>${product.descripcion_corta}</p>`;
+    if (fullDesc) fullDesc.innerHTML = `<p>${escHtml(product.descripcion_larga || product.descripcion_corta || '')}</p>`;
 
     // Especificaciones
     renderSpecs(product);
 
-    // WhatsApp Button
+    // WhatsApp Button - use cotizarProducto utility
     const whatsappBtn = document.getElementById('whatsapp-btn');
     if (whatsappBtn) {
-        whatsappBtn.dataset.id = product.id_producto;
-        whatsappBtn.dataset.name = product.nombre;
-        whatsappBtn.dataset.price = product.precio_actual;
-        whatsappBtn.dataset.image = product.imagen_principal || '';
-        whatsappBtn.dataset.brand = product.categoria || '';
-    }
-
-    // Add to Cart Button Logic
-    const addToCartBtn = document.getElementById('add-to-cart-btn');
-    if (addToCartBtn) {
-        addToCartBtn.onclick = () => {
-            // Usar funcion global de cart-sidebar.js
-            if (window.addToCart) {
-                window.addToCart(product.id_producto, product.nombre, product.precio_actual, product.imagen_principal, currentQuantity);
+        whatsappBtn.onclick = (e) => {
+            e.preventDefault();
+            if (typeof window.cotizarProducto === 'function') {
+                window.cotizarProducto(product);
+            } else {
+                // Fallback direct wa.me
+                const wa = '573216453672';
+                const precio = product.precio_actual
+                    ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.precio_actual)
+                    : 'consultar';
+                const url = `${location.origin}/pages/detalle-producto.html?id=${product.id_producto}`;
+                const msg = `Hola Ceveco, quiero cotizar:\n\n*${product.nombre}*\nSKU: ${product.sku || '-'}\nPrecio listado: ${precio}\n\n${url}\n\n¿Está disponible y cuáles son los métodos de pago?`;
+                window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
             }
         };
     }
@@ -219,8 +224,8 @@ function renderSpecs(product) {
 
             return `
                 <div class="flex justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded">
-                    <span class="font-semibold text-gray-700">${spec.nombre}:</span>
-                    <span class="text-gray-900 font-medium">${valor}${unidad}</span>
+                    <span class="font-semibold text-gray-700">${escHtml(spec.nombre)}:</span>
+                    <span class="text-gray-900 font-medium">${escHtml(valor)}${escHtml(unidad)}</span>
                 </div>
             `;
         }).join('');

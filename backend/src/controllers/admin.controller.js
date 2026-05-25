@@ -1,11 +1,11 @@
 const { validationResult } = require('express-validator');
 const ProductoModel = require('../models/producto.model');
-const { exec } = require('child_process');
+const { execFile } = require('child_process');
 const path = require('path');
 const fs = require('fs').promises;
 const { promisify } = require('util');
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 class AdminController {
   /**
@@ -31,15 +31,18 @@ class AdminController {
       const backupFileName = `ceveco_backup_${timestamp}.sql`;
       const backupPath = path.join(backupsDir, backupFileName);
 
-      // Comando pg_dump
-      const pgDumpCommand = `pg_dump -h ${dbConfig.host} -p ${dbConfig.port} -U ${dbConfig.user} -d ${dbConfig.database} -F c -f "${backupPath}"`;
-
       // Configurar variable de entorno para la contraseña
       const env = { ...process.env, PGPASSWORD: dbConfig.password };
 
       try {
-        await execAsync(pgDumpCommand, { env, maxBuffer: 1024 * 1024 * 10 });
-        
+        await execFileAsync('pg_dump', [
+          '-h', dbConfig.host,
+          '-p', String(dbConfig.port || 5432),
+          '-U', dbConfig.user,
+          '-d', dbConfig.database,
+          '-f', backupPath
+        ], { env, maxBuffer: 1024 * 1024 * 10 });
+
         // Obtener información del archivo
         const stats = await fs.stat(backupPath);
         const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
@@ -49,19 +52,23 @@ class AdminController {
           message: 'Backup generado exitosamente',
           data: {
             filename: backupFileName,
-            path: backupPath,
             size: `${fileSizeInMB} MB`,
             timestamp: new Date().toISOString()
           }
         });
       } catch (error) {
         console.error('Error ejecutando pg_dump:', error);
-        
-        // Intentar método alternativo con formato SQL plano
-        const sqlDumpCommand = `pg_dump -h ${dbConfig.host} -p ${dbConfig.port} -U ${dbConfig.user} -d ${dbConfig.database} > "${backupPath}"`;
-        
+
+        // Intentar método alternativo con formato SQL plano (-F p y -f para ruta segura)
         try {
-          await execAsync(sqlDumpCommand, { env, maxBuffer: 1024 * 1024 * 10 });
+          await execFileAsync('pg_dump', [
+            '-h', dbConfig.host,
+            '-p', String(dbConfig.port || 5432),
+            '-U', dbConfig.user,
+            '-d', dbConfig.database,
+            '-F', 'p',
+            '-f', backupPath
+          ], { env, maxBuffer: 1024 * 1024 * 10 });
           const stats = await fs.stat(backupPath);
           const fileSizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
 
@@ -70,7 +77,6 @@ class AdminController {
             message: 'Backup generado exitosamente',
             data: {
               filename: backupFileName,
-              path: backupPath,
               size: `${fileSizeInMB} MB`,
               timestamp: new Date().toISOString()
             }
@@ -213,13 +219,126 @@ class AdminController {
    */
   async getStats(req, res) {
     try {
-      // Aquí puedes agregar consultas para obtener estadísticas
-      // Por ahora retornamos un objeto básico
+      const { query } = require('../config/db');
+
+      const [
+        productosResult,
+        bannersResult,
+        pedidosResult,
+        usuariosResult,
+        categoriasResult,
+        marcasResult,
+        sedesResult,
+        ultimosPedidosResult,
+        productosSinStockResult
+      ] = await Promise.all([
+        // Productos stats
+        query(`
+          SELECT
+            count(*) AS total,
+            count(*) FILTER (WHERE activo) AS activos,
+            count(*) FILTER (WHERE NOT activo) AS inactivos,
+            count(*) FILTER (WHERE destacado) AS destacados,
+            count(*) FILTER (WHERE stock = 0) AS sin_stock,
+            count(*) FILTER (WHERE stock > 0 AND stock <= 5) AS stock_bajo_5
+          FROM productos
+        `).catch(() => ({ rows: [{ total: 0, activos: 0, inactivos: 0, destacados: 0, sin_stock: 0, stock_bajo_5: 0 }] })),
+
+        // Banners stats
+        query(`
+          SELECT count(*) AS total, count(*) FILTER (WHERE activo) AS activos FROM banners
+        `).catch(() => ({ rows: [{ total: 0, activos: 0 }] })),
+
+        // Pedidos stats
+        query(`
+          SELECT
+            count(*) FILTER (WHERE fecha_creacion::date = CURRENT_DATE) AS hoy,
+            count(*) FILTER (WHERE fecha_creacion >= CURRENT_DATE - INTERVAL '7 days') AS semana,
+            count(*) FILTER (WHERE fecha_creacion >= CURRENT_DATE - INTERVAL '30 days') AS mes,
+            count(*) FILTER (WHERE estado = 'pendiente') AS pendientes,
+            count(*) AS total
+          FROM pedidos
+        `).catch(() => ({ rows: [{ hoy: 0, semana: 0, mes: 0, pendientes: 0, total: 0 }] })),
+
+        // Usuarios stats
+        query(`
+          SELECT
+            count(*) AS total,
+            count(*) FILTER (WHERE rol = 'admin') AS admins,
+            count(*) FILTER (WHERE fecha_creacion >= CURRENT_DATE - INTERVAL '7 days') AS nuevos_semana
+          FROM usuarios
+        `).catch(() => ({ rows: [{ total: 0, admins: 0, nuevos_semana: 0 }] })),
+
+        // Categorías activas
+        query(`SELECT count(*) AS total FROM categorias WHERE activo`)
+          .catch(() => query(`SELECT count(*) AS total FROM categorias`))
+          .catch(() => ({ rows: [{ total: 0 }] })),
+
+        // Marcas activas
+        query(`SELECT count(*) AS total FROM marcas WHERE activo`)
+          .catch(() => query(`SELECT count(*) AS total FROM marcas`))
+          .catch(() => ({ rows: [{ total: 0 }] })),
+
+        // Sedes (con o sin columna activo)
+        query(`SELECT count(*) AS total FROM sedes WHERE activo`)
+          .catch(() => query(`SELECT count(*) AS total FROM sedes`))
+          .catch(() => ({ rows: [{ total: 0 }] })),
+
+        // Últimos pedidos pendientes
+        query(`
+          SELECT id_pedido, numero_pedido, estado, total, fecha_creacion
+          FROM pedidos
+          WHERE estado = 'pendiente'
+          ORDER BY fecha_creacion DESC LIMIT 5
+        `).catch(() => ({ rows: [] })),
+
+        // Productos sin stock o stock bajo
+        query(`
+          SELECT id_producto, sku, nombre, stock,
+            (SELECT url_imagen FROM producto_imagenes WHERE id_producto = p.id_producto AND es_principal LIMIT 1) AS imagen
+          FROM productos p
+          WHERE activo AND stock <= 5
+          ORDER BY stock ASC, id_producto DESC LIMIT 5
+        `).catch(() => ({ rows: [] }))
+      ]);
+
+      const p = productosResult.rows[0];
+      const b = bannersResult.rows[0];
+      const ped = pedidosResult.rows[0];
+      const u = usuariosResult.rows[0];
+
       res.json({
         success: true,
         data: {
-          message: 'Estadísticas del sistema',
-          // Agregar más estadísticas según necesites
+          productos: {
+            total: parseInt(p.total) || 0,
+            activos: parseInt(p.activos) || 0,
+            inactivos: parseInt(p.inactivos) || 0,
+            destacados: parseInt(p.destacados) || 0,
+            sin_stock: parseInt(p.sin_stock) || 0,
+            stock_bajo_5: parseInt(p.stock_bajo_5) || 0
+          },
+          banners: {
+            total: parseInt(b.total) || 0,
+            activos: parseInt(b.activos) || 0
+          },
+          pedidos: {
+            hoy: parseInt(ped.hoy) || 0,
+            semana: parseInt(ped.semana) || 0,
+            mes: parseInt(ped.mes) || 0,
+            pendientes: parseInt(ped.pendientes) || 0,
+            total: parseInt(ped.total) || 0
+          },
+          usuarios: {
+            total: parseInt(u.total) || 0,
+            admins: parseInt(u.admins) || 0,
+            nuevos_semana: parseInt(u.nuevos_semana) || 0
+          },
+          categorias: parseInt(categoriasResult.rows[0].total) || 0,
+          marcas: parseInt(marcasResult.rows[0].total) || 0,
+          sedes: parseInt(sedesResult.rows[0].total) || 0,
+          ultimos_pedidos_pendientes: ultimosPedidosResult.rows || [],
+          productos_sin_stock: productosSinStockResult.rows || []
         }
       });
     } catch (error) {

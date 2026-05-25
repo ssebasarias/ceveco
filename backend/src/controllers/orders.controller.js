@@ -34,7 +34,6 @@ class OrdersController {
             const newOrder = await OrderModel.create(userId, orderData);
 
             // Auto-login for guest users
-            let authResponse = null;
             if (isGuest) {
                 const user = {
                     id_usuario: userId,
@@ -44,14 +43,18 @@ class OrdersController {
                     apellido: orderData.shippingAddress.lastName
                 };
                 const token = AuthController.generateToken(user);
-                authResponse = { token, user };
+                res.cookie('jwt_token', token, {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                });
             }
 
             res.status(201).json({
                 success: true,
                 message: 'Pedido creado exitosamente',
-                data: newOrder,
-                auth: authResponse
+                data: newOrder
             });
 
         } catch (error) {
@@ -59,7 +62,7 @@ class OrdersController {
             res.status(500).json({
                 success: false,
                 message: 'Error al procesar el pedido',
-                error: error.message
+                error: process.env.NODE_ENV === 'development' ? error.message : undefined
             });
         }
     }

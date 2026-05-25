@@ -1,63 +1,125 @@
-<aside class="w-full lg:w-64 flex-shrink-0">
-    <!-- Mobile Toggle -->
-    <button id="filters-toggle-mobile" class="filters-toggle-mobile lg:hidden mb-4">
-        <span class="flex items-center gap-2">
-            <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
-            Filtros
-        </span>
-        <i data-lucide="chevron-down" class="w-5 h-5"></i>
-    </button>
-
-    <!-- Filters Container -->
-    <div id="filters-wrapper" class="hidden lg:block filters-sidebar">
-        <!-- Header -->
-        <div class="filters-header">
-            <h3>
-                <i data-lucide="sliders-horizontal" class="filters-header-icon"></i>
-                Filtros
-            </h3>
-            <button class="btn-clear-filters" id="clear-filters-btn" style="display: none;">
-                Limpiar
-            </button>
-        </div>
-
-        <!-- Dynamic Attribute Filters -->
-        <div id="dynamic-filters-container">
-            <!-- Filters will be loaded dynamically here -->
-            <div class="filter-loading">
-                <div class="filter-loading-spinner"></div>
-            </div>
-        </div>
-
-        <!-- Price Filter (Accordion Style) -->
-        <div class="filter-group open" id="price-filter-group">
-            <button class="filter-group-header" type="button">
-                <div class="filter-group-title">
-                    <i data-lucide="dollar-sign" class="w-4 h-4 filter-group-icon"></i>
-                    <span>Precio</span>
-                </div>
-                <div class="flex items-center">
-                    <i data-lucide="chevron-down" class="filter-chevron"></i>
-                </div>
-            </button>
-            <div class="filter-group-content">
-                <div class="price-filter-container">
-                    <div class="price-inputs-row">
-                        <div class="price-input-wrapper">
-                            <span class="price-symbol">$</span>
-                            <input type="number" id="price-min" placeholder="Mín" min="0" class="price-input-field">
-                        </div>
-                        <span class="text-gray-400">-</span>
-                        <div class="price-input-wrapper">
-                            <span class="price-symbol">$</span>
-                            <input type="number" id="price-max" placeholder="Máx" min="0" class="price-input-field">
-                        </div>
-                    </div>
-                    <button id="apply-price-filter" class="btn-price-apply">
-                        Aplicar
-                    </button>
-                </div>
-            </div>
-        </div>
+<aside id="filters-sidebar" class="filters-sidebar">
+  <button id="filters-toggle-mobile" class="filters-toggle-mobile lg:hidden mb-4" type="button">
+    <span class="flex items-center gap-2">
+      <i data-lucide="sliders-horizontal" class="w-5 h-5"></i> Filtros
+    </span>
+    <i data-lucide="chevron-down" class="w-5 h-5"></i>
+  </button>
+  <div id="filters-wrapper" class="hidden lg:block filters-sidebar">
+    <div class="filters-header">
+      <h3><i data-lucide="sliders-horizontal" class="filters-header-icon"></i> Filtros</h3>
+      <button class="btn-clear-filters" id="clear-filters-btn" type="button" style="display:none">Limpiar</button>
     </div>
+
+    <!-- Active Filters Chips -->
+    <div id="active-filters-chips" class="hidden px-4 py-2 flex flex-wrap gap-1 border-b border-gray-100"></div>
+
+    <!-- Categoría (radios) -->
+    <div class="filter-group open" data-filter="categoria" id="categoria-filter-group">
+      <button class="filter-group-header" type="button">
+        <span class="filter-group-title"><i data-lucide="grid-3x3" class="w-4 h-4"></i> Categoría</span>
+        <i data-lucide="chevron-down" class="filter-chevron"></i>
+      </button>
+      <div class="filter-group-content">
+        <div class="filter-options" id="filter-categorias">
+          <label class="filter-option">
+            <input class="filter-checkbox" type="radio" name="categoria" value="">
+            <span class="filter-label">Todas las categorías</span>
+          </label>
+          <label class="filter-option">
+            <input class="filter-checkbox" type="radio" name="categoria" value="electro-hogar">
+            <span class="filter-label">Electro Hogar</span>
+          </label>
+          <label class="filter-option">
+            <input class="filter-checkbox" type="radio" name="categoria" value="muebles">
+            <span class="filter-label">Muebles y Organización</span>
+          </label>
+          <label class="filter-option">
+            <input class="filter-checkbox" type="radio" name="categoria" value="motos">
+            <span class="filter-label">Motos</span>
+          </label>
+          <label class="filter-option">
+            <input class="filter-checkbox" type="radio" name="categoria" value="herramientas">
+            <span class="filter-label">Herramientas STIHL</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Marca (checkboxes con buscador interno + contador) -->
+    <div class="filter-group" data-filter="marca" id="marca-filter-group">
+      <button class="filter-group-header" type="button">
+        <span class="filter-group-title"><i data-lucide="tag" class="w-4 h-4"></i> Marca</span>
+        <span class="filter-group-count-badge" id="marca-badge">0</span>
+        <i data-lucide="chevron-down" class="filter-chevron"></i>
+      </button>
+      <div class="filter-group-content">
+        <div class="px-6 pt-3">
+          <input id="marca-search-input" type="text" placeholder="Buscar marca..." class="w-full text-xs border rounded-lg px-2 py-1.5 mb-2 focus:outline-none focus:border-blue-400">
+        </div>
+        <div class="filter-options scrollable" id="marca-options">
+          <div class="text-xs text-gray-400 py-2 text-center">Cargando marcas...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subcategoría (solo visible si hay subcats disponibles) -->
+    <div class="filter-group hidden" data-filter="subcategoria" id="subcategoria-filter-group">
+      <button class="filter-group-header" type="button">
+        <span class="filter-group-title"><i data-lucide="folder" class="w-4 h-4"></i> Subcategoría</span>
+        <span class="filter-group-count-badge" id="subcategoria-badge">0</span>
+        <i data-lucide="chevron-down" class="filter-chevron"></i>
+      </button>
+      <div class="filter-group-content">
+        <div class="filter-options scrollable" id="subcategoria-options"></div>
+      </div>
+    </div>
+
+    <!-- Precio -->
+    <div class="filter-group" data-filter="precio" id="price-filter-group">
+      <button class="filter-group-header" type="button">
+        <span class="filter-group-title"><i data-lucide="circle-dollar-sign" class="w-4 h-4"></i> Precio</span>
+        <i data-lucide="chevron-down" class="filter-chevron"></i>
+      </button>
+      <div class="filter-group-content">
+        <div class="price-filter-container">
+          <div class="price-inputs-row">
+            <div class="price-input-wrapper"><span class="price-symbol">$</span><input class="price-input-field" id="price-min" type="number" placeholder="Mín" min="0"></div>
+            <span class="text-gray-400">-</span>
+            <div class="price-input-wrapper"><span class="price-symbol">$</span><input class="price-input-field" id="price-max" type="number" placeholder="Máx" min="0"></div>
+          </div>
+          <button id="apply-price-filter" class="btn-price-apply" type="button">Aplicar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Disponibilidad -->
+    <div class="filter-group" data-filter="stock" id="stock-filter-group">
+      <button class="filter-group-header" type="button">
+        <span class="filter-group-title"><i data-lucide="package-check" class="w-4 h-4"></i> Disponibilidad</span>
+        <i data-lucide="chevron-down" class="filter-chevron"></i>
+      </button>
+      <div class="filter-group-content">
+        <div class="filter-options">
+          <label class="filter-option"><input class="filter-checkbox" type="checkbox" id="filter-stock" value="1"><span class="filter-label">Solo en stock</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calificación -->
+    <div class="filter-group" data-filter="rating" id="rating-filter-group">
+      <button class="filter-group-header" type="button">
+        <span class="filter-group-title"><i data-lucide="star" class="w-4 h-4"></i> Calificación mínima</span>
+        <i data-lucide="chevron-down" class="filter-chevron"></i>
+      </button>
+      <div class="filter-group-content">
+        <div class="filter-options">
+          <label class="filter-option" for="filter-rating-4"><input type="radio" id="filter-rating-4" name="rating" value="4" class="filter-checkbox"><span class="filter-label">⭐⭐⭐⭐ 4+ estrellas</span></label>
+          <label class="filter-option" for="filter-rating-3"><input type="radio" id="filter-rating-3" name="rating" value="3" class="filter-checkbox"><span class="filter-label">⭐⭐⭐ 3+ estrellas</span></label>
+          <label class="filter-option" for="filter-rating-2"><input type="radio" id="filter-rating-2" name="rating" value="2" class="filter-checkbox"><span class="filter-label">⭐⭐ 2+ estrellas</span></label>
+          <label class="filter-option" for="filter-rating-any"><input type="radio" id="filter-rating-any" name="rating" value="" class="filter-checkbox" checked><span class="filter-label">Cualquier calificación</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
 </aside>

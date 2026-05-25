@@ -21,10 +21,19 @@ const validate = (req, res, next) => {
 const rateLimit = require('express-rate-limit');
 const authLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // limit each IP to 10 requests per windowMs
+    max: 5, // limit each IP to 5 failed requests per windowMs
+    skipSuccessfulRequests: true, // only count failed (status >= 400) attempts
     message: { success: false, message: 'Too many requests, please try again later.' },
     standardHeaders: true,
     legacyHeaders: false,
+});
+
+const passwordResetLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 min window
+    max: 3,                    // 3 attempts per IP per 15 min
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Demasiados intentos de recuperación. Esperá 15 minutos.' }
 });
 
 // ============================================
@@ -41,7 +50,10 @@ router.post(
     authLimiter,
     [
         body('email').isEmail().withMessage('Email debe ser válido'),
-        body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+        body('password')
+            .isLength({ min: 8 }).withMessage('La contraseña debe tener al menos 8 caracteres')
+            .matches(/[A-Za-z]/).withMessage('La contraseña debe contener al menos una letra')
+            .matches(/\d/).withMessage('La contraseña debe contener al menos un número'),
         body('nombre').notEmpty().withMessage('Nombre es requerido'),
         body('apellido').optional().isString(),
         body('telefono').optional().isString()
@@ -93,6 +105,7 @@ router.post(
  */
 router.post(
     '/forgot-password',
+    passwordResetLimiter,
     [body('email').isEmail().withMessage('Email debe ser válido')],
     validate,
     AuthController.forgotPassword
@@ -106,11 +119,13 @@ router.post(
  */
 router.post(
     '/reset-password',
+    passwordResetLimiter,
     [
         body('token').notEmpty().withMessage('Token es requerido'),
         body('newPassword')
-            .isLength({ min: 6 })
-            .withMessage('La nueva contraseña debe tener al menos 6 caracteres')
+            .isLength({ min: 8 }).withMessage('La nueva contraseña debe tener al menos 8 caracteres')
+            .matches(/[A-Za-z]/).withMessage('La nueva contraseña debe contener al menos una letra')
+            .matches(/\d/).withMessage('La nueva contraseña debe contener al menos un número')
     ],
     validate,
     AuthController.resetPassword
@@ -152,8 +167,9 @@ router.put(
     authMiddleware,
     [
         body('newPassword')
-            .isLength({ min: 6 })
-            .withMessage('La nueva contraseña debe tener al menos 6 caracteres'),
+            .isLength({ min: 8 }).withMessage('La nueva contraseña debe tener al menos 8 caracteres')
+            .matches(/[A-Za-z]/).withMessage('La nueva contraseña debe contener al menos una letra')
+            .matches(/\d/).withMessage('La nueva contraseña debe contener al menos un número'),
         body('currentPassword').optional().isString()
     ],
     validate,

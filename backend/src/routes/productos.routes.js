@@ -9,23 +9,30 @@ const { query, param, body } = require('express-validator');
  * @desc    Obtener todos los productos con filtros y paginación
  * @access  Public
  * @query   {string} categoria - Slug de la categoría
- * @query   {number} marca - ID de la marca
- * @query   {number} precioMin - Precio mínimo
- * @query   {number} precioMax - Precio máximo
+ * @query   {string} marca - ID(s) de marca, puede ser CSV: "1,5,12"
+ * @query   {number} precio_min - Precio mínimo
+ * @query   {number} precio_max - Precio máximo
+ * @query   {number} subcategoria - ID de subcategoría
  * @query   {boolean} destacado - Solo productos destacados
- * @query   {string} busqueda - Término de búsqueda
+ * @query   {string} q - Término de búsqueda
  * @query   {number} page - Número de página (default: 1)
  * @query   {number} limit - Productos por página (default: 12)
- * @query   {string} orderBy - Campo de ordenamiento (default: fecha_creacion)
- * @query   {string} orderDir - Dirección de ordenamiento ASC/DESC (default: DESC)
+ * @query   {string} sort - relevance|price_asc|price_desc|name_asc
+ * @query   {number} stock - 1 = solo con stock disponible
+ * @query   {number} rating - calificación mínima
  */
 router.get('/',
     [
         query('page').optional().isInt({ min: 1 }).withMessage('Página debe ser un número mayor a 0'),
         query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Límite debe estar entre 1 y 100'),
-        query('precioMin').optional().isFloat({ min: 0 }).withMessage('Precio mínimo debe ser mayor o igual a 0'),
-        query('precioMax').optional().isFloat({ min: 0 }).withMessage('Precio máximo debe ser mayor o igual a 0'),
-        query('marca').optional().isInt().withMessage('ID de marca debe ser un número'),
+        query('precio_min').optional().isFloat({ min: 0 }).withMessage('Precio mínimo debe ser mayor o igual a 0'),
+        query('precio_max').optional().isFloat({ min: 0 }).withMessage('Precio máximo debe ser mayor o igual a 0'),
+        // Legacy param names (keep for backwards compat)
+        query('precioMin').optional().isFloat({ min: 0 }),
+        query('precioMax').optional().isFloat({ min: 0 }),
+        query('sort').optional().isIn(['relevance', 'price_asc', 'price_desc', 'name_asc', 'newest']).withMessage('Sort inválido'),
+        query('stock').optional().isIn(['0', '1']).withMessage('stock debe ser 0 o 1'),
+        query('rating').optional().isFloat({ min: 0, max: 5 }).withMessage('rating debe estar entre 0 y 5'),
         query('orderBy').optional().isIn(['precio_actual', 'nombre', 'fecha_creacion', 'calificacion_promedio', 'ventas_totales'])
             .withMessage('Campo de ordenamiento inválido'),
         query('orderDir').optional().isIn(['ASC', 'DESC']).withMessage('Dirección de ordenamiento debe ser ASC o DESC')
@@ -64,16 +71,41 @@ router.get('/buscar',
 );
 
 /**
- * @route   GET /api/v1/productos/filtros
- * @desc    Obtener filtros por categoría
+ * @route   GET /api/v1/productos/filters
+ * @route   GET /api/v1/productos/filtros  (legacy alias)
+ * @desc    Obtener filtros completos: marcas, subcategorías, rango de precio
  * @access  Public
- * @query   {string} categoria - Slug de la categoría
+ * @query   {string} categoria - Slug de la categoría (opcional)
  */
-router.get('/filtros',
+router.get('/filters', ProductoController.getFilters);
+router.get('/filtros', ProductoController.getFilters);
+
+/**
+ * @route   GET /api/v1/productos/admin/all
+ * @desc    Obtener todos los productos con campos completos para el panel admin
+ * @access  Private (Admin only - JWT cookie)
+ * @query   {number} page - Número de página (default: 1)
+ * @query   {number} limit - Productos por página (default: 25)
+ * @query   {string} q - Búsqueda por nombre o SKU
+ * @query   {boolean} activo - Filtrar por estado activo
+ * @query   {boolean} destacado - Filtrar por destacado
+ * @query   {string} categoria - Slug de categoría
+ * @query   {string} marca - Slug de marca
+ */
+router.get(
+    '/admin/all',
+    authMiddleware,
+    requireAdmin,
     [
-        query('categoria').notEmpty().withMessage('Categoría requerida')
+        query('page').optional().isInt({ min: 1 }).toInt(),
+        query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+        query('q').optional().isString().trim(),
+        query('activo').optional().isIn(['true', 'false']),
+        query('destacado').optional().isIn(['true', 'false']),
+        query('categoria').optional().isString().trim(),
+        query('marca').optional().isString().trim()
     ],
-    ProductoController.getFilters
+    ProductoController.getAllForAdmin
 );
 
 /**
@@ -124,6 +156,29 @@ router.get('/:id/stock',
 // ============================================
 
 /**
+ * @route   POST /api/v1/productos/admin/bulk-action
+ * @desc    Acción masiva sobre productos
+ * @access  Private (Admin only)
+ */
+router.post(
+    '/admin/bulk-action',
+    authMiddleware,
+    requireAdmin,
+    [
+        body('action')
+            .isIn(['activate', 'deactivate', 'destacar', 'undestacar', 'delete'])
+            .withMessage('Acción debe ser activate, deactivate, destacar, undestacar o delete'),
+        body('ids')
+            .isArray({ min: 1 })
+            .withMessage('Se requiere un array de IDs con al menos un elemento'),
+        body('ids.*')
+            .isInt({ min: 1 })
+            .withMessage('Cada ID debe ser un entero positivo')
+    ],
+    ProductoController.bulkAction
+);
+
+/**
  * @route   POST /api/v1/productos
  * @desc    Crear nuevo producto
  * @access  Private (Admin only)
@@ -156,10 +211,15 @@ router.put('/:id',
     [
         param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido'),
         body('nombre').optional().isString(),
-        body('descripcion').optional().isString(),
+        body('sku').optional().isString(),
+        body('descripcion_corta').optional().isString(),
+        body('descripcion_larga').optional().isString(),
         body('precio_actual').optional().isFloat({ min: 0 }),
         body('precio_anterior').optional().isFloat({ min: 0 }),
         body('stock').optional().isInt({ min: 0 }),
+        body('id_categoria').optional().isInt({ min: 1 }),
+        body('id_subcategoria').optional().isInt({ min: 1 }),
+        body('id_marca').optional().isInt({ min: 1 }),
         body('activo').optional().isBoolean(),
         body('destacado').optional().isBoolean(),
         body('badge').optional().isString()

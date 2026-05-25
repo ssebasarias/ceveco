@@ -12,34 +12,18 @@ async function loadUserMenuTemplates() {
 
     console.log('UI.js: Loading User Menu Templates...');
 
-    // Helper to try multiple paths
+    // Helper to load template using absolute path
     const fetchTemplate = async (filename) => {
-        const pathsToTry = [
-            // Relative (Context dependent)
-            `./components/${filename}`,
-            `../components/${filename}`,
-            // Absolute (Server root)
-            `/components/${filename}`,
-            // Explicit Project Structure
-            `/frontend/components/${filename}`,
-            `../frontend/components/${filename}`
-        ];
-
-        for (const path of pathsToTry) {
-            try {
-                // Determine if we need to adjust relative paths based on location
-                // But simplified: just try them.
-                // Note: Fetch relative paths are resolved against current page URL.
-                let res = await fetch(path);
-                if (res.ok) {
-                    console.log(`UI.js: Successfully loaded ${filename} from ${path}`);
-                    return await res.text();
-                }
-            } catch (e) {
-                // Ignore error, continue to next path
+        const path = `/components/${filename}`;
+        try {
+            const res = await fetch(path);
+            if (res.ok) {
+                return await res.text();
             }
+        } catch (e) {
+            // ignore
         }
-        console.error(`UI.js: Failed to load ${filename} after trying all paths`);
+        console.error(`UI.js: Failed to load ${filename} from ${path}`);
         return null;
     };
 

@@ -5,7 +5,11 @@ const UsuarioModel = require('../models/usuario.model');
 const AuthProviderModel = require('../models/authProvider.model');
 
 // Configuración JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'ceveco_secret_key_change_in_production';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+    console.error('FATAL: JWT_SECRET environment variable is not set. Aborting.');
+    process.exit(1);
+}
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const COOKIE_NAME = 'jwt_token';
 
@@ -56,10 +60,10 @@ class AuthController {
                 });
             }
 
-            if (password.length < 6) {
+            if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
                 return res.status(400).json({
                     success: false,
-                    message: 'La contraseña debe tener al menos 6 caracteres'
+                    message: 'La contraseña debe tener al menos 8 caracteres, una letra y un número'
                 });
             }
 
@@ -421,10 +425,10 @@ class AuthController {
             const userId = req.user.id;
             const { currentPassword, newPassword } = req.body;
 
-            if (!newPassword || newPassword.length < 6) {
+            if (!newPassword || newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/\d/.test(newPassword)) {
                 return res.status(400).json({
                     success: false,
-                    message: 'La nueva contraseña debe tener al menos 6 caracteres'
+                    message: 'La nueva contraseña debe tener al menos 8 caracteres, una letra y un número'
                 });
             }
 
@@ -494,11 +498,8 @@ class AuthController {
 
             await UsuarioModel.setRecoveryToken(email, token, expiry);
 
-            // TODO: Enviar email con el token
-            // Por ahora solo log en desarrollo
-            if (process.env.NODE_ENV === 'development') {
-                console.log(`Token de recuperación para ${email}: ${token}`);
-            }
+            // TODO: Integrar servicio de email (SendGrid / AWS SES) para enviar el token al usuario.
+            // El token fue guardado en DB y expira en 1 hora.
 
             res.json({
                 success: true,
@@ -528,10 +529,10 @@ class AuthController {
                 });
             }
 
-            if (newPassword.length < 6) {
+            if (newPassword.length < 8 || !/[A-Za-z]/.test(newPassword) || !/\d/.test(newPassword)) {
                 return res.status(400).json({
                     success: false,
-                    message: 'La contraseña debe tener al menos 6 caracteres'
+                    message: 'La contraseña debe tener al menos 8 caracteres, una letra y un número'
                 });
             }
 
