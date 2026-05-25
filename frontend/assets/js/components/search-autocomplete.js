@@ -1,6 +1,11 @@
 (function () {
     'use strict';
 
+    function escHtml(s) {
+        if (s == null) return '';
+        return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
     // Self-inject CSS so this script is the only include needed
     (function ensureCss() {
         if (document.getElementById('search-autocomplete-css')) return;
@@ -65,8 +70,8 @@
                 return '<a class="search-autocomplete-item" href="/pages/detalle-producto.html?id=' + p.id_producto + '" data-index="' + i + '" role="option">' +
                     '<img src="' + jpg + '" alt="" class="search-autocomplete-thumb" loading="lazy" onerror="this.src=\'' + webp + '\'">' +
                     '<div class="search-autocomplete-info">' +
-                        '<div class="search-autocomplete-name">' + p.nombre + '</div>' +
-                        '<div class="search-autocomplete-meta">' + (p.marca || '') + ' · ' + (p.categoria || '') + '</div>' +
+                        '<div class="search-autocomplete-name">' + escHtml(p.nombre) + '</div>' +
+                        '<div class="search-autocomplete-meta">' + escHtml(p.marca || '') + ' · ' + escHtml(p.categoria || '') + '</div>' +
                     '</div>' +
                     '<div class="search-autocomplete-price">' + formatCOP(p.precio_actual) + '</div>' +
                 '</a>';

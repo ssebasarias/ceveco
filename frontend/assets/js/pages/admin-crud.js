@@ -3,6 +3,11 @@
  * Funcionalidades CRUD para productos en las páginas públicas
  */
 
+function escHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 const API_BASE = '/api/v1';
 
 // Variable global para rastrear el estado de admin
@@ -1752,15 +1757,15 @@ function renderBannersList(banners) {
     listContainer.innerHTML = banners.map(banner => `
         <div class="bg-white border border-gray-200 rounded-xl p-4 flex items-center gap-4">
             <div class="flex-shrink-0">
-                <img src="${banner.imagen_url}" alt="${banner.titulo}" 
+                <img src="${banner.imagen_url}" alt="${escHtml(banner.titulo)}"
                     class="js-banner-list-image w-24 h-24 object-cover rounded-lg border border-gray-200">
             </div>
             <div class="flex-1 min-w-0">
-                <h5 class="font-semibold text-gray-900 truncate">${banner.titulo || 'Sin título'}</h5>
-                <p class="text-sm text-gray-600">${banner.subtitulo || ''}</p>
+                <h5 class="font-semibold text-gray-900 truncate">${escHtml(banner.titulo || 'Sin título')}</h5>
+                <p class="text-sm text-gray-600">${escHtml(banner.subtitulo || '')}</p>
                 <div class="flex items-center gap-2 mt-2">
                     <span class="px-2 py-1 text-xs rounded-full ${banner.posicion === 'hero' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
-                        ${banner.posicion}
+                        ${escHtml(banner.posicion)}
                     </span>
                     <span class="px-2 py-1 text-xs rounded-full ${banner.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                         ${banner.activo ? 'Activo' : 'Inactivo'}
@@ -2713,21 +2718,21 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <input type="checkbox" class="row-checkbox w-4 h-4 rounded" data-id="${p.id_producto}">
                     </td>
                     <td class="px-3 py-2">
-                        <img src="${imgUrl}" alt="${p.nombre}" class="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                        <img src="${imgUrl}" alt="${escHtml(p.nombre)}" class="w-12 h-12 object-cover rounded-lg border border-gray-200"
                              onerror="this.src='/assets/img/no-image.svg'">
                     </td>
                     <td class="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">${p.id_producto}</td>
-                    <td class="px-3 py-3 text-sm text-gray-700 whitespace-nowrap font-mono">${p.sku || '-'}</td>
-                    <td class="px-3 py-3 text-sm text-gray-900 max-w-xs truncate" title="${p.nombre}">${p.nombre}</td>
-                    <td class="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">${p.categoria || '-'}</td>
-                    <td class="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">${p.marca || '-'}</td>
+                    <td class="px-3 py-3 text-sm text-gray-700 whitespace-nowrap font-mono">${escHtml(p.sku || '-')}</td>
+                    <td class="px-3 py-3 text-sm text-gray-900 max-w-xs truncate" title="${escHtml(p.nombre)}">${escHtml(p.nombre)}</td>
+                    <td class="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">${escHtml(p.categoria || '-')}</td>
+                    <td class="px-3 py-3 text-sm text-gray-600 whitespace-nowrap">${escHtml(p.marca || '-')}</td>
                     <td class="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">${precio}</td>
                     <td class="px-3 py-3 text-sm text-gray-900 whitespace-nowrap">${p.stock != null ? p.stock : '-'}</td>
                     <td class="px-3 py-3 whitespace-nowrap">${activoBadge}</td>
                     <td class="px-3 py-3 whitespace-nowrap">${destacadoBadge}</td>
                     <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">
                         <button class="panel-edit-btn text-[#FE2418] hover:text-[#091C49] mr-3 font-medium" data-id="${p.id_producto}">Editar</button>
-                        <button class="panel-delete-btn text-red-600 hover:text-red-900 font-medium" data-id="${p.id_producto}" data-name="${p.nombre.replace(/"/g, '&quot;')}">Eliminar</button>
+                        <button class="panel-delete-btn text-red-600 hover:text-red-900 font-medium" data-id="${p.id_producto}" data-name="${escHtml(p.nombre)}">Eliminar</button>
                     </td>
                 </tr>
             `;
@@ -2942,18 +2947,18 @@ window.setupModalCloseListeners = setupModalCloseListeners;
             <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden" data-banner-id="${b.id_banner}">
                 <!-- Image preview 16:9 -->
                 <div class="relative w-full" style="padding-top:56.25%; max-height:200px;">
-                    <img src="${b.imagen_url || '/assets/img/no-image.svg'}" alt="${(b.titulo || '').replace(/"/g, '&quot;')}"
+                    <img src="${b.imagen_url || '/assets/img/no-image.svg'}" alt="${escHtml(b.titulo || '')}"
                          class="absolute inset-0 w-full h-full object-cover"
                          onerror="this.src='/assets/img/no-image.svg'">
                 </div>
                 <div class="p-4">
                     <!-- Title -->
-                    <h3 class="font-semibold text-gray-900 truncate mb-2" title="${(b.titulo || '').replace(/"/g, '&quot;')}">${b.titulo || 'Sin título'}</h3>
+                    <h3 class="font-semibold text-gray-900 truncate mb-2" title="${escHtml(b.titulo || '')}">${escHtml(b.titulo || 'Sin título')}</h3>
 
                     <!-- Badges row -->
                     <div class="flex flex-wrap items-center gap-2 mb-3">
                         <span class="px-2 py-0.5 text-xs rounded-full font-medium ${posicionColors[b.posicion] || 'bg-gray-100 text-gray-700'}">
-                            ${b.posicion}
+                            ${escHtml(b.posicion)}
                         </span>
                         <span class="banner-activo-badge px-2 py-0.5 text-xs rounded-full font-medium ${b.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
                             ${b.activo ? 'Activo' : 'Inactivo'}
@@ -2985,7 +2990,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <button class="panel-edit-banner flex-1 bg-[#FE2418] text-white px-3 py-1.5 rounded-lg text-sm hover:bg-[#d91b10] transition font-medium"
                                 data-id="${b.id_banner}">Editar</button>
                         <button class="panel-delete-banner flex-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition font-medium"
-                                data-id="${b.id_banner}" data-titulo="${(b.titulo || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                                data-id="${b.id_banner}" data-titulo="${escHtml(b.titulo || '')}">Eliminar</button>
                     </div>
                 </div>
             </div>
@@ -3468,9 +3473,9 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                 }
                 grid.innerHTML = products.map(p => `
                     <div class="bg-white rounded-lg border border-gray-200 p-4">
-                        <img src="${p.imagen || '/assets/img/no-image.svg'}" alt="${p.nombre}" class="w-full h-32 object-cover rounded mb-2"
+                        <img src="${p.imagen || '/assets/img/no-image.svg'}" alt="${escHtml(p.nombre)}" class="w-full h-32 object-cover rounded mb-2"
                              onerror="this.src='/assets/img/no-image.svg'">
-                        <h3 class="font-semibold text-gray-800 mb-1 text-sm truncate">${p.nombre}</h3>
+                        <h3 class="font-semibold text-gray-800 mb-1 text-sm truncate">${escHtml(p.nombre)}</h3>
                         <p class="text-sm text-gray-600 mb-2">$${parseFloat(p.precio_actual).toLocaleString('es-CO')}</p>
                         <button class="panel-toggle-featured w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm transition"
                                 data-id="${p.id_producto}">Quitar de Destacados</button>
@@ -3650,12 +3655,12 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div class="space-y-3">
                             ${s.productos_sin_stock.map(p => `
                             <div class="flex items-center gap-3">
-                                <img src="${p.imagen || '/assets/img/no-image.svg'}" alt="${p.nombre}"
+                                <img src="${p.imagen || '/assets/img/no-image.svg'}" alt="${escHtml(p.nombre)}"
                                      class="w-12 h-12 object-cover rounded-lg border border-gray-100 flex-shrink-0"
                                      onerror="this.src='/assets/img/no-image.svg'">
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900 truncate" title="${p.nombre}">${p.nombre}</p>
-                                    <p class="text-xs text-gray-400 font-mono">${p.sku || '-'}</p>
+                                    <p class="text-sm font-medium text-gray-900 truncate" title="${escHtml(p.nombre)}">${escHtml(p.nombre)}</p>
+                                    <p class="text-xs text-gray-400 font-mono">${escHtml(p.sku || '-')}</p>
                                 </div>
                                 <span class="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold ${p.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}">
                                     Stock: ${p.stock}
@@ -3683,7 +3688,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                                     </svg>
                                 </div>
                                 <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-gray-900">${p.numero_pedido || '#' + p.id_pedido}</p>
+                                    <p class="text-sm font-medium text-gray-900">${escHtml(p.numero_pedido || '#' + p.id_pedido)}</p>
                                     <p class="text-xs text-gray-400">${p.fecha_creacion ? new Date(p.fecha_creacion).toLocaleDateString('es-CO') : '-'}</p>
                                 </div>
                                 <div class="flex-shrink-0 text-right">

@@ -2,6 +2,11 @@
  * Logica de la pagina de Detalle de Producto
  */
 
+function escHtml(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 // Variables globales para el producto actual
 let currentProduct = null;
 let currentQuantity = 1;
@@ -101,7 +106,7 @@ function renderProduct(product) {
     // Badge
     if (product.badge) {
         const badgeContainer = document.getElementById('product-badge');
-        if (badgeContainer) badgeContainer.innerHTML = `<span class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">${product.badge}</span>`;
+        if (badgeContainer) badgeContainer.innerHTML = `<span class="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-sm">${escHtml(product.badge)}</span>`;
     }
 
     // Stock
@@ -166,8 +171,9 @@ function renderProduct(product) {
     }
 
     // Descripción larga
+    // TODO: Integrate DOMPurify for rich-text support when admin-authored HTML is needed.
     const fullDesc = document.getElementById('full-description');
-    if (fullDesc) fullDesc.innerHTML = product.descripcion_larga || `<p>${product.descripcion_corta}</p>`;
+    if (fullDesc) fullDesc.innerHTML = `<p>${escHtml(product.descripcion_larga || product.descripcion_corta || '')}</p>`;
 
     // Especificaciones
     renderSpecs(product);
@@ -218,8 +224,8 @@ function renderSpecs(product) {
 
             return `
                 <div class="flex justify-between py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors px-2 rounded">
-                    <span class="font-semibold text-gray-700">${spec.nombre}:</span>
-                    <span class="text-gray-900 font-medium">${valor}${unidad}</span>
+                    <span class="font-semibold text-gray-700">${escHtml(spec.nombre)}:</span>
+                    <span class="text-gray-900 font-medium">${escHtml(valor)}${escHtml(unidad)}</span>
                 </div>
             `;
         }).join('');
