@@ -32,32 +32,42 @@
         <!-- Tabs Navigation -->
         <div class="bg-white rounded-lg shadow-sm mb-6">
             <div class="border-b border-gray-200">
-                <nav class="flex -mb-px">
-                    <button onclick="switchTab('productos')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-blue-500 text-blue-600" data-tab="productos">
+                <nav class="flex -mb-px overflow-x-auto">
+                    <button onclick="switchTab('dashboard')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-[#FE2418] text-[#FE2418] whitespace-nowrap" data-tab="dashboard">
+                        Dashboard
+                    </button>
+                    <button onclick="switchTab('productos')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="productos">
                         Productos
                     </button>
-                    <button onclick="switchTab('banners')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="banners">
+                    <button onclick="switchTab('banners')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="banners">
                         Banners
                     </button>
-                    <button onclick="switchTab('destacados')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="destacados">
+                    <button onclick="switchTab('destacados')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="destacados">
                         Productos Destacados
                     </button>
-                    <button onclick="switchTab('backup')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="backup">
+                    <button onclick="switchTab('backup')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="backup">
                         Backup
                     </button>
-                    <button onclick="switchTab('categorias')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="categorias">
+                    <button onclick="switchTab('categorias')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="categorias">
                         Categorías
                     </button>
-                    <button onclick="switchTab('marcas')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="marcas">
+                    <button onclick="switchTab('marcas')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="marcas">
                         Marcas
                     </button>
-                    <button onclick="switchTab('sedes')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="sedes">
+                    <button onclick="switchTab('sedes')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="sedes">
                         Sedes
                     </button>
-                    <button onclick="switchTab('asesores')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="asesores">
+                    <button onclick="switchTab('asesores')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="asesores">
                         Asesores
                     </button>
                 </nav>
+            </div>
+        </div>
+
+        <!-- Tab Content: Dashboard -->
+        <div id="tab-dashboard" class="tab-content">
+            <div id="dashboard-container">
+                <div class="text-center text-gray-500 py-12">Cargando dashboard...</div>
             </div>
         </div>
 
@@ -66,14 +76,14 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Productos</h2>
-                    <button onclick="openProductModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <button onclick="openProductModal()" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
                         + Nuevo Producto
                     </button>
                 </div>
 
                 <!-- Search and Filters -->
                 <div class="mb-6 flex gap-4">
-                    <input type="text" id="product-search" placeholder="Buscar productos..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="product-search" placeholder="Buscar productos..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
                     <button onclick="searchProducts()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
                         Buscar
                     </button>
@@ -110,7 +120,7 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Banners</h2>
-                    <button onclick="openBannerModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <button onclick="openBannerModal()" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
                         + Nuevo Banner
                     </button>
                 </div>
@@ -130,7 +140,7 @@
 
                 <!-- Search -->
                 <div class="mb-6">
-                    <input type="text" id="featured-search" placeholder="Buscar productos para destacar..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="featured-search" placeholder="Buscar productos para destacar..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
                 </div>
 
                 <!-- Featured Products Grid -->
@@ -168,12 +178,12 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Categorías</h2>
-                    <button id="new-categoria-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <button id="new-categoria-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
                         + Nueva Categoría
                     </button>
                 </div>
                 <div class="mb-4">
-                    <input type="text" id="categoria-search" placeholder="Buscar categorías..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="categoria-search" placeholder="Buscar categorías..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -201,12 +211,12 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Marcas</h2>
-                    <button id="new-marca-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <button id="new-marca-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
                         + Nueva Marca
                     </button>
                 </div>
                 <div class="mb-4">
-                    <input type="text" id="marca-search" placeholder="Buscar marcas..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="marca-search" placeholder="Buscar marcas..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -234,12 +244,12 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Sedes</h2>
-                    <button id="new-sede-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <button id="new-sede-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
                         + Nueva Sede
                     </button>
                 </div>
                 <div class="mb-4">
-                    <input type="text" id="sede-search" placeholder="Buscar sedes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="sede-search" placeholder="Buscar sedes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -267,12 +277,12 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Asesores</h2>
-                    <button id="new-asesor-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                    <button id="new-asesor-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
                         + Nuevo Asesor
                     </button>
                 </div>
                 <div class="mb-4">
-                    <input type="text" id="asesor-search" placeholder="Buscar asesores..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <input type="text" id="asesor-search" placeholder="Buscar asesores..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">

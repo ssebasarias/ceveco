@@ -618,7 +618,7 @@ function loadAdminModals() {
                                 <input type="number" id="new-banner-orden" value="0" placeholder="Orden" min="0"
                                     class="w-24 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary">
                             </div>
-                            <button id="add-banner-btn" class="w-full bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition-all font-medium">
+                            <button id="add-banner-btn" class="w-full bg-[#FE2418] text-white px-4 py-2 rounded-xl hover:bg-[#d91b10] transition-all font-medium">
                                 Agregar Banner
                             </button>
                         </div>
@@ -1139,7 +1139,7 @@ async function handleImageUpload(event) {
 
     const statusEl = document.getElementById('image-upload-status');
     statusEl.textContent = 'Subiendo imagen...';
-    statusEl.className = 'text-xs text-blue-600';
+    statusEl.className = 'text-xs text-[#00458E]';
 
     try {
         const formData = new FormData();
@@ -1210,7 +1210,7 @@ function updateImagePreview() {
             <button type="button" class="remove-image-btn absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-xs" data-index="${index}">
                 ×
             </button>
-            ${index === 0 ? '<span class="absolute bottom-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded">Principal</span>' : ''}
+            ${index === 0 ? '<span class="absolute bottom-1 left-1 bg-[#FE2418] text-white text-xs px-2 py-1 rounded">Principal</span>' : ''}
         `;
         previewContainer.appendChild(imgDiv);
 
@@ -1769,7 +1769,7 @@ function renderBannersList(banners) {
                 </div>
             </div>
             <div class="flex-shrink-0 flex gap-2">
-                <button class="edit-banner-btn px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm" data-id="${banner.id_banner}">
+                <button class="edit-banner-btn px-4 py-2 bg-[#FE2418] text-white rounded-lg hover:bg-[#d91b10] transition text-sm" data-id="${banner.id_banner}">
                     Editar
                 </button>
                 <button class="delete-banner-btn px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm" data-id="${banner.id_banner}" data-titulo="${banner.titulo.replace(/'/g, "\\'")}">
@@ -2444,11 +2444,11 @@ window.setupModalCloseListeners = setupModalCloseListeners;
 
         // Escuchar hash
         const hash = window.location.hash.replace('#', '');
-        const validTabs = ['productos', 'banners', 'destacados', 'backup', 'categorias', 'marcas', 'sedes', 'asesores'];
+        const validTabs = ['dashboard', 'productos', 'banners', 'destacados', 'backup', 'categorias', 'marcas', 'sedes', 'asesores'];
         if (hash && validTabs.includes(hash)) {
             panelSwitchTab(hash);
         } else {
-            panelSwitchTab('productos');
+            panelSwitchTab('dashboard');
         }
 
         // Configurar tabs para que llamen a panelSwitchTab
@@ -2528,10 +2528,10 @@ window.setupModalCloseListeners = setupModalCloseListeners;
         document.querySelectorAll('.tab-btn').forEach(btn => {
             const tab = btn.getAttribute('data-tab');
             if (tab === tabName) {
-                btn.classList.add('border-blue-500', 'text-blue-600');
-                btn.classList.remove('border-transparent', 'text-gray-500');
+                btn.classList.add('border-[#FE2418]', 'text-[#FE2418]');
+                btn.classList.remove('border-transparent', 'text-gray-500', 'border-blue-500', 'text-blue-600');
             } else {
-                btn.classList.remove('border-blue-500', 'text-blue-600');
+                btn.classList.remove('border-[#FE2418]', 'text-[#FE2418]', 'border-blue-500', 'text-blue-600');
                 btn.classList.add('border-transparent', 'text-gray-500');
             }
         });
@@ -2541,6 +2541,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
         if (tabEl) tabEl.classList.add('active');
 
         switch (tabName) {
+            case 'dashboard': panelLoadDashboard(); break;
             case 'productos': panelLoadProducts(1); break;
             case 'banners': panelLoadBanners(); break;
             case 'destacados': panelLoadFeaturedProducts(); break;
@@ -2587,12 +2588,12 @@ window.setupModalCloseListeners = setupModalCloseListeners;
             filterBar.id = 'admin-filter-bar';
             filterBar.className = 'mb-4 flex flex-wrap gap-3 items-center';
             filterBar.innerHTML = `
-                <select id="filter-activo" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                <select id="filter-activo" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FE2418]">
                     <option value="">Todos los estados</option>
                     <option value="true">Activo</option>
                     <option value="false">Inactivo</option>
                 </select>
-                <select id="filter-destacado" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+                <select id="filter-destacado" class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#FE2418]">
                     <option value="">Todos</option>
                     <option value="true">Destacados</option>
                     <option value="false">No destacados</option>
@@ -2725,7 +2726,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                     <td class="px-3 py-3 whitespace-nowrap">${activoBadge}</td>
                     <td class="px-3 py-3 whitespace-nowrap">${destacadoBadge}</td>
                     <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">
-                        <button class="panel-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${p.id_producto}">Editar</button>
+                        <button class="panel-edit-btn text-[#FE2418] hover:text-[#091C49] mr-3 font-medium" data-id="${p.id_producto}">Editar</button>
                         <button class="panel-delete-btn text-red-600 hover:text-red-900 font-medium" data-id="${p.id_producto}" data-name="${p.nombre.replace(/"/g, '&quot;')}">Eliminar</button>
                     </td>
                 </tr>
@@ -2778,7 +2779,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
         container.innerHTML = `
             <button class="panel-page-btn px-3 py-2 border rounded text-sm ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>Anterior</button>
             ${pages.map(p => `
-                <button class="panel-page-btn px-3 py-2 border rounded text-sm ${p === page ? 'bg-blue-600 text-white' : 'hover:bg-gray-50'}" data-page="${p}">${p}</button>
+                <button class="panel-page-btn px-3 py-2 border rounded text-sm ${p === page ? 'bg-[#FE2418] text-white' : 'hover:bg-gray-50'}" data-page="${p}">${p}</button>
             `).join('')}
             <button class="panel-page-btn px-3 py-2 border rounded text-sm ${page >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>Siguiente</button>
         `;
@@ -2963,7 +2964,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                     <div class="flex items-center gap-2 mb-3">
                         <label class="text-xs text-gray-500 whitespace-nowrap">Orden:</label>
                         <input type="number" min="0"
-                               class="banner-orden-input w-20 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               class="banner-orden-input w-20 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]"
                                value="${b.orden != null ? b.orden : 0}"
                                data-id="${b.id_banner}"
                                data-original="${b.orden != null ? b.orden : 0}">
@@ -2981,7 +2982,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
 
                     <!-- Actions -->
                     <div class="flex gap-2">
-                        <button class="panel-edit-banner flex-1 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-blue-700 transition font-medium"
+                        <button class="panel-edit-banner flex-1 bg-[#FE2418] text-white px-3 py-1.5 rounded-lg text-sm hover:bg-[#d91b10] transition font-medium"
                                 data-id="${b.id_banner}">Editar</button>
                         <button class="panel-delete-banner flex-1 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm hover:bg-red-700 transition font-medium"
                                 data-id="${b.id_banner}" data-titulo="${(b.titulo || '').replace(/"/g, '&quot;')}">Eliminar</button>
@@ -3107,42 +3108,42 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Título <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-banner-titulo" required placeholder="Ej: Ofertas de Temporada"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Subtítulo -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Subtítulo</label>
                             <input type="text" id="panel-banner-subtitulo" placeholder="Ej: Hasta 50% de descuento"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Descripción -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
                             <textarea id="panel-banner-descripcion" rows="3" placeholder="Descripción del banner..."
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418] resize-none"></textarea>
                         </div>
 
                         <!-- Enlace URL -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">URL de Enlace</label>
                             <input type="text" id="panel-banner-enlace-url" placeholder="Ej: /pages/productos.html?categoria=electro"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Texto Botón -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Texto Botón</label>
                             <input type="text" id="panel-banner-texto-boton" placeholder="Ej: Ver Ofertas"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Posición -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Posición</label>
                             <select id="panel-banner-posicion"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none bg-white">
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418] appearance-none bg-white">
                                 <option value="hero">Hero (Principal)</option>
                                 <option value="sidebar">Sidebar</option>
                                 <option value="footer">Footer</option>
@@ -3154,27 +3155,27 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Orden</label>
                             <input type="number" id="panel-banner-orden" min="0" value="0"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Fecha Inicio -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio</label>
                             <input type="datetime-local" id="panel-banner-fecha-inicio"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Fecha Fin -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Fecha Fin</label>
                             <input type="datetime-local" id="panel-banner-fecha-fin"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] focus:border-[#FE2418]">
                         </div>
 
                         <!-- Activo -->
                         <div class="md:col-span-2 flex items-center gap-3 pt-1">
                             <input type="checkbox" id="panel-banner-activo" checked
-                                   class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                                   class="w-5 h-5 text-[#FE2418] border-gray-300 rounded focus:ring-[#FE2418] cursor-pointer">
                             <label for="panel-banner-activo" class="text-sm font-medium text-gray-700 cursor-pointer">Activo</label>
                         </div>
 
@@ -3202,7 +3203,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
 
                     <div class="mt-8 flex gap-3 pt-6 border-t border-gray-200">
                         <button type="submit" id="panel-banner-submit-btn"
-                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium shadow-md">
+                                class="flex-1 bg-[#FE2418] text-white px-6 py-3 rounded-xl hover:bg-[#d91b10] transition font-medium shadow-md">
                             Guardar Banner
                         </button>
                         <button type="button" id="cancel-panel-banner-modal-btn"
@@ -3342,7 +3343,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
         preview.classList.remove('hidden');
 
         statusEl.textContent = 'Subiendo imagen...';
-        statusEl.className = 'text-xs text-blue-600';
+        statusEl.className = 'text-xs text-[#00458E]';
 
         try {
             // Optimize if > 1MB
@@ -3539,6 +3540,209 @@ window.setupModalCloseListeners = setupModalCloseListeners;
     }
 
     // --------------------------------------------------------
+    // Dashboard with KPIs
+    // --------------------------------------------------------
+    async function panelLoadDashboard() {
+        const container = document.getElementById('dashboard-container');
+        if (!container) return;
+        container.innerHTML = '<div class="text-center text-gray-500 py-12">Cargando dashboard...</div>';
+
+        try {
+            const response = await fetch('/api/v1/admin/stats', { credentials: 'include' });
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '/pages/login.html?redirect=admin';
+                return;
+            }
+            const data = await response.json();
+            if (!data.success) {
+                container.innerHTML = `<div class="text-center text-red-500 py-12">Error al cargar estadísticas: ${data.message || ''}</div>`;
+                return;
+            }
+
+            const s = data.data;
+            const fmt = n => (n || 0).toLocaleString('es-CO');
+
+            container.innerHTML = `
+                <!-- 4 Metric Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+
+                    <!-- Productos activos -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 border-l-4 border-l-[#FE2418]">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Productos Activos</p>
+                                <p class="text-3xl font-bold text-gray-900">${fmt(s.productos.activos)}</p>
+                                <p class="text-xs text-gray-400 mt-1">de ${fmt(s.productos.total)} total</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-[#FE2418]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 10V7"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        ${s.productos.sin_stock > 0 ? `<p class="mt-3 text-xs font-medium text-red-600 bg-red-50 rounded-lg px-3 py-1.5">⚠ ${s.productos.sin_stock} sin stock · ${s.productos.stock_bajo_5} stock bajo</p>` : `<p class="mt-3 text-xs font-medium text-green-600 bg-green-50 rounded-lg px-3 py-1.5">✓ Sin alertas de stock</p>`}
+                    </div>
+
+                    <!-- Pedidos pendientes -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 border-l-4 border-l-[#00458E]">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Pedidos Pendientes</p>
+                                <p class="text-3xl font-bold text-gray-900">${fmt(s.pedidos.pendientes)}</p>
+                                <p class="text-xs text-gray-400 mt-1">${fmt(s.pedidos.mes)} este mes</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-[#00458E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5">Hoy: ${fmt(s.pedidos.hoy)} · Semana: ${fmt(s.pedidos.semana)}</p>
+                    </div>
+
+                    <!-- Banners activos -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 border-l-4 border-l-[#091C49]">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Banners Activos</p>
+                                <p class="text-3xl font-bold text-gray-900">${fmt(s.banners.activos)}</p>
+                                <p class="text-xs text-gray-400 mt-1">de ${fmt(s.banners.total)} total</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-[#091C49]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <p class="mt-3 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5">${s.banners.total - s.banners.activos} inactivos</p>
+                    </div>
+
+                    <!-- Usuarios totales -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 border-l-4 border-l-[#FFD23F]">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Usuarios Totales</p>
+                                <p class="text-3xl font-bold text-gray-900">${fmt(s.usuarios.total)}</p>
+                                <p class="text-xs text-gray-400 mt-1">${fmt(s.usuarios.admins)} admins</p>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-[#FFD23F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        ${s.usuarios.nuevos_semana > 0 ? `<p class="mt-3 text-xs font-medium text-amber-700 bg-amber-50 rounded-lg px-3 py-1.5">+${fmt(s.usuarios.nuevos_semana)} nuevos esta semana</p>` : `<p class="mt-3 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-1.5">Sin nuevos registros esta semana</p>`}
+                    </div>
+                </div>
+
+                <!-- 2 Lists -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+                    <!-- Productos sin stock / stock bajo -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-[#FE2418]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            Productos sin stock / stock bajo
+                        </h3>
+                        ${s.productos_sin_stock && s.productos_sin_stock.length > 0 ? `
+                        <div class="space-y-3">
+                            ${s.productos_sin_stock.map(p => `
+                            <div class="flex items-center gap-3">
+                                <img src="${p.imagen || '/assets/img/no-image.svg'}" alt="${p.nombre}"
+                                     class="w-12 h-12 object-cover rounded-lg border border-gray-100 flex-shrink-0"
+                                     onerror="this.src='/assets/img/no-image.svg'">
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900 truncate" title="${p.nombre}">${p.nombre}</p>
+                                    <p class="text-xs text-gray-400 font-mono">${p.sku || '-'}</p>
+                                </div>
+                                <span class="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold ${p.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}">
+                                    Stock: ${p.stock}
+                                </span>
+                            </div>
+                            `).join('')}
+                        </div>` : `<p class="text-sm text-gray-400 text-center py-6">No hay productos con stock crítico</p>`}
+                    </div>
+
+                    <!-- Pedidos pendientes -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="text-base font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-[#00458E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            Pedidos pendientes recientes
+                        </h3>
+                        ${s.ultimos_pedidos_pendientes && s.ultimos_pedidos_pendientes.length > 0 ? `
+                        <div class="space-y-3">
+                            ${s.ultimos_pedidos_pendientes.map(p => `
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-[#00458E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">${p.numero_pedido || '#' + p.id_pedido}</p>
+                                    <p class="text-xs text-gray-400">${p.fecha_creacion ? new Date(p.fecha_creacion).toLocaleDateString('es-CO') : '-'}</p>
+                                </div>
+                                <div class="flex-shrink-0 text-right">
+                                    <p class="text-sm font-semibold text-gray-900">$${parseFloat(p.total || 0).toLocaleString('es-CO')}</p>
+                                    <span class="px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">${p.estado}</span>
+                                </div>
+                            </div>
+                            `).join('')}
+                        </div>` : `<p class="text-sm text-gray-400 text-center py-6">No hay pedidos pendientes</p>`}
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-base font-semibold text-gray-800 mb-4">Acceso rápido</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <button onclick="window.panelSwitchTab('categorias')"
+                                class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-[#FE2418] hover:bg-red-50 transition group">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-[#FE2418]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-[#FE2418]">Categorías</span>
+                            <span class="text-lg font-bold text-gray-900">${fmt(s.categorias)}</span>
+                        </button>
+                        <button onclick="window.panelSwitchTab('marcas')"
+                                class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-[#FE2418] hover:bg-red-50 transition group">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-[#FE2418]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-[#FE2418]">Marcas</span>
+                            <span class="text-lg font-bold text-gray-900">${fmt(s.marcas)}</span>
+                        </button>
+                        <button onclick="window.panelSwitchTab('sedes')"
+                                class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-[#FE2418] hover:bg-red-50 transition group">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-[#FE2418]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-[#FE2418]">Sedes</span>
+                            <span class="text-lg font-bold text-gray-900">${fmt(s.sedes)}</span>
+                        </button>
+                        <button onclick="window.panelSwitchTab('asesores')"
+                                class="flex flex-col items-center gap-2 p-4 rounded-xl border border-gray-200 hover:border-[#FE2418] hover:bg-red-50 transition group">
+                            <svg class="w-6 h-6 text-gray-400 group-hover:text-[#FE2418]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            <span class="text-sm font-medium text-gray-700 group-hover:text-[#FE2418]">Asesores</span>
+                            <span class="text-lg font-bold text-gray-900">—</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } catch (err) {
+            console.error('Error cargando dashboard:', err);
+            container.innerHTML = '<div class="text-center text-red-500 py-12">Error al cargar el dashboard. Verifica la conexión.</div>';
+        }
+    }
+
+    // --------------------------------------------------------
     // Override saveProductFromModal para refrescar tabla en admin.html
     // --------------------------------------------------------
     function overrideSaveProduct() {
@@ -3701,7 +3905,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                    <button class="cat-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${c.id_categoria}">Editar</button>
+                    <button class="cat-edit-btn text-[#FE2418] hover:text-[#091C49] mr-3 font-medium" data-id="${c.id_categoria}">Editar</button>
                     <button class="cat-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${c.id_categoria}" data-name="${(c.nombre || '').replace(/"/g, '&quot;')}">Eliminar</button>
                 </td>
             </tr>
@@ -3731,32 +3935,32 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nombre <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-categoria-nombre" required placeholder="Ej: Electro Hogar"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Slug <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-categoria-slug" required placeholder="electro-hogar"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Icono (Lucide)</label>
                             <input type="text" id="panel-categoria-icono" placeholder="tv, sofa, bike..."
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
                             <textarea id="panel-categoria-descripcion" rows="3"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] resize-none"></textarea>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">URL de Imagen</label>
                             <input type="text" id="panel-categoria-imagen-url"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Orden</label>
                             <input type="number" id="panel-categoria-orden" min="0" value="0"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2 flex items-center gap-3">
                             <input type="checkbox" id="panel-categoria-activo" checked class="w-5 h-5 rounded">
@@ -3765,7 +3969,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                     </div>
                     <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
                         <button type="submit" id="panel-categoria-submit-btn"
-                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                                class="flex-1 bg-[#FE2418] text-white px-6 py-3 rounded-xl hover:bg-[#d91b10] transition font-medium">
                             Guardar Categoría
                         </button>
                         <button type="button" id="cancel-panel-categoria-btn"
@@ -3918,14 +4122,14 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                 <td class="px-4 py-3 text-sm text-gray-900">${m.id_marca}</td>
                 <td class="px-4 py-3 text-sm font-medium text-gray-900">${m.nombre}</td>
                 <td class="px-4 py-3 text-sm text-gray-600 font-mono">${m.slug || '-'}</td>
-                <td class="px-4 py-3 text-sm text-gray-600">${m.sitio_web ? `<a href="${m.sitio_web}" target="_blank" class="text-blue-600 hover:underline">Ver</a>` : '-'}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">${m.sitio_web ? `<a href="${m.sitio_web}" target="_blank" class="text-[#00458E] hover:underline">Ver</a>` : '-'}</td>
                 <td class="px-4 py-3">
                     ${m.activo
                         ? '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Activo</span>'
                         : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                    <button class="marca-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${m.id_marca}">Editar</button>
+                    <button class="marca-edit-btn text-[#FE2418] hover:text-[#091C49] mr-3 font-medium" data-id="${m.id_marca}">Editar</button>
                     <button class="marca-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${m.id_marca}" data-name="${(m.nombre || '').replace(/"/g, '&quot;')}">Eliminar</button>
                 </td>
             </tr>
@@ -3955,27 +4159,27 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nombre <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-marca-nombre" required placeholder="Ej: Samsung"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Slug <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-marca-slug" required placeholder="samsung"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Sitio Web</label>
                             <input type="text" id="panel-marca-sitio-web" placeholder="https://samsung.com"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">URL de Logo</label>
                             <input type="text" id="panel-marca-logo-url"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
                             <textarea id="panel-marca-descripcion" rows="3"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] resize-none"></textarea>
                         </div>
                         <div class="md:col-span-2 flex items-center gap-3">
                             <input type="checkbox" id="panel-marca-activo" checked class="w-5 h-5 rounded">
@@ -3984,7 +4188,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                     </div>
                     <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
                         <button type="submit" id="panel-marca-submit-btn"
-                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                                class="flex-1 bg-[#FE2418] text-white px-6 py-3 rounded-xl hover:bg-[#d91b10] transition font-medium">
                             Guardar Marca
                         </button>
                         <button type="button" id="cancel-panel-marca-btn"
@@ -4137,7 +4341,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                    <button class="sede-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${s.id_sede}">Editar</button>
+                    <button class="sede-edit-btn text-[#FE2418] hover:text-[#091C49] mr-3 font-medium" data-id="${s.id_sede}">Editar</button>
                     <button class="sede-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${s.id_sede}" data-name="${(s.nombre || '').replace(/"/g, '&quot;')}">Eliminar</button>
                 </td>
             </tr>
@@ -4167,47 +4371,47 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nombre <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-sede-nombre" required placeholder="Ej: Sede Principal Bogotá"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Ciudad <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-sede-ciudad" required placeholder="Bogotá"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Departamento</label>
                             <input type="text" id="panel-sede-departamento" placeholder="Cundinamarca"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Dirección <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-sede-direccion" required placeholder="Calle 80 # 45-23"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
                             <input type="text" id="panel-sede-telefono"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
                             <input type="text" id="panel-sede-whatsapp" placeholder="+57 300 000 0000"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Latitud</label>
                             <input type="number" step="any" id="panel-sede-latitud" placeholder="4.7110"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Longitud</label>
                             <input type="number" step="any" id="panel-sede-longitud" placeholder="-74.0721"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Horario de Atención</label>
                             <textarea id="panel-sede-horario" rows="3" placeholder="Lunes a Viernes 8am - 6pm"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] resize-none"></textarea>
                         </div>
                         <div class="md:col-span-2 flex items-center gap-6 pt-1">
                             <label class="flex items-center gap-2 cursor-pointer">
@@ -4222,7 +4426,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                     </div>
                     <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
                         <button type="submit" id="panel-sede-submit-btn"
-                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                                class="flex-1 bg-[#FE2418] text-white px-6 py-3 rounded-xl hover:bg-[#d91b10] transition font-medium">
                             Guardar Sede
                         </button>
                         <button type="button" id="cancel-panel-sede-btn"
@@ -4384,7 +4588,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
                 </td>
                 <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
-                    <button class="asesor-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${a.id_asesor}">Editar</button>
+                    <button class="asesor-edit-btn text-[#FE2418] hover:text-[#091C49] mr-3 font-medium" data-id="${a.id_asesor}">Editar</button>
                     <button class="asesor-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${a.id_asesor}" data-name="${(a.nombre_completo || '').replace(/"/g, '&quot;')}">Eliminar</button>
                 </td>
             </tr>
@@ -4414,32 +4618,32 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo <span class="text-red-500">*</span></label>
                             <input type="text" id="panel-asesor-nombre" required placeholder="Ej: Juan Carlos Pérez"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono / WhatsApp</label>
                             <input type="text" id="panel-asesor-telefono" placeholder="+57 300 000 0000"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
                             <input type="text" id="panel-asesor-especialidad" placeholder="Ej: Electro Hogar"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">URL de Foto</label>
                             <input type="text" id="panel-asesor-foto-url"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Horario de Atención</label>
                             <textarea id="panel-asesor-horario" rows="2" placeholder="Lunes a Viernes 8am - 6pm"
-                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418] resize-none"></textarea>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Orden</label>
                             <input type="number" id="panel-asesor-orden" min="0" value="0"
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FE2418]">
                         </div>
                         <div class="flex items-center gap-3 pt-6">
                             <input type="checkbox" id="panel-asesor-activo" checked class="w-5 h-5 rounded">
@@ -4448,7 +4652,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
                     </div>
                     <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
                         <button type="submit" id="panel-asesor-submit-btn"
-                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                                class="flex-1 bg-[#FE2418] text-white px-6 py-3 rounded-xl hover:bg-[#d91b10] transition font-medium">
                             Guardar Asesor
                         </button>
                         <button type="button" id="cancel-panel-asesor-btn"
@@ -4563,7 +4767,7 @@ window.setupModalCloseListeners = setupModalCloseListeners;
 
         container.innerHTML = `
             <button class="spg-btn px-3 py-2 border rounded text-sm ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>Anterior</button>
-            ${pages.map(p => `<button class="spg-btn px-3 py-2 border rounded text-sm ${p === page ? 'bg-blue-600 text-white' : 'hover:bg-gray-50'}" data-page="${p}">${p}</button>`).join('')}
+            ${pages.map(p => `<button class="spg-btn px-3 py-2 border rounded text-sm ${p === page ? 'bg-[#FE2418] text-white' : 'hover:bg-gray-50'}" data-page="${p}">${p}</button>`).join('')}
             <button class="spg-btn px-3 py-2 border rounded text-sm ${page >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>Siguiente</button>
         `;
         container.querySelectorAll('.spg-btn:not([disabled])').forEach(btn =>
