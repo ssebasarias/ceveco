@@ -111,7 +111,6 @@ app.get(`${API_PREFIX}/config`, (req, res) => {
     res.json({
         success: true,
         data: {
-            wompiPublicKey: process.env.WOMPI_PUBLIC_KEY || 'pub_test_Q5yDA9xoKdePzhSGeVe9HAez7HgGORGf',
             googleClientId: process.env.GOOGLE_CLIENT_ID || 'PENDING_GOOGLE_CLIENT_ID'
         }
     });
@@ -127,7 +126,7 @@ app.use(`${API_PREFIX}/admin/upload`, require('./src/routes/upload.routes')); //
 app.use(`${API_PREFIX}/favoritos`, require('./src/routes/favoritos.routes'));
 app.use(`${API_PREFIX}/marcas`, require('./src/routes/marcas.routes'));
 app.use(`${API_PREFIX}/orders`, require('./src/routes/orders.routes'));
-app.use(`${API_PREFIX}/pagos`, require('./src/routes/webhook.routes'));
+// Wompi webhook removed (cotización-only model — no checkout)
 app.use(`${API_PREFIX}/direcciones`, require('./src/routes/address.routes'));
 app.use(`${API_PREFIX}/contacto`, require('./src/routes/contact.routes'));
 app.use(`${API_PREFIX}/categorias`, require('./src/routes/categorias.routes'));

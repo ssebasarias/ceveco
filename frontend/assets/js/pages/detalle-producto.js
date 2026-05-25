@@ -172,23 +172,22 @@ function renderProduct(product) {
     // Especificaciones
     renderSpecs(product);
 
-    // WhatsApp Button
+    // WhatsApp Button - use cotizarProducto utility
     const whatsappBtn = document.getElementById('whatsapp-btn');
     if (whatsappBtn) {
-        whatsappBtn.dataset.id = product.id_producto;
-        whatsappBtn.dataset.name = product.nombre;
-        whatsappBtn.dataset.price = product.precio_actual;
-        whatsappBtn.dataset.image = product.imagen_principal || '';
-        whatsappBtn.dataset.brand = product.categoria || '';
-    }
-
-    // Add to Cart Button Logic
-    const addToCartBtn = document.getElementById('add-to-cart-btn');
-    if (addToCartBtn) {
-        addToCartBtn.onclick = () => {
-            // Usar funcion global de cart-sidebar.js
-            if (window.addToCart) {
-                window.addToCart(product.id_producto, product.nombre, product.precio_actual, product.imagen_principal, currentQuantity);
+        whatsappBtn.onclick = (e) => {
+            e.preventDefault();
+            if (typeof window.cotizarProducto === 'function') {
+                window.cotizarProducto(product);
+            } else {
+                // Fallback direct wa.me
+                const wa = '573216453672';
+                const precio = product.precio_actual
+                    ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.precio_actual)
+                    : 'consultar';
+                const url = `${location.origin}/pages/detalle-producto.html?id=${product.id_producto}`;
+                const msg = `Hola Ceveco, quiero cotizar:\n\n*${product.nombre}*\nSKU: ${product.sku || '-'}\nPrecio listado: ${precio}\n\n${url}\n\n¿Está disponible y cuáles son los métodos de pago?`;
+                window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
             }
         };
     }

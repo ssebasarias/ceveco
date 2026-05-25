@@ -127,29 +127,7 @@ window.removeFavoritePage = async (productId) => {
     }
 };
 
-window.addToCartPage = async (productId) => {
-    try {
-        // Usar CartService si existe, o lógica manual
-        // Asumo que existe Cart logic global en ceveco-core.js o similar
-        // Si no, implemento básico:
-
-        // Buscar producto completo (necesitamos info para carrito)
-        const favorites = await FavoritesService.getAll();
-        const product = favorites.find(p => p.id_producto == productId); // Loose equations just in case string/int
-
-        if (product) {
-            window.addToCart({
-                id: product.id_producto,
-                name: product.nombre,
-                price: product.precio,
-                image: product.imagen_url || product.imagen,
-                quantity: 1
-            });
-        }
-    } catch (e) {
-        console.error('Error adding to cart:', e);
-    }
-};
+// Cart functionality removed - model is cotización via WhatsApp only
 
 // Función Logout (Reutilizada del sidebar)
 window.handleLogout = () => {
