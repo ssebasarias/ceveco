@@ -73,26 +73,22 @@ app.use('/images', express.static(path.join(__dirname, 'public/images')));
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../frontend/pages')));
 
-const fs = require('fs');
-
-// Endpoint para obtener banners dinámicos
-app.get('/api/v1/hero-banners', (req, res) => {
-    const bannersDir = path.join(__dirname, '../frontend/assets/img/banner-hero');
-
-    fs.readdir(bannersDir, (err, files) => {
-        if (err) {
-            console.error('Error reading banner directory:', err);
-            return res.status(500).json({ success: false, message: 'Error reading banners' });
-        }
-
-        // Filtrar solo imágenes y devolver rutas absolutas
-        const images = files.filter(file =>
-            /\.(jpg|jpeg|png|gif|webp)$/i.test(file)
-        ).map(file => `/assets/img/banner-hero/${file}`); // Ruta absoluta en lugar de relativa
-
-        console.log('📸 Banners encontrados:', images.length);
+// Endpoint para obtener banners dinámicos (lee desde la tabla banners en DB)
+app.get('/api/v1/hero-banners', async (req, res) => {
+    try {
+        const { pool } = require('./src/config/db');
+        const { rows } = await pool.query(
+            `SELECT imagen_url FROM banners
+             WHERE posicion = 'hero' AND activo = true
+             ORDER BY orden ASC, id_banner ASC`
+        );
+        const images = rows.map(r => r.imagen_url);
+        console.log('📸 Banners encontrados en DB:', images.length);
         res.json({ success: true, data: images });
-    });
+    } catch (err) {
+        console.error('Error en /hero-banners:', err);
+        res.status(500).json({ success: false, message: 'Error al cargar banners' });
+    }
 });
 
 // ============================================
