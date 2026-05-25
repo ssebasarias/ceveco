@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración - Ceveco</title>
-    <link rel="stylesheet" href="/assets/css/tailwind.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="../assets/css/main.css">
+    <link rel="stylesheet" href="../assets/css/pages/admin.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
     <style>
         .admin-sidebar {
             min-height: calc(100vh - 80px);
@@ -32,42 +34,20 @@
         <!-- Tabs Navigation -->
         <div class="bg-white rounded-lg shadow-sm mb-6">
             <div class="border-b border-gray-200">
-                <nav class="flex -mb-px overflow-x-auto">
-                    <button onclick="switchTab('dashboard')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-[#FE2418] text-[#FE2418] whitespace-nowrap" data-tab="dashboard">
-                        Dashboard
-                    </button>
-                    <button onclick="switchTab('productos')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="productos">
+                <nav class="flex -mb-px">
+                    <button onclick="switchTab('productos')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-blue-500 text-blue-600" data-tab="productos">
                         Productos
                     </button>
-                    <button onclick="switchTab('banners')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="banners">
+                    <button onclick="switchTab('banners')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="banners">
                         Banners
                     </button>
-                    <button onclick="switchTab('destacados')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="destacados">
+                    <button onclick="switchTab('destacados')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="destacados">
                         Productos Destacados
                     </button>
-                    <button onclick="switchTab('backup')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="backup">
+                    <button onclick="switchTab('backup')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="backup">
                         Backup
                     </button>
-                    <button onclick="switchTab('categorias')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="categorias">
-                        Categorías
-                    </button>
-                    <button onclick="switchTab('marcas')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="marcas">
-                        Marcas
-                    </button>
-                    <button onclick="switchTab('sedes')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="sedes">
-                        Sedes
-                    </button>
-                    <button onclick="switchTab('asesores')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap" data-tab="asesores">
-                        Asesores
-                    </button>
                 </nav>
-            </div>
-        </div>
-
-        <!-- Tab Content: Dashboard -->
-        <div id="tab-dashboard" class="tab-content">
-            <div id="dashboard-container">
-                <div class="text-center text-gray-500 py-12">Cargando dashboard...</div>
             </div>
         </div>
 
@@ -76,14 +56,14 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Productos</h2>
-                    <button onclick="openProductModal()" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
+                    <button onclick="openProductModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                         + Nuevo Producto
                     </button>
                 </div>
 
                 <!-- Search and Filters -->
                 <div class="mb-6 flex gap-4">
-                    <input type="text" id="product-search" placeholder="Buscar productos..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
+                    <input type="text" id="product-search" placeholder="Buscar productos..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                     <button onclick="searchProducts()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
                         Buscar
                     </button>
@@ -120,7 +100,7 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-gray-800">Gestión de Banners</h2>
-                    <button onclick="openBannerModal()" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
+                    <button onclick="openBannerModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                         + Nuevo Banner
                     </button>
                 </div>
@@ -140,7 +120,7 @@
 
                 <!-- Search -->
                 <div class="mb-6">
-                    <input type="text" id="featured-search" placeholder="Buscar productos para destacar..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
+                    <input type="text" id="featured-search" placeholder="Buscar productos para destacar..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
 
                 <!-- Featured Products Grid -->
@@ -173,151 +153,200 @@
         </div>
     </div>
 
-        <!-- Tab Content: Categorías -->
-        <div id="tab-categorias" class="tab-content">
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Categorías</h2>
-                    <button id="new-categoria-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
-                        + Nueva Categoría
-                    </button>
-                </div>
-                <div class="mb-4">
-                    <input type="text" id="categoria-search" placeholder="Buscar categorías..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orden</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="categorias-table-body" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="categorias-pagination" class="mt-4 flex justify-center gap-2"></div>
+    <!-- Product Modal -->
+    <div id="product-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold" id="product-modal-title">Nuevo Producto</h3>
+                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
-        </div>
+            <form id="product-form" onsubmit="saveProduct(event)">
+                <input type="hidden" id="product-id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                        <input type="text" id="product-nombre" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Precio</label>
+                        <input type="number" id="product-precio" step="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Stock</label>
+                        <input type="number" id="product-stock" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                        <textarea id="product-descripcion" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
 
-        <!-- Tab Content: Marcas -->
-        <div id="tab-marcas" class="tab-content">
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Marcas</h2>
-                    <button id="new-marca-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
-                        + Nueva Marca
+                    <!-- ============================================
+                         Imágenes del producto (Pista C - image picker)
+                         Solo visible al editar (cuando ya hay product-id)
+                         ============================================ -->
+                    <div id="product-images-section" class="space-y-3 hidden pt-3 border-t border-gray-100">
+                        <label class="block text-sm font-medium text-gray-700">Imágenes del producto</label>
+
+                        <!-- Dropzone -->
+                        <div id="img-dropzone" class="img-dropzone" role="button" tabindex="0"
+                             aria-label="Arrastra imágenes o haz clic para subir">
+                            <svg class="img-dropzone__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <p class="img-dropzone__title">Arrastra imágenes o haz clic para subir</p>
+                            <p class="img-dropzone__hint">JPG, PNG o WebP &middot; máximo 5 MB cada una</p>
+                            <input type="file" id="img-file-input" multiple
+                                   accept="image/jpeg,image/png,image/webp" class="hidden">
+                        </div>
+
+                        <!-- Botón scrape automático -->
+                        <button type="button" id="img-auto-scrape" class="img-scrape-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                 stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            Buscar imagen automáticamente
+                        </button>
+
+                        <!-- Mensaje de estado -->
+                        <p id="img-status" class="img-status" role="status" aria-live="polite"></p>
+
+                        <!-- Galería -->
+                        <div id="img-gallery" class="img-gallery" aria-label="Imágenes del producto">
+                            <div class="img-gallery-empty">Aún no hay imágenes para este producto.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        Guardar
+                    </button>
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        Cancelar
                     </button>
                 </div>
-                <div class="mb-4">
-                    <input type="text" id="marca-search" placeholder="Buscar marcas..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sitio Web</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="marcas-table-body" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="marcas-pagination" class="mt-4 flex justify-center gap-2"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Banner Modal -->
+    <div id="banner-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" style="display: none; visibility: hidden;">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold" id="banner-modal-title">Nuevo Banner</h3>
+                <button onclick="closeBannerModal()" class="text-gray-500 hover:text-gray-700">✕</button>
             </div>
-        </div>
-
-        <!-- Tab Content: Sedes -->
-        <div id="tab-sedes" class="tab-content">
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Sedes</h2>
-                    <button id="new-sede-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
-                        + Nueva Sede
+            <form id="banner-form" onsubmit="saveBanner(event)">
+                <input type="hidden" id="banner-id">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+                        <input type="text" id="banner-titulo" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Subtítulo</label>
+                        <input type="text" id="banner-subtitulo" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL de Imagen</label>
+                        <input type="url" id="banner-imagen" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">URL de Enlace</label>
+                        <input type="url" id="banner-enlace" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Posición</label>
+                        <select id="banner-posicion" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="hero">Hero</option>
+                            <option value="sidebar">Sidebar</option>
+                            <option value="footer">Footer</option>
+                            <option value="popup">Popup</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Orden</label>
+                        <input type="number" id="banner-orden" value="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" id="banner-activo" checked class="mr-2">
+                            <span class="text-sm font-medium text-gray-700">Activo</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-3">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        Guardar
+                    </button>
+                    <button type="button" onclick="closeBannerModal()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+                        Cancelar
                     </button>
                 </div>
-                <div class="mb-4">
-                    <input type="text" id="sede-search" placeholder="Buscar sedes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ciudad</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dirección</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sedes-table-body" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="sedes-pagination" class="mt-4 flex justify-center gap-2"></div>
-            </div>
+            </form>
         </div>
+    </div>
 
-        <!-- Tab Content: Asesores -->
-        <div id="tab-asesores" class="tab-content">
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Asesores</h2>
-                    <button id="new-asesor-btn" class="bg-[#FE2418] text-white px-4 py-2 rounded-lg hover:bg-[#d91b10] transition">
-                        + Nuevo Asesor
-                    </button>
-                </div>
-                <div class="mb-4">
-                    <input type="text" id="asesor-search" placeholder="Buscar asesores..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FE2418] focus:border-transparent">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Especialidad</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="asesores-table-body" class="bg-white divide-y divide-gray-200">
-                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="asesores-pagination" class="mt-4 flex justify-center gap-2"></div>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center" style="display: none; visibility: hidden;">
+        <div class="bg-white rounded-lg p-6">
+            <div class="text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                <p class="mt-4 text-gray-700">Procesando...</p>
             </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="../assets/js/config.js"></script>
-    <script src="../assets/js/utils/constants.js"></script>
-    <script src="../assets/js/utils/helpers.js"></script>
-    <script src="../assets/js/utils/storage.js"></script>
-    <script src="../assets/js/api/client.js"></script>
-    <script src="../assets/js/services/auth.service.js"></script>
-    <script src="../assets/js/services/products.service.js"></script>
-    <script src="../assets/js/services/favorites.service.js"></script>
-    <script src="../assets/js/services/orders.service.js"></script>
     <script src="../assets/js/core.js"></script>
-    <script src="../assets/js/utils/admin-helper.js"></script>
-    <script src="../assets/js/pages/admin-crud.js" defer></script>
+    <script src="../assets/js/pages/admin.js"></script>
+    <!-- Image picker para el modal de producto del admin panel (Pista C) -->
+    <script src="../assets/js/components/admin-image-picker.js"></script>
+    <script>
+        // ============================================
+        // Pista C: hook del image picker al abrir el modal de producto
+        // - Mostrar la sección de imágenes solo en modo edición
+        // - Inicializar el picker con el ID del producto que se edita
+        // ============================================
+        (function () {
+            const _origOpen = window.openProductModal;
+            window.openProductModal = function (productId) {
+                if (typeof _origOpen === 'function') {
+                    _origOpen.apply(this, arguments);
+                }
+                const section = document.getElementById('product-images-section');
+                if (!section) return;
+                if (productId) {
+                    section.classList.remove('hidden');
+                    if (window.AdminImagePicker && typeof window.AdminImagePicker.init === 'function') {
+                        window.AdminImagePicker.init(productId);
+                    }
+                } else {
+                    section.classList.add('hidden');
+                    if (window.AdminImagePicker && typeof window.AdminImagePicker.reset === 'function') {
+                        window.AdminImagePicker.reset();
+                    }
+                }
+                if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                    window.lucide.createIcons();
+                }
+            };
+
+            // Hook al cerrar para limpiar estado
+            const _origClose = window.closeProductModal;
+            window.closeProductModal = function () {
+                if (typeof _origClose === 'function') _origClose.apply(this, arguments);
+                if (window.AdminImagePicker && typeof window.AdminImagePicker.reset === 'function') {
+                    window.AdminImagePicker.reset();
+                }
+            };
+        })();
+    </script>
 </body>
 </html>
