@@ -20,6 +20,7 @@ class ProductoService {
                 case 'price_asc':  orderBy = 'precio_actual'; orderDir = 'ASC';  break;
                 case 'price_desc': orderBy = 'precio_actual'; orderDir = 'DESC'; break;
                 case 'name_asc':   orderBy = 'nombre';        orderDir = 'ASC';  break;
+                case 'newest':     orderBy = 'fecha_creacion'; orderDir = 'DESC'; break;
                 case 'relevance':  orderBy = 'fecha_creacion'; orderDir = 'DESC'; break;
             }
         }

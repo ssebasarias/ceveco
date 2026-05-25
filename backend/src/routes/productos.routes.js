@@ -30,7 +30,7 @@ router.get('/',
         // Legacy param names (keep for backwards compat)
         query('precioMin').optional().isFloat({ min: 0 }),
         query('precioMax').optional().isFloat({ min: 0 }),
-        query('sort').optional().isIn(['relevance', 'price_asc', 'price_desc', 'name_asc']).withMessage('Sort inválido'),
+        query('sort').optional().isIn(['relevance', 'price_asc', 'price_desc', 'name_asc', 'newest']).withMessage('Sort inválido'),
         query('stock').optional().isIn(['0', '1']).withMessage('stock debe ser 0 o 1'),
         query('rating').optional().isFloat({ min: 0, max: 5 }).withMessage('rating debe estar entre 0 y 5'),
         query('orderBy').optional().isIn(['precio_actual', 'nombre', 'fecha_creacion', 'calificacion_promedio', 'ventas_totales'])
