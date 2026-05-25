@@ -57,10 +57,15 @@ function pushUrlParams(params) {
 // ============================================================
 function getActiveFilters() {
     const urlParams = getUrlParams();
+
+    // Categoria: prefer radio selection in sidebar, fallback to URL param
+    const categoriaRadio = document.querySelector('input[name="categoria"]:checked');
+    const categoriaVal = categoriaRadio ? categoriaRadio.value : (urlParams.categoria || '');
+
     const filters = {
         page: currentPage,
         limit: currentLimit,
-        categoria: urlParams.categoria || undefined,
+        categoria: categoriaVal || undefined,
         q: urlParams.q || undefined,
         destacado: urlParams.destacado || undefined
     };
@@ -89,7 +94,7 @@ function getActiveFilters() {
 
     // Sort
     const sortSel = document.getElementById('sort-select');
-    if (sortSel?.value && sortSel.value !== 'relevancia') filters.sort = sortSel.value;
+    if (sortSel?.value && sortSel.value !== 'relevance') filters.sort = sortSel.value;
 
     return filters;
 }
@@ -199,6 +204,16 @@ function renderSubcategoriasFilter(subcats) {
 
 function applyUrlFiltersToDOM() {
     const urlParams = getUrlParams();
+
+    // Apply categoria radio
+    const categoriaSlug = urlParams.categoria || '';
+    const catRadio = document.querySelector(`input[name="categoria"][value="${categoriaSlug}"]`);
+    if (catRadio) catRadio.checked = true;
+    else {
+        // Default to "all"
+        const allCatRadio = document.querySelector('input[name="categoria"][value=""]');
+        if (allCatRadio) allCatRadio.checked = true;
+    }
 
     // Apply marca checkboxes
     if (urlParams.marca) {
@@ -313,6 +328,10 @@ function clearAllFilters() {
     document.querySelectorAll('.filter-checkbox').forEach(cb => { cb.checked = false; });
     const ratingAny = document.getElementById('filter-rating-any');
     if (ratingAny) ratingAny.checked = true;
+    // Keep categoria from URL (don't reset it via "clear filters")
+    const urlParams = getUrlParams();
+    const catRadio = document.querySelector(`input[name="categoria"][value="${urlParams.categoria || ''}"]`);
+    if (catRadio) catRadio.checked = true;
     const priceMin = document.getElementById('price-min');
     const priceMax = document.getElementById('price-max');
     if (priceMin) priceMin.value = '';
@@ -625,6 +644,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Apply price filter button
     const applyPrice = document.getElementById('apply-price-filter');
     if (applyPrice) applyPrice.addEventListener('click', applyFilters);
+
+    // Categoria radios
+    document.querySelectorAll('input[name="categoria"]').forEach(r => {
+        r.addEventListener('change', () => {
+            // When categoria changes reload filters too
+            const val = r.value;
+            loadFilterData(val || null).then(() => {
+                applyFilters();
+            });
+        });
+    });
 
     // Stock checkbox
     const stockChk = document.getElementById('filter-stock');
