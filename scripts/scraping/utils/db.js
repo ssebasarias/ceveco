@@ -10,6 +10,10 @@ const pool = new Pool({
     database: process.env.DB_NAME || 'ceveco_db',
 });
 
+/**
+ * Productos sin imagen principal apuntando a /images/productos/.
+ * Conservado para compatibilidad con el scraper legacy fetch-product-images.js.
+ */
 async function getProductsNeedingImage() {
     const { rows } = await pool.query(`
         SELECT p.id_producto AS id,
@@ -35,6 +39,34 @@ async function getProductsNeedingImage() {
     return rows;
 }
 
+/**
+ * Productos candidatos para el scraper profesional fetch-product-data.js.
+ * Excluye productos marcados con manual_override=TRUE (editados por admin).
+ */
+async function getProductsNeedingData() {
+    const { rows } = await pool.query(`
+        SELECT p.id_producto AS id,
+               p.sku,
+               p.nombre,
+               m.nombre AS marca,
+               c.nombre AS categoria,
+               sc.nombre AS subcategoria
+        FROM productos p
+        JOIN marcas m ON m.id_marca = p.id_marca
+        JOIN categorias c ON c.id_categoria = p.id_categoria
+        LEFT JOIN subcategorias sc ON sc.id_subcategoria = p.id_subcategoria
+        WHERE p.activo = true
+          AND COALESCE(p.manual_override, FALSE) = FALSE
+        ORDER BY p.id_producto
+    `);
+    return rows;
+}
+
+/**
+ * Marca la imagen como principal en producto_imagenes. Si ya existe la URL
+ * para este producto, la actualiza; si no, la inserta. El resto de imágenes
+ * del producto quedan con es_principal=false.
+ */
 async function upsertMainImage(idProducto, urlImagen, altText) {
     const client = await pool.connect();
     try {
@@ -55,8 +87,12 @@ async function upsertMainImage(idProducto, urlImagen, altText) {
             );
         } else {
             await client.query(
-                `UPDATE producto_imagenes SET es_principal = true WHERE id_imagen = $1`,
-                [existing.rows[0].id_imagen]
+                `UPDATE producto_imagenes
+                    SET es_principal = true,
+                        alt_text     = COALESCE($3, alt_text),
+                        orden        = 0
+                  WHERE id_imagen = $1`,
+                [existing.rows[0].id_imagen, urlImagen, altText]
             );
         }
         await client.query('COMMIT');
@@ -68,8 +104,70 @@ async function upsertMainImage(idProducto, urlImagen, altText) {
     }
 }
 
+/**
+ * Inserta o actualiza una imagen secundaria de galería. Idempotente vía
+ * UNIQUE(id_producto, url_imagen) introducido en la migración 20260525.
+ */
+async function upsertExtraImage(idProducto, urlImagen, altText, orden) {
+    const sql = `
+        INSERT INTO producto_imagenes (id_producto, url_imagen, alt_text, es_principal, orden)
+        VALUES ($1, $2, $3, FALSE, $4)
+        ON CONFLICT (id_producto, url_imagen)
+        DO UPDATE SET alt_text = EXCLUDED.alt_text,
+                      orden    = EXCLUDED.orden
+    `;
+    await pool.query(sql, [idProducto, urlImagen, altText, orden]);
+}
+
+/**
+ * Actualiza datos extendidos del producto siempre que manual_override=false.
+ *
+ * `descripcion_larga`, `specs` y `componentes` se actualizan solo si vienen
+ * con un valor no-null (COALESCE preserva lo existente). `fuente_scrape` y
+ * `ultima_actualizacion_scrape` se reescriben en cada corrida.
+ */
+async function updateProductData(idProducto, { descripcion_larga, specs, componentes, fuente }) {
+    const sql = `
+        UPDATE productos
+           SET descripcion_larga          = COALESCE($2, descripcion_larga),
+               specs                      = COALESCE($3::jsonb, specs),
+               componentes                = COALESCE($4::jsonb, componentes),
+               fuente_scrape              = $5,
+               ultima_actualizacion_scrape = NOW()
+         WHERE id_producto = $1
+           AND COALESCE(manual_override, FALSE) = FALSE
+    `;
+    await pool.query(sql, [
+        idProducto,
+        descripcion_larga || null,
+        specs ? JSON.stringify(specs) : null,
+        componentes ? JSON.stringify(componentes) : null,
+        fuente || null
+    ]);
+}
+
+/**
+ * Helper para que el coordinador pueda marcar manualmente un producto como
+ * no-pisable por el scraper (cuando el admin sube imagen/descripción a mano).
+ */
+async function markManualOverride(idProducto, value = true) {
+    await pool.query(
+        `UPDATE productos SET manual_override = $2 WHERE id_producto = $1`,
+        [idProducto, value]
+    );
+}
+
 async function close() {
     await pool.end();
 }
 
-module.exports = { getProductsNeedingImage, upsertMainImage, close, pool };
+module.exports = {
+    pool,
+    getProductsNeedingImage,
+    getProductsNeedingData,
+    upsertMainImage,
+    upsertExtraImage,
+    updateProductData,
+    markManualOverride,
+    close
+};
