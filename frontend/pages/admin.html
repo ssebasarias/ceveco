@@ -45,6 +45,18 @@
                     <button onclick="switchTab('backup')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="backup">
                         Backup
                     </button>
+                    <button onclick="switchTab('categorias')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="categorias">
+                        Categorías
+                    </button>
+                    <button onclick="switchTab('marcas')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="marcas">
+                        Marcas
+                    </button>
+                    <button onclick="switchTab('sedes')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="sedes">
+                        Sedes
+                    </button>
+                    <button onclick="switchTab('asesores')" class="tab-btn px-6 py-4 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="asesores">
+                        Asesores
+                    </button>
                 </nav>
             </div>
         </div>
@@ -147,6 +159,139 @@
                         <div class="text-center text-gray-500 py-4">Cargando backups...</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Tab Content: Categorías -->
+        <div id="tab-categorias" class="tab-content">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Categorías</h2>
+                    <button id="new-categoria-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        + Nueva Categoría
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <input type="text" id="categoria-search" placeholder="Buscar categorías..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orden</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="categorias-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="categorias-pagination" class="mt-4 flex justify-center gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Marcas -->
+        <div id="tab-marcas" class="tab-content">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Marcas</h2>
+                    <button id="new-marca-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        + Nueva Marca
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <input type="text" id="marca-search" placeholder="Buscar marcas..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sitio Web</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marcas-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="marcas-pagination" class="mt-4 flex justify-center gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Sedes -->
+        <div id="tab-sedes" class="tab-content">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Sedes</h2>
+                    <button id="new-sede-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        + Nueva Sede
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <input type="text" id="sede-search" placeholder="Buscar sedes..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ciudad</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dirección</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sedes-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="sedes-pagination" class="mt-4 flex justify-center gap-2"></div>
+            </div>
+        </div>
+
+        <!-- Tab Content: Asesores -->
+        <div id="tab-asesores" class="tab-content">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-gray-800">Gestión de Asesores</h2>
+                    <button id="new-asesor-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        + Nuevo Asesor
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <input type="text" id="asesor-search" placeholder="Buscar asesores..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Especialidad</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="asesores-table-body" class="bg-white divide-y divide-gray-200">
+                            <tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="asesores-pagination" class="mt-4 flex justify-center gap-2"></div>
             </div>
         </div>
     </div>

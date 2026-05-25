@@ -2444,7 +2444,8 @@ window.setupModalCloseListeners = setupModalCloseListeners;
 
         // Escuchar hash
         const hash = window.location.hash.replace('#', '');
-        if (hash && ['productos', 'banners', 'destacados', 'backup'].includes(hash)) {
+        const validTabs = ['productos', 'banners', 'destacados', 'backup', 'categorias', 'marcas', 'sedes', 'asesores'];
+        if (hash && validTabs.includes(hash)) {
             panelSwitchTab(hash);
         } else {
             panelSwitchTab('productos');
@@ -2544,6 +2545,10 @@ window.setupModalCloseListeners = setupModalCloseListeners;
             case 'banners': panelLoadBanners(); break;
             case 'destacados': panelLoadFeaturedProducts(); break;
             case 'backup': panelLoadBackups(); break;
+            case 'categorias': wireNewTabButtons(); panelLoadCategorias(1); break;
+            case 'marcas': wireNewTabButtons(); panelLoadMarcas(1); break;
+            case 'sedes': wireNewTabButtons(); panelLoadSedes(1); break;
+            case 'asesores': wireNewTabButtons(); panelLoadAsesores(1); break;
         }
     }
 
@@ -3645,6 +3650,985 @@ window.setupModalCloseListeners = setupModalCloseListeners;
         document.addEventListener('DOMContentLoaded', initAdminPanel);
     } else {
         initAdminPanel();
+    }
+
+    // ============================================================
+    // TAB: CATEGORÍAS
+    // ============================================================
+    const categoriaState = { currentPage: 1, searchTimeout: null };
+
+    async function panelLoadCategorias(page = 1) {
+        categoriaState.currentPage = page;
+        const tbody = document.getElementById('categorias-table-body');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>';
+
+        const params = new URLSearchParams({ page, limit: 25 });
+        const q = document.getElementById('categoria-search')?.value?.trim();
+        if (q) params.set('q', q);
+
+        try {
+            const r = await fetch(`${API_BASE}/categorias/admin/all?${params}`, { credentials: 'include' });
+            if (r.status === 401 || r.status === 403) { window.location.href = '/pages/login.html?redirect=admin'; return; }
+            const data = await r.json();
+            if (data.success) {
+                panelRenderCategoriasTable(data.data || []);
+                panelRenderSimplePagination(data.pagination, 'categorias-pagination', panelLoadCategorias);
+            } else {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error: ${data.message}</td></tr>`;
+            }
+        } catch (err) {
+            console.error('Error cargando categorias admin:', err);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error de conexión</td></tr>';
+        }
+    }
+
+    function panelRenderCategoriasTable(rows) {
+        const tbody = document.getElementById('categorias-table-body');
+        if (!tbody) return;
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No se encontraron categorías</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map(c => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm text-gray-900">${c.id_categoria}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">${c.nombre}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 font-mono">${c.slug || '-'}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">${c.orden != null ? c.orden : '-'}</td>
+                <td class="px-4 py-3">
+                    ${c.activo
+                        ? '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Activo</span>'
+                        : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                    <button class="cat-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${c.id_categoria}">Editar</button>
+                    <button class="cat-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${c.id_categoria}" data-name="${(c.nombre || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.cat-edit-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelOpenCategoriaModal(parseInt(btn.dataset.id))));
+        tbody.querySelectorAll('.cat-del-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelDeleteCategoria(parseInt(btn.dataset.id), btn.dataset.name)));
+    }
+
+    function ensurePanelCategoriaModal() {
+        if (document.getElementById('panel-categoria-modal')) return;
+        document.body.insertAdjacentHTML('beforeend', `
+        <div id="panel-categoria-modal" class="hidden fixed inset-0 items-center justify-center p-4"
+             style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:9999;">
+            <div id="panel-categoria-modal-content" class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl" style="z-index:10000;">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 flex justify-between items-center" style="z-index:10001;">
+                    <h3 class="text-2xl font-bold text-gray-900" id="panel-categoria-modal-title">Nueva Categoría</h3>
+                    <button id="close-panel-categoria-btn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <form id="panel-categoria-form" class="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+                    <input type="hidden" id="panel-categoria-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-categoria-nombre" required placeholder="Ej: Electro Hogar"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Slug <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-categoria-slug" required placeholder="electro-hogar"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Icono (Lucide)</label>
+                            <input type="text" id="panel-categoria-icono" placeholder="tv, sofa, bike..."
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                            <textarea id="panel-categoria-descripcion" rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">URL de Imagen</label>
+                            <input type="text" id="panel-categoria-imagen-url"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Orden</label>
+                            <input type="number" id="panel-categoria-orden" min="0" value="0"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2 flex items-center gap-3">
+                            <input type="checkbox" id="panel-categoria-activo" checked class="w-5 h-5 rounded">
+                            <label for="panel-categoria-activo" class="text-sm font-medium text-gray-700">Activo</label>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
+                        <button type="submit" id="panel-categoria-submit-btn"
+                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                            Guardar Categoría
+                        </button>
+                        <button type="button" id="cancel-panel-categoria-btn"
+                                class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>`);
+
+        const modal = document.getElementById('panel-categoria-modal');
+        const content = document.getElementById('panel-categoria-modal-content');
+        content.addEventListener('click', e => e.stopPropagation());
+        modal.addEventListener('click', e => { if (e.target === modal) closePanelCategoriaModal(); });
+        document.getElementById('close-panel-categoria-btn').addEventListener('click', closePanelCategoriaModal);
+        document.getElementById('cancel-panel-categoria-btn').addEventListener('click', closePanelCategoriaModal);
+        document.getElementById('panel-categoria-nombre').addEventListener('input', e => {
+            const slug = document.getElementById('panel-categoria-slug');
+            if (!slug.dataset.manual) {
+                slug.value = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            }
+        });
+        document.getElementById('panel-categoria-slug').addEventListener('input', e => {
+            e.target.dataset.manual = 'true';
+        });
+        document.getElementById('panel-categoria-form').addEventListener('submit', panelSaveCategoria);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function panelOpenCategoriaModal(id = null) {
+        ensurePanelCategoriaModal();
+        const modal = document.getElementById('panel-categoria-modal');
+        const form = document.getElementById('panel-categoria-form');
+        form.reset();
+        document.getElementById('panel-categoria-id').value = '';
+        document.getElementById('panel-categoria-activo').checked = true;
+        document.getElementById('panel-categoria-orden').value = '0';
+        delete document.getElementById('panel-categoria-slug').dataset.manual;
+
+        if (id) {
+            document.getElementById('panel-categoria-modal-title').textContent = 'Editar Categoría';
+            document.getElementById('panel-categoria-id').value = id;
+            try {
+                const r = await fetch(`${API_BASE}/categorias/admin/${id}`, { credentials: 'include' });
+                const d = await r.json();
+                if (r.ok && d.success && d.data) {
+                    const c = d.data;
+                    document.getElementById('panel-categoria-nombre').value = c.nombre || '';
+                    document.getElementById('panel-categoria-slug').value = c.slug || '';
+                    document.getElementById('panel-categoria-slug').dataset.manual = 'true';
+                    document.getElementById('panel-categoria-descripcion').value = c.descripcion || '';
+                    document.getElementById('panel-categoria-imagen-url').value = c.imagen_url || '';
+                    document.getElementById('panel-categoria-icono').value = c.icono || '';
+                    document.getElementById('panel-categoria-orden').value = c.orden != null ? c.orden : 0;
+                    document.getElementById('panel-categoria-activo').checked = c.activo !== false;
+                }
+            } catch (err) { showNotification('Error al cargar categoría', 'error'); }
+        } else {
+            document.getElementById('panel-categoria-modal-title').textContent = 'Nueva Categoría';
+        }
+
+        modal.classList.remove('hidden'); modal.style.display = 'flex'; modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePanelCategoriaModal() {
+        const modal = document.getElementById('panel-categoria-modal');
+        if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; modal.style.visibility = 'hidden'; document.body.style.overflow = ''; }
+    }
+
+    async function panelSaveCategoria(event) {
+        event.preventDefault();
+        const id = document.getElementById('panel-categoria-id').value;
+        const body = {
+            nombre: document.getElementById('panel-categoria-nombre').value.trim(),
+            slug: document.getElementById('panel-categoria-slug').value.trim(),
+            descripcion: document.getElementById('panel-categoria-descripcion').value.trim() || null,
+            imagen_url: document.getElementById('panel-categoria-imagen-url').value.trim() || null,
+            icono: document.getElementById('panel-categoria-icono').value.trim() || null,
+            orden: parseInt(document.getElementById('panel-categoria-orden').value) || 0,
+            activo: document.getElementById('panel-categoria-activo').checked
+        };
+        const btn = document.getElementById('panel-categoria-submit-btn');
+        const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Guardando...';
+        try {
+            const url = id ? `${API_BASE}/categorias/admin/${id}` : `${API_BASE}/categorias/admin`;
+            const r = await fetch(url, { method: id ? 'PUT' : 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const d = await r.json();
+            if (r.ok && d.success) {
+                showNotification(id ? 'Categoría actualizada' : 'Categoría creada', 'success');
+                closePanelCategoriaModal();
+                panelLoadCategorias(categoriaState.currentPage);
+            } else { showNotification(d.message || 'Error al guardar categoría', 'error'); }
+        } catch (err) { console.error('Error guardando categoría:', err); showNotification('Error de conexión', 'error'); }
+        finally { btn.disabled = false; btn.textContent = orig; }
+    }
+
+    async function panelDeleteCategoria(id, name) {
+        const ok = await showConfirmDialog('Eliminar categoría', `¿Eliminar "${name}"? Si tiene productos asociados, la operación será rechazada.`, 'Eliminar', 'Cancelar');
+        if (!ok) return;
+        try {
+            const r = await fetch(`${API_BASE}/categorias/admin/${id}`, { method: 'DELETE', credentials: 'include' });
+            const d = await r.json();
+            if (r.ok && d.success) { showNotification('Categoría eliminada', 'success'); panelLoadCategorias(categoriaState.currentPage); }
+            else showNotification(d.message || 'Error al eliminar', 'error');
+        } catch (err) { showNotification('Error de conexión', 'error'); }
+    }
+
+    // ============================================================
+    // TAB: MARCAS
+    // ============================================================
+    const marcaState = { currentPage: 1, searchTimeout: null };
+
+    async function panelLoadMarcas(page = 1) {
+        marcaState.currentPage = page;
+        const tbody = document.getElementById('marcas-table-body');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>';
+
+        const params = new URLSearchParams({ page, limit: 25 });
+        const q = document.getElementById('marca-search')?.value?.trim();
+        if (q) params.set('q', q);
+
+        try {
+            const r = await fetch(`${API_BASE}/marcas/admin/all?${params}`, { credentials: 'include' });
+            if (r.status === 401 || r.status === 403) { window.location.href = '/pages/login.html?redirect=admin'; return; }
+            const data = await r.json();
+            if (data.success) {
+                panelRenderMarcasTable(data.data || []);
+                panelRenderSimplePagination(data.pagination, 'marcas-pagination', panelLoadMarcas);
+            } else {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error: ${data.message}</td></tr>`;
+            }
+        } catch (err) {
+            console.error('Error cargando marcas admin:', err);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error de conexión</td></tr>';
+        }
+    }
+
+    function panelRenderMarcasTable(rows) {
+        const tbody = document.getElementById('marcas-table-body');
+        if (!tbody) return;
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No se encontraron marcas</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map(m => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm text-gray-900">${m.id_marca}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">${m.nombre}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 font-mono">${m.slug || '-'}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">${m.sitio_web ? `<a href="${m.sitio_web}" target="_blank" class="text-blue-600 hover:underline">Ver</a>` : '-'}</td>
+                <td class="px-4 py-3">
+                    ${m.activo
+                        ? '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Activo</span>'
+                        : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                    <button class="marca-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${m.id_marca}">Editar</button>
+                    <button class="marca-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${m.id_marca}" data-name="${(m.nombre || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.marca-edit-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelOpenMarcaModal(parseInt(btn.dataset.id))));
+        tbody.querySelectorAll('.marca-del-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelDeleteMarca(parseInt(btn.dataset.id), btn.dataset.name)));
+    }
+
+    function ensurePanelMarcaModal() {
+        if (document.getElementById('panel-marca-modal')) return;
+        document.body.insertAdjacentHTML('beforeend', `
+        <div id="panel-marca-modal" class="hidden fixed inset-0 items-center justify-center p-4"
+             style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:9999;">
+            <div id="panel-marca-modal-content" class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl" style="z-index:10000;">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 flex justify-between items-center" style="z-index:10001;">
+                    <h3 class="text-2xl font-bold text-gray-900" id="panel-marca-modal-title">Nueva Marca</h3>
+                    <button id="close-panel-marca-btn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <form id="panel-marca-form" class="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+                    <input type="hidden" id="panel-marca-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-marca-nombre" required placeholder="Ej: Samsung"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Slug <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-marca-slug" required placeholder="samsung"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Sitio Web</label>
+                            <input type="text" id="panel-marca-sitio-web" placeholder="https://samsung.com"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">URL de Logo</label>
+                            <input type="text" id="panel-marca-logo-url"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Descripción</label>
+                            <textarea id="panel-marca-descripcion" rows="3"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                        </div>
+                        <div class="md:col-span-2 flex items-center gap-3">
+                            <input type="checkbox" id="panel-marca-activo" checked class="w-5 h-5 rounded">
+                            <label for="panel-marca-activo" class="text-sm font-medium text-gray-700">Activo</label>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
+                        <button type="submit" id="panel-marca-submit-btn"
+                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                            Guardar Marca
+                        </button>
+                        <button type="button" id="cancel-panel-marca-btn"
+                                class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>`);
+
+        const modal = document.getElementById('panel-marca-modal');
+        const content = document.getElementById('panel-marca-modal-content');
+        content.addEventListener('click', e => e.stopPropagation());
+        modal.addEventListener('click', e => { if (e.target === modal) closePanelMarcaModal(); });
+        document.getElementById('close-panel-marca-btn').addEventListener('click', closePanelMarcaModal);
+        document.getElementById('cancel-panel-marca-btn').addEventListener('click', closePanelMarcaModal);
+        document.getElementById('panel-marca-nombre').addEventListener('input', e => {
+            const slug = document.getElementById('panel-marca-slug');
+            if (!slug.dataset.manual) slug.value = e.target.value.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        });
+        document.getElementById('panel-marca-slug').addEventListener('input', e => { e.target.dataset.manual = 'true'; });
+        document.getElementById('panel-marca-form').addEventListener('submit', panelSaveMarca);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function panelOpenMarcaModal(id = null) {
+        ensurePanelMarcaModal();
+        const modal = document.getElementById('panel-marca-modal');
+        const form = document.getElementById('panel-marca-form');
+        form.reset();
+        document.getElementById('panel-marca-id').value = '';
+        document.getElementById('panel-marca-activo').checked = true;
+        delete document.getElementById('panel-marca-slug').dataset.manual;
+
+        if (id) {
+            document.getElementById('panel-marca-modal-title').textContent = 'Editar Marca';
+            document.getElementById('panel-marca-id').value = id;
+            try {
+                const r = await fetch(`${API_BASE}/marcas/admin/${id}`, { credentials: 'include' });
+                const d = await r.json();
+                if (r.ok && d.success && d.data) {
+                    const m = d.data;
+                    document.getElementById('panel-marca-nombre').value = m.nombre || '';
+                    document.getElementById('panel-marca-slug').value = m.slug || '';
+                    document.getElementById('panel-marca-slug').dataset.manual = 'true';
+                    document.getElementById('panel-marca-logo-url').value = m.logo_url || '';
+                    document.getElementById('panel-marca-descripcion').value = m.descripcion || '';
+                    document.getElementById('panel-marca-sitio-web').value = m.sitio_web || '';
+                    document.getElementById('panel-marca-activo').checked = m.activo !== false;
+                }
+            } catch (err) { showNotification('Error al cargar marca', 'error'); }
+        } else {
+            document.getElementById('panel-marca-modal-title').textContent = 'Nueva Marca';
+        }
+
+        modal.classList.remove('hidden'); modal.style.display = 'flex'; modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePanelMarcaModal() {
+        const modal = document.getElementById('panel-marca-modal');
+        if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; modal.style.visibility = 'hidden'; document.body.style.overflow = ''; }
+    }
+
+    async function panelSaveMarca(event) {
+        event.preventDefault();
+        const id = document.getElementById('panel-marca-id').value;
+        const body = {
+            nombre: document.getElementById('panel-marca-nombre').value.trim(),
+            slug: document.getElementById('panel-marca-slug').value.trim(),
+            logo_url: document.getElementById('panel-marca-logo-url').value.trim() || null,
+            descripcion: document.getElementById('panel-marca-descripcion').value.trim() || null,
+            sitio_web: document.getElementById('panel-marca-sitio-web').value.trim() || null,
+            activo: document.getElementById('panel-marca-activo').checked
+        };
+        const btn = document.getElementById('panel-marca-submit-btn');
+        const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Guardando...';
+        try {
+            const url = id ? `${API_BASE}/marcas/admin/${id}` : `${API_BASE}/marcas/admin`;
+            const r = await fetch(url, { method: id ? 'PUT' : 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const d = await r.json();
+            if (r.ok && d.success) {
+                showNotification(id ? 'Marca actualizada' : 'Marca creada', 'success');
+                closePanelMarcaModal();
+                panelLoadMarcas(marcaState.currentPage);
+            } else { showNotification(d.message || 'Error al guardar marca', 'error'); }
+        } catch (err) { console.error('Error guardando marca:', err); showNotification('Error de conexión', 'error'); }
+        finally { btn.disabled = false; btn.textContent = orig; }
+    }
+
+    async function panelDeleteMarca(id, name) {
+        const ok = await showConfirmDialog('Eliminar marca', `¿Eliminar "${name}"? Si tiene productos asociados, la operación será rechazada.`, 'Eliminar', 'Cancelar');
+        if (!ok) return;
+        try {
+            const r = await fetch(`${API_BASE}/marcas/admin/${id}`, { method: 'DELETE', credentials: 'include' });
+            const d = await r.json();
+            if (r.ok && d.success) { showNotification('Marca eliminada', 'success'); panelLoadMarcas(marcaState.currentPage); }
+            else showNotification(d.message || 'Error al eliminar', 'error');
+        } catch (err) { showNotification('Error de conexión', 'error'); }
+    }
+
+    // ============================================================
+    // TAB: SEDES
+    // ============================================================
+    const sedeState = { currentPage: 1, searchTimeout: null };
+
+    async function panelLoadSedes(page = 1) {
+        sedeState.currentPage = page;
+        const tbody = document.getElementById('sedes-table-body');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>';
+
+        const params = new URLSearchParams({ page, limit: 25 });
+        const q = document.getElementById('sede-search')?.value?.trim();
+        if (q) params.set('q', q);
+
+        try {
+            const r = await fetch(`${API_BASE}/sedes/admin/all?${params}`, { credentials: 'include' });
+            if (r.status === 401 || r.status === 403) { window.location.href = '/pages/login.html?redirect=admin'; return; }
+            const data = await r.json();
+            if (data.success) {
+                panelRenderSedesTable(data.data || []);
+                panelRenderSimplePagination(data.pagination, 'sedes-pagination', panelLoadSedes);
+            } else {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error: ${data.message}</td></tr>`;
+            }
+        } catch (err) {
+            console.error('Error cargando sedes admin:', err);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error de conexión</td></tr>';
+        }
+    }
+
+    function panelRenderSedesTable(rows) {
+        const tbody = document.getElementById('sedes-table-body');
+        if (!tbody) return;
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No se encontraron sedes</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map(s => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm text-gray-900">${s.id_sede}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">${s.nombre}${s.es_principal ? ' <span class="ml-1 px-1.5 py-0.5 text-xs rounded bg-yellow-100 text-yellow-800">Principal</span>' : ''}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">${s.ciudad || '-'}</td>
+                <td class="px-4 py-3 text-sm text-gray-600 max-w-xs truncate" title="${s.direccion || ''}">${s.direccion || '-'}</td>
+                <td class="px-4 py-3">
+                    ${s.activo
+                        ? '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Activo</span>'
+                        : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                    <button class="sede-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${s.id_sede}">Editar</button>
+                    <button class="sede-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${s.id_sede}" data-name="${(s.nombre || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.sede-edit-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelOpenSedeModal(parseInt(btn.dataset.id))));
+        tbody.querySelectorAll('.sede-del-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelDeleteSede(parseInt(btn.dataset.id), btn.dataset.name)));
+    }
+
+    function ensurePanelSedeModal() {
+        if (document.getElementById('panel-sede-modal')) return;
+        document.body.insertAdjacentHTML('beforeend', `
+        <div id="panel-sede-modal" class="hidden fixed inset-0 items-center justify-center p-4"
+             style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:9999;">
+            <div id="panel-sede-modal-content" class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden shadow-2xl" style="z-index:10000;">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 flex justify-between items-center" style="z-index:10001;">
+                    <h3 class="text-2xl font-bold text-gray-900" id="panel-sede-modal-title">Nueva Sede</h3>
+                    <button id="close-panel-sede-btn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <form id="panel-sede-form" class="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+                    <input type="hidden" id="panel-sede-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-sede-nombre" required placeholder="Ej: Sede Principal Bogotá"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Ciudad <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-sede-ciudad" required placeholder="Bogotá"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Departamento</label>
+                            <input type="text" id="panel-sede-departamento" placeholder="Cundinamarca"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Dirección <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-sede-direccion" required placeholder="Calle 80 # 45-23"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono</label>
+                            <input type="text" id="panel-sede-telefono"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">WhatsApp</label>
+                            <input type="text" id="panel-sede-whatsapp" placeholder="+57 300 000 0000"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Latitud</label>
+                            <input type="number" step="any" id="panel-sede-latitud" placeholder="4.7110"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Longitud</label>
+                            <input type="number" step="any" id="panel-sede-longitud" placeholder="-74.0721"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Horario de Atención</label>
+                            <textarea id="panel-sede-horario" rows="3" placeholder="Lunes a Viernes 8am - 6pm"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                        </div>
+                        <div class="md:col-span-2 flex items-center gap-6 pt-1">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="panel-sede-es-principal" class="w-5 h-5 rounded">
+                                <span class="text-sm font-medium text-gray-700">Sede Principal</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="panel-sede-activo" checked class="w-5 h-5 rounded">
+                                <span class="text-sm font-medium text-gray-700">Activo</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
+                        <button type="submit" id="panel-sede-submit-btn"
+                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                            Guardar Sede
+                        </button>
+                        <button type="button" id="cancel-panel-sede-btn"
+                                class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>`);
+
+        const modal = document.getElementById('panel-sede-modal');
+        const content = document.getElementById('panel-sede-modal-content');
+        content.addEventListener('click', e => e.stopPropagation());
+        modal.addEventListener('click', e => { if (e.target === modal) closePanelSedeModal(); });
+        document.getElementById('close-panel-sede-btn').addEventListener('click', closePanelSedeModal);
+        document.getElementById('cancel-panel-sede-btn').addEventListener('click', closePanelSedeModal);
+        document.getElementById('panel-sede-form').addEventListener('submit', panelSaveSede);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function panelOpenSedeModal(id = null) {
+        ensurePanelSedeModal();
+        const modal = document.getElementById('panel-sede-modal');
+        const form = document.getElementById('panel-sede-form');
+        form.reset();
+        document.getElementById('panel-sede-id').value = '';
+        document.getElementById('panel-sede-activo').checked = true;
+        document.getElementById('panel-sede-es-principal').checked = false;
+
+        if (id) {
+            document.getElementById('panel-sede-modal-title').textContent = 'Editar Sede';
+            document.getElementById('panel-sede-id').value = id;
+            try {
+                const r = await fetch(`${API_BASE}/sedes/admin/${id}`, { credentials: 'include' });
+                const d = await r.json();
+                if (r.ok && d.success && d.data) {
+                    const s = d.data;
+                    document.getElementById('panel-sede-nombre').value = s.nombre || '';
+                    document.getElementById('panel-sede-ciudad').value = s.ciudad || '';
+                    document.getElementById('panel-sede-departamento').value = s.departamento || '';
+                    document.getElementById('panel-sede-direccion').value = s.direccion || '';
+                    document.getElementById('panel-sede-telefono').value = s.telefono || '';
+                    document.getElementById('panel-sede-whatsapp').value = s.whatsapp || '';
+                    document.getElementById('panel-sede-latitud').value = s.latitud || '';
+                    document.getElementById('panel-sede-longitud').value = s.longitud || '';
+                    document.getElementById('panel-sede-horario').value = s.horario_atencion || '';
+                    document.getElementById('panel-sede-es-principal').checked = s.es_principal === true;
+                    document.getElementById('panel-sede-activo').checked = s.activo !== false;
+                }
+            } catch (err) { showNotification('Error al cargar sede', 'error'); }
+        } else {
+            document.getElementById('panel-sede-modal-title').textContent = 'Nueva Sede';
+        }
+
+        modal.classList.remove('hidden'); modal.style.display = 'flex'; modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePanelSedeModal() {
+        const modal = document.getElementById('panel-sede-modal');
+        if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; modal.style.visibility = 'hidden'; document.body.style.overflow = ''; }
+    }
+
+    async function panelSaveSede(event) {
+        event.preventDefault();
+        const id = document.getElementById('panel-sede-id').value;
+        const lat = document.getElementById('panel-sede-latitud').value;
+        const lng = document.getElementById('panel-sede-longitud').value;
+        const body = {
+            nombre: document.getElementById('panel-sede-nombre').value.trim(),
+            ciudad: document.getElementById('panel-sede-ciudad').value.trim(),
+            departamento: document.getElementById('panel-sede-departamento').value.trim() || null,
+            direccion: document.getElementById('panel-sede-direccion').value.trim(),
+            telefono: document.getElementById('panel-sede-telefono').value.trim() || null,
+            whatsapp: document.getElementById('panel-sede-whatsapp').value.trim() || null,
+            latitud: lat ? parseFloat(lat) : null,
+            longitud: lng ? parseFloat(lng) : null,
+            horario_atencion: document.getElementById('panel-sede-horario').value.trim() || null,
+            es_principal: document.getElementById('panel-sede-es-principal').checked,
+            activo: document.getElementById('panel-sede-activo').checked
+        };
+        const btn = document.getElementById('panel-sede-submit-btn');
+        const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Guardando...';
+        try {
+            const url = id ? `${API_BASE}/sedes/admin/${id}` : `${API_BASE}/sedes/admin`;
+            const r = await fetch(url, { method: id ? 'PUT' : 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const d = await r.json();
+            if (r.ok && d.success) {
+                showNotification(id ? 'Sede actualizada' : 'Sede creada', 'success');
+                closePanelSedeModal();
+                panelLoadSedes(sedeState.currentPage);
+            } else { showNotification(d.message || 'Error al guardar sede', 'error'); }
+        } catch (err) { console.error('Error guardando sede:', err); showNotification('Error de conexión', 'error'); }
+        finally { btn.disabled = false; btn.textContent = orig; }
+    }
+
+    async function panelDeleteSede(id, name) {
+        const ok = await showConfirmDialog('Eliminar sede', `¿Eliminar "${name}"? Esta acción no se puede deshacer.`, 'Eliminar', 'Cancelar');
+        if (!ok) return;
+        try {
+            const r = await fetch(`${API_BASE}/sedes/admin/${id}`, { method: 'DELETE', credentials: 'include' });
+            const d = await r.json();
+            if (r.ok && d.success) { showNotification('Sede eliminada', 'success'); panelLoadSedes(sedeState.currentPage); }
+            else showNotification(d.message || 'Error al eliminar', 'error');
+        } catch (err) { showNotification('Error de conexión', 'error'); }
+    }
+
+    // ============================================================
+    // TAB: ASESORES
+    // ============================================================
+    const asesorState = { currentPage: 1, searchTimeout: null };
+
+    async function panelLoadAsesores(page = 1) {
+        asesorState.currentPage = page;
+        const tbody = document.getElementById('asesores-table-body');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-gray-500">Cargando...</td></tr>';
+
+        const params = new URLSearchParams({ page, limit: 25 });
+        const q = document.getElementById('asesor-search')?.value?.trim();
+        if (q) params.set('q', q);
+
+        try {
+            const r = await fetch(`${API_BASE}/asesores/admin/all?${params}`, { credentials: 'include' });
+            if (r.status === 401 || r.status === 403) { window.location.href = '/pages/login.html?redirect=admin'; return; }
+            const data = await r.json();
+            if (data.success) {
+                panelRenderAsesoresTable(data.data || []);
+                panelRenderSimplePagination(data.pagination, 'asesores-pagination', panelLoadAsesores);
+            } else {
+                if (tbody) tbody.innerHTML = `<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error: ${data.message}</td></tr>`;
+            }
+        } catch (err) {
+            console.error('Error cargando asesores admin:', err);
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-4 text-center text-red-500">Error de conexión</td></tr>';
+        }
+    }
+
+    function panelRenderAsesoresTable(rows) {
+        const tbody = document.getElementById('asesores-table-body');
+        if (!tbody) return;
+        if (rows.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No se encontraron asesores</td></tr>';
+            return;
+        }
+        tbody.innerHTML = rows.map(a => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-sm text-gray-900">${a.id_asesor}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900 flex items-center gap-2">
+                    ${a.foto_url ? `<img src="${a.foto_url}" alt="${a.nombre_completo}" class="w-8 h-8 rounded-full object-cover" onerror="this.style.display='none'">` : ''}
+                    ${a.nombre_completo}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-600">${a.telefono || '-'}</td>
+                <td class="px-4 py-3 text-sm text-gray-600">${a.especialidad || '-'}</td>
+                <td class="px-4 py-3">
+                    ${a.activo
+                        ? '<span class="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">Activo</span>'
+                        : '<span class="px-2 py-1 text-xs rounded-full bg-red-100 text-red-800 font-medium">Inactivo</span>'}
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                    <button class="asesor-edit-btn text-blue-600 hover:text-blue-900 mr-3 font-medium" data-id="${a.id_asesor}">Editar</button>
+                    <button class="asesor-del-btn text-red-600 hover:text-red-900 font-medium" data-id="${a.id_asesor}" data-name="${(a.nombre_completo || '').replace(/"/g, '&quot;')}">Eliminar</button>
+                </td>
+            </tr>
+        `).join('');
+
+        tbody.querySelectorAll('.asesor-edit-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelOpenAsesorModal(parseInt(btn.dataset.id))));
+        tbody.querySelectorAll('.asesor-del-btn').forEach(btn =>
+            btn.addEventListener('click', () => panelDeleteAsesor(parseInt(btn.dataset.id), btn.dataset.name)));
+    }
+
+    function ensurePanelAsesorModal() {
+        if (document.getElementById('panel-asesor-modal')) return;
+        document.body.insertAdjacentHTML('beforeend', `
+        <div id="panel-asesor-modal" class="hidden fixed inset-0 items-center justify-center p-4"
+             style="display:none; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:9999;">
+            <div id="panel-asesor-modal-content" class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden shadow-2xl" style="z-index:10000;">
+                <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 flex justify-between items-center" style="z-index:10001;">
+                    <h3 class="text-2xl font-bold text-gray-900" id="panel-asesor-modal-title">Nuevo Asesor</h3>
+                    <button id="close-panel-asesor-btn" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <form id="panel-asesor-form" class="p-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+                    <input type="hidden" id="panel-asesor-id">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Nombre Completo <span class="text-red-500">*</span></label>
+                            <input type="text" id="panel-asesor-nombre" required placeholder="Ej: Juan Carlos Pérez"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Teléfono / WhatsApp</label>
+                            <input type="text" id="panel-asesor-telefono" placeholder="+57 300 000 0000"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Especialidad</label>
+                            <input type="text" id="panel-asesor-especialidad" placeholder="Ej: Electro Hogar"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">URL de Foto</label>
+                            <input type="text" id="panel-asesor-foto-url"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Horario de Atención</label>
+                            <textarea id="panel-asesor-horario" rows="2" placeholder="Lunes a Viernes 8am - 6pm"
+                                      class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Orden</label>
+                            <input type="number" id="panel-asesor-orden" min="0" value="0"
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="flex items-center gap-3 pt-6">
+                            <input type="checkbox" id="panel-asesor-activo" checked class="w-5 h-5 rounded">
+                            <label for="panel-asesor-activo" class="text-sm font-medium text-gray-700">Activo</label>
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3 pt-4 border-t border-gray-200">
+                        <button type="submit" id="panel-asesor-submit-btn"
+                                class="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition font-medium">
+                            Guardar Asesor
+                        </button>
+                        <button type="button" id="cancel-panel-asesor-btn"
+                                class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition font-medium">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>`);
+
+        const modal = document.getElementById('panel-asesor-modal');
+        const content = document.getElementById('panel-asesor-modal-content');
+        content.addEventListener('click', e => e.stopPropagation());
+        modal.addEventListener('click', e => { if (e.target === modal) closePanelAsesorModal(); });
+        document.getElementById('close-panel-asesor-btn').addEventListener('click', closePanelAsesorModal);
+        document.getElementById('cancel-panel-asesor-btn').addEventListener('click', closePanelAsesorModal);
+        document.getElementById('panel-asesor-form').addEventListener('submit', panelSaveAsesor);
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function panelOpenAsesorModal(id = null) {
+        ensurePanelAsesorModal();
+        const modal = document.getElementById('panel-asesor-modal');
+        const form = document.getElementById('panel-asesor-form');
+        form.reset();
+        document.getElementById('panel-asesor-id').value = '';
+        document.getElementById('panel-asesor-activo').checked = true;
+        document.getElementById('panel-asesor-orden').value = '0';
+
+        if (id) {
+            document.getElementById('panel-asesor-modal-title').textContent = 'Editar Asesor';
+            document.getElementById('panel-asesor-id').value = id;
+            try {
+                const r = await fetch(`${API_BASE}/asesores/admin/${id}`, { credentials: 'include' });
+                const d = await r.json();
+                if (r.ok && d.success && d.data) {
+                    const a = d.data;
+                    document.getElementById('panel-asesor-nombre').value = a.nombre_completo || '';
+                    document.getElementById('panel-asesor-telefono').value = a.telefono || '';
+                    document.getElementById('panel-asesor-foto-url').value = a.foto_url || '';
+                    document.getElementById('panel-asesor-especialidad').value = a.especialidad || '';
+                    document.getElementById('panel-asesor-horario').value = a.horario_atencion || '';
+                    document.getElementById('panel-asesor-orden').value = a.orden != null ? a.orden : 0;
+                    document.getElementById('panel-asesor-activo').checked = a.activo !== false;
+                }
+            } catch (err) { showNotification('Error al cargar asesor', 'error'); }
+        } else {
+            document.getElementById('panel-asesor-modal-title').textContent = 'Nuevo Asesor';
+        }
+
+        modal.classList.remove('hidden'); modal.style.display = 'flex'; modal.style.visibility = 'visible';
+        document.body.style.overflow = 'hidden';
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function closePanelAsesorModal() {
+        const modal = document.getElementById('panel-asesor-modal');
+        if (modal) { modal.classList.add('hidden'); modal.style.display = 'none'; modal.style.visibility = 'hidden'; document.body.style.overflow = ''; }
+    }
+
+    async function panelSaveAsesor(event) {
+        event.preventDefault();
+        const id = document.getElementById('panel-asesor-id').value;
+        const body = {
+            nombre_completo: document.getElementById('panel-asesor-nombre').value.trim(),
+            telefono: document.getElementById('panel-asesor-telefono').value.trim() || null,
+            foto_url: document.getElementById('panel-asesor-foto-url').value.trim() || null,
+            especialidad: document.getElementById('panel-asesor-especialidad').value.trim() || null,
+            horario_atencion: document.getElementById('panel-asesor-horario').value.trim() || null,
+            orden: parseInt(document.getElementById('panel-asesor-orden').value) || 0,
+            activo: document.getElementById('panel-asesor-activo').checked
+        };
+        const btn = document.getElementById('panel-asesor-submit-btn');
+        const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Guardando...';
+        try {
+            const url = id ? `${API_BASE}/asesores/admin/${id}` : `${API_BASE}/asesores/admin`;
+            const r = await fetch(url, { method: id ? 'PUT' : 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+            const d = await r.json();
+            if (r.ok && d.success) {
+                showNotification(id ? 'Asesor actualizado' : 'Asesor creado', 'success');
+                closePanelAsesorModal();
+                panelLoadAsesores(asesorState.currentPage);
+            } else { showNotification(d.message || 'Error al guardar asesor', 'error'); }
+        } catch (err) { console.error('Error guardando asesor:', err); showNotification('Error de conexión', 'error'); }
+        finally { btn.disabled = false; btn.textContent = orig; }
+    }
+
+    async function panelDeleteAsesor(id, name) {
+        const ok = await showConfirmDialog('Eliminar asesor', `¿Eliminar "${name}"? Esta acción no se puede deshacer.`, 'Eliminar', 'Cancelar');
+        if (!ok) return;
+        try {
+            const r = await fetch(`${API_BASE}/asesores/admin/${id}`, { method: 'DELETE', credentials: 'include' });
+            const d = await r.json();
+            if (r.ok && d.success) { showNotification('Asesor eliminado', 'success'); panelLoadAsesores(asesorState.currentPage); }
+            else showNotification(d.message || 'Error al eliminar', 'error');
+        } catch (err) { showNotification('Error de conexión', 'error'); }
+    }
+
+    // ============================================================
+    // SHARED PAGINATION HELPER
+    // ============================================================
+    function panelRenderSimplePagination(pagination, containerId, callback) {
+        const container = document.getElementById(containerId);
+        if (!container || !pagination || pagination.totalPages <= 1) {
+            if (container) container.innerHTML = '';
+            return;
+        }
+        const { page, totalPages } = pagination;
+        const pages = [];
+        for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) pages.push(i);
+
+        container.innerHTML = `
+            <button class="spg-btn px-3 py-2 border rounded text-sm ${page <= 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page - 1}" ${page <= 1 ? 'disabled' : ''}>Anterior</button>
+            ${pages.map(p => `<button class="spg-btn px-3 py-2 border rounded text-sm ${p === page ? 'bg-blue-600 text-white' : 'hover:bg-gray-50'}" data-page="${p}">${p}</button>`).join('')}
+            <button class="spg-btn px-3 py-2 border rounded text-sm ${page >= totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50'}" data-page="${page + 1}" ${page >= totalPages ? 'disabled' : ''}>Siguiente</button>
+        `;
+        container.querySelectorAll('.spg-btn:not([disabled])').forEach(btn =>
+            btn.addEventListener('click', () => callback(parseInt(btn.dataset.page))));
+    }
+
+    // ============================================================
+    // Wire up new tab buttons and search inputs
+    // ============================================================
+    function wireNewTabButtons() {
+        const newCatBtn = document.getElementById('new-categoria-btn');
+        if (newCatBtn && !newCatBtn.dataset.listenerAttached) {
+            newCatBtn.addEventListener('click', () => panelOpenCategoriaModal());
+            newCatBtn.dataset.listenerAttached = 'true';
+        }
+        const catSearch = document.getElementById('categoria-search');
+        if (catSearch && !catSearch.dataset.listenerAttached) {
+            catSearch.addEventListener('input', () => {
+                clearTimeout(categoriaState.searchTimeout);
+                categoriaState.searchTimeout = setTimeout(() => panelLoadCategorias(1), 400);
+            });
+            catSearch.dataset.listenerAttached = 'true';
+        }
+
+        const newMarcaBtn = document.getElementById('new-marca-btn');
+        if (newMarcaBtn && !newMarcaBtn.dataset.listenerAttached) {
+            newMarcaBtn.addEventListener('click', () => panelOpenMarcaModal());
+            newMarcaBtn.dataset.listenerAttached = 'true';
+        }
+        const marcaSearch = document.getElementById('marca-search');
+        if (marcaSearch && !marcaSearch.dataset.listenerAttached) {
+            marcaSearch.addEventListener('input', () => {
+                clearTimeout(marcaState.searchTimeout);
+                marcaState.searchTimeout = setTimeout(() => panelLoadMarcas(1), 400);
+            });
+            marcaSearch.dataset.listenerAttached = 'true';
+        }
+
+        const newSedeBtn = document.getElementById('new-sede-btn');
+        if (newSedeBtn && !newSedeBtn.dataset.listenerAttached) {
+            newSedeBtn.addEventListener('click', () => panelOpenSedeModal());
+            newSedeBtn.dataset.listenerAttached = 'true';
+        }
+        const sedeSearch = document.getElementById('sede-search');
+        if (sedeSearch && !sedeSearch.dataset.listenerAttached) {
+            sedeSearch.addEventListener('input', () => {
+                clearTimeout(sedeState.searchTimeout);
+                sedeState.searchTimeout = setTimeout(() => panelLoadSedes(1), 400);
+            });
+            sedeSearch.dataset.listenerAttached = 'true';
+        }
+
+        const newAsesorBtn = document.getElementById('new-asesor-btn');
+        if (newAsesorBtn && !newAsesorBtn.dataset.listenerAttached) {
+            newAsesorBtn.addEventListener('click', () => panelOpenAsesorModal());
+            newAsesorBtn.dataset.listenerAttached = 'true';
+        }
+        const asesorSearch = document.getElementById('asesor-search');
+        if (asesorSearch && !asesorSearch.dataset.listenerAttached) {
+            asesorSearch.addEventListener('input', () => {
+                clearTimeout(asesorState.searchTimeout);
+                asesorState.searchTimeout = setTimeout(() => panelLoadAsesores(1), 400);
+            });
+            asesorSearch.dataset.listenerAttached = 'true';
+        }
     }
 
     // Exportar funciones del panel
