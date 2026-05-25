@@ -50,3 +50,6 @@ backups/
 
 # Visual restoration backup
 .backup-pre-restore/
+
+# Allow migration SQL files to be tracked
+!migrations/*.sql
