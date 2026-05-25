@@ -188,12 +188,10 @@ class AuthService {
 
         await UsuarioModel.setRecoveryToken(email, token, expiry);
 
-        // TODO: Enviar email con el token
-        if (config.server.isDevelopment) {
-            console.log(`Token de recuperación para ${email}: ${token}`);
-        }
+        // TODO: Integrar servicio de email (SendGrid / AWS SES) para enviar el token al usuario.
+        // El token fue guardado en DB y expira en 1 hora.
 
-        return { success: true, token: config.server.isDevelopment ? token : undefined };
+        return { success: true };
     }
 
     /**
