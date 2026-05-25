@@ -47,3 +47,6 @@ backups/
 *.sql
 *.backup
 *.dump
+
+# Visual restoration backup
+.backup-pre-restore/
