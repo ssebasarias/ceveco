@@ -21,7 +21,8 @@ const validate = (req, res, next) => {
 const rateLimit = require('express-rate-limit');
 const authLimiter = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // limit each IP to 10 requests per windowMs
+    max: 5, // limit each IP to 5 failed requests per windowMs
+    skipSuccessfulRequests: true, // only count failed (status >= 400) attempts
     message: { success: false, message: 'Too many requests, please try again later.' },
     standardHeaders: true,
     legacyHeaders: false,
