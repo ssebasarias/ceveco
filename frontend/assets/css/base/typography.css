@@ -6,7 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap');
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-body, 'Inter', sans-serif);
     -webkit-font-smoothing: antialiased;
 }
 
@@ -16,7 +16,9 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: 'Montserrat', sans-serif;
+    font-family: var(--font-heading, 'Manrope', 'Inter', sans-serif);
+    letter-spacing: -0.02em;
+    font-weight: 700;
 }
 
 
