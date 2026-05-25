@@ -1,15 +1,18 @@
+# =============================================================================
+# Ceveco — .gitignore
+# =============================================================================
+
 # Dependencias
 node_modules/
 backend/node_modules/
 frontend/node_modules/
 frontend/.tailwindcache
 
-# Entorno y Secretos
+# Entorno y secretos
 .env
 .env.production
 .env.local
 .env.*.local
-# Excepción: ¡Queremos versionar el ejemplo!
 !.env.example
 
 # Logs
@@ -18,14 +21,16 @@ yarn-debug.log*
 yarn-error.log*
 logs/
 *.log
+debug_log.txt
 
 # Editor y sistema
 .vscode/
 .idea/
 .DS_Store
 Thumbs.db
+*.ps1
 
-# Docker (Opcional, a veces queremos ignorar builds locales)
+# Docker
 docker-compose.override.yml
 
 # Testing
@@ -34,22 +39,29 @@ test-results/
 blob-report/
 playwright/.cache/
 
-# Otros
+# Build artifacts
 dist/
 build/
 coverage/
-.agent/
-debug_log.txt
-*.ps1
 
-# Database backups
+# Claude Code / agent workspaces
+.claude/
+.agent/
+.playwright-mcp/
+
+# Documentación de proceso (specs/plans generados por agentes durante desarrollo)
+docs/superpowers/
+
+# Carpetas y archivos temporales / de monitoreo
+.backup-pre-restore/
+*.tmp
+verify-*.png
+*-screenshot.png
+
+# Database backups (no commitear dumps; sí migraciones .sql en migrations/)
 backups/
 *.sql
 *.backup
 *.dump
-
-# Visual restoration backup
-.backup-pre-restore/
-
-# Allow migration SQL files to be tracked
 !migrations/*.sql
+!bd.sql

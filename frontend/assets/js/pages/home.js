@@ -102,9 +102,9 @@ function buildHomeProductCard(product) {
 
     <div class="p-4 flex flex-col flex-1">
         <div class="mb-1">
-            <p class="text-xs text-gray-500 uppercase tracking-wider line-clamp-1">${_escHomeHtml(categoria)}</p>
+            <p class="text-[10px] text-gray-500 uppercase tracking-wider line-clamp-1">${_escHomeHtml(categoria)}</p>
         </div>
-        <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 h-[2.5rem] overflow-hidden group-hover:text-primary transition-colors leading-tight" title="${_escHomeHtml(nombre)}">
+        <h3 class="font-semibold text-sm text-gray-900 mb-2 line-clamp-3 min-h-[3.5rem] overflow-hidden group-hover:text-primary transition-colors leading-snug" title="${_escHomeHtml(nombre)}">
             ${_escHomeHtml(nombre)}
         </h3>
         <div class="mt-auto">

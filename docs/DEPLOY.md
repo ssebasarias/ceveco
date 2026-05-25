@@ -16,14 +16,40 @@
 - Certbot (Let's Encrypt para HTTPS)
 - Dominio apuntando al servidor (ej. ceveco.com.co)
 
-## Pasos de deploy
+## Quick start con `deploy.sh`
+
+Para el día a día existe `deploy.sh` en la raíz del repo. Asume que **ya**
+clonaste el repo en el servidor y configuraste `backend/.env`.
+
+```bash
+# Primera instalación: crea BD, usuario sistema y servicio systemd
+sudo ./deploy.sh --first
+
+# Redeploys normales (después del primero)
+./deploy.sh
+
+# Actualizar código sin reiniciar (para verificar antes)
+./deploy.sh --no-restart
+```
+
+Lo que hace `deploy.sh`:
+1. `git pull` de `main`.
+2. `npm ci` en `backend/` y `frontend/` + `npm run build:css`.
+3. Aplica todas las migraciones en `migrations/*.sql` (idempotentes).
+4. Reinicia el servicio systemd `ceveco`.
+5. Health check contra `/api/v1/productos?limit=1`.
+
+Configurable vía variables de entorno: `CEVECO_APP_DIR`, `CEVECO_SERVICE`,
+`CEVECO_APP_USER`, `DB_NAME`, `PORT`.
+
+## Pasos manuales (alternativa al script)
 
 ### 1. Clonar repo y dependencias
 
 ```bash
 git clone <repo-url> /var/www/ceveco
 cd /var/www/ceveco/backend
-npm ci --production
+npm ci --omit=dev
 cd ../frontend
 npm ci && npm run build:css
 ```

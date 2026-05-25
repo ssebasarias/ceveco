@@ -282,46 +282,6 @@
         }
     }
 
-    async function runScrape() {
-        if (!currentProductId) return;
-        const btn = $('img-auto-scrape');
-        if (btn) btn.disabled = true;
-        setStatus('Buscando imagen oficial, esto puede tardar 30-60 segundos...');
-        try {
-            const res = await fetch(`/api/v1/admin/productos/${currentProductId}/scrape`, {
-                method: 'POST',
-                credentials: 'include',
-                headers: authHeaders()
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok || !data.success) {
-                setStatus(data.message || 'No se pudo iniciar el scraping.', 'error');
-                return;
-            }
-            setStatus('Scraping iniciado. Vamos a recargar las imágenes automáticamente cada 15 segundos durante 2 minutos.');
-
-            // Polling suave de la galería cada 15s durante 2 minutos
-            const start = Date.now();
-            const expectedProductId = currentProductId;
-            const interval = setInterval(async () => {
-                if (currentProductId !== expectedProductId) {
-                    clearInterval(interval);
-                    return;
-                }
-                await reload();
-                if (Date.now() - start > 2 * 60 * 1000) {
-                    clearInterval(interval);
-                    setStatus('Si no aparece la imagen, vuelve a intentar o súbela manualmente.', '');
-                }
-            }, 15000);
-        } catch (err) {
-            console.error('[AdminImagePicker] scrape error:', err);
-            setStatus('No se pudo iniciar el scraping.', 'error');
-        } finally {
-            if (btn) btn.disabled = false;
-        }
-    }
-
     // ----- Event wiring -----
     function onGalleryClick(e) {
         const actionEl = e.target.closest('[data-action]');
@@ -426,7 +386,6 @@
         const zone = $('img-dropzone');
         const input = $('img-file-input');
         const gallery = $('img-gallery');
-        const scrapeBtn = $('img-auto-scrape');
 
         if (zone) {
             zone.addEventListener('click', onDropzoneClick);
@@ -446,9 +405,6 @@
             gallery.addEventListener('dragleave', onGalleryDragLeave);
             gallery.addEventListener('drop', onGalleryDrop);
             gallery.addEventListener('dragend', onGalleryDragEnd);
-        }
-        if (scrapeBtn) {
-            scrapeBtn.addEventListener('click', runScrape);
         }
         isWired = true;
     }

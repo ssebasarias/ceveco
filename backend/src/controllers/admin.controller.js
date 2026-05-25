@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const ProductoModel = require('../models/producto.model');
-const { exec, spawn } = require('child_process');
+const { exec } = require('child_process');
 const path = require('path');
 const fs = require('fs').promises;
 const fsSync = require('fs');
@@ -522,70 +522,6 @@ class AdminController {
       });
     } finally {
       client.release();
-    }
-  }
-
-  /**
-   * Disparar scraping de un producto específico (asíncrono, en background)
-   * POST /api/v1/admin/productos/:id/scrape
-   */
-  async scrapeProducto(req, res) {
-    try {
-      const { id } = req.params;
-      const idProducto = parseInt(id, 10);
-      if (isNaN(idProducto)) {
-        return res.status(400).json({ success: false, message: 'ID de producto inválido' });
-      }
-
-      // Validar que el producto existe (defensa básica)
-      const exists = await query('SELECT id_producto FROM productos WHERE id_producto = $1', [idProducto]);
-      if (!exists.rowCount) {
-        return res.status(404).json({ success: false, message: 'Producto no encontrado' });
-      }
-
-      // Lanzar spawn en background.
-      // El script "scripts/scraping/fetch-product-data.js" es responsabilidad de la Pista A.
-      // Asumimos que existirá (o existirá pronto) — solo lanzamos el proceso y respondemos 202.
-      const scriptPath = path.join(__dirname, '../../../scripts/scraping/fetch-product-data.js');
-      const args = [scriptPath, '--only', String(idProducto)];
-
-      let child;
-      try {
-        child = spawn(process.execPath, args, {
-          detached: true,
-          stdio: 'ignore',
-          windowsHide: true
-        });
-        child.on('error', (err) => {
-          console.error(`[scrapeProducto] spawn error para producto ${idProducto}:`, err.message);
-        });
-        // unref para que el server no espere al proceso hijo
-        if (typeof child.unref === 'function') child.unref();
-      } catch (spawnErr) {
-        console.error('[scrapeProducto] No se pudo lanzar el scraper:', spawnErr);
-        return res.status(500).json({
-          success: false,
-          message: 'No se pudo iniciar el scraping. Verifica que el script esté disponible.',
-          error: process.env.NODE_ENV === 'development' ? spawnErr.message : undefined
-        });
-      }
-
-      // Responder 202 inmediatamente (el scraping corre en background)
-      return res.status(202).json({
-        success: true,
-        message: 'Scraping iniciado en background. Recarga las imágenes en 30-60 segundos.',
-        data: {
-          id_producto: idProducto,
-          pid: child.pid || null
-        }
-      });
-    } catch (error) {
-      console.error('Error en scrapeProducto:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Error al iniciar el scraping',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined
-      });
     }
   }
 

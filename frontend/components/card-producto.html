@@ -35,11 +35,11 @@
     <div class="p-4 flex flex-col flex-1 pointer-events-none">
         <!-- Category -->
         <div class="mb-1">
-            <p class="text-xs text-gray-500 uppercase tracking-wider line-clamp-1">{{category}}</p>
+            <p class="text-[10px] text-gray-500 uppercase tracking-wider line-clamp-1">{{category}}</p>
         </div>
 
-        <!-- Title (Fixed height for uniformity) -->
-        <h3 class="font-bold text-gray-900 mb-2 line-clamp-2 h-[2.5rem] overflow-hidden group-hover:text-primary transition-colors leading-tight"
+        <!-- Title: full product name on up to 3 lines, smaller font for balance -->
+        <h3 class="font-semibold text-sm text-gray-900 mb-2 line-clamp-3 min-h-[3.5rem] overflow-hidden group-hover:text-primary transition-colors leading-snug"
             title="{{name}}">
             {{name}}
         </h3>

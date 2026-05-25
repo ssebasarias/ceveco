@@ -145,17 +145,4 @@ router.patch('/productos/:id/imagenes/orden',
     AdminController.reordenarImagenes.bind(AdminController)
 );
 
-/**
- * @route   POST /api/v1/admin/productos/:id/scrape
- * @desc    Disparar scraping puntual de un producto. Responde 202 inmediato y procesa en background.
- *          Depende del script `scripts/scraping/fetch-product-data.js` (Pista A).
- * @access  Private (Admin only)
- */
-router.post('/productos/:id/scrape',
-    authMiddleware,
-    requireAdmin,
-    [param('id').isInt({ min: 1 }).withMessage('ID debe ser un número válido')],
-    AdminController.scrapeProducto.bind(AdminController)
-);
-
 module.exports = router;
