@@ -1,12 +1,59 @@
+# =============================================================================
+# .dockerignore — evita copiar basura al build context
+# =============================================================================
+
+# Dependencies (se reinstalan dentro del contenedor)
 node_modules
+backend/node_modules
+frontend/node_modules
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+debug_log.txt
+
+# Editor / SO
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+*.ps1
+
+# Git
 .git
 .gitignore
-.env
-.DS_Store
-*.log
+
+# Tests / CI
+e2e/
 playwright-report
 test-results
-e2e
+playwright.config.js
+.github
+
+# Claude / agentes / temporales
+.claude
 .agent
-debug_log.txt
-*.ps1
+.playwright-mcp
+docs/superpowers
+verify-*.png
+
+# Docs (no van en la imagen del app)
+docs/
+*.md
+
+# Env de desarrollo (cada server pone el suyo)
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# Build artifacts
+dist
+build
+coverage
+
+# SSL certs (montados por compose, no van en imagen)
+certbot/

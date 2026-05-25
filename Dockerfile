@@ -1,45 +1,61 @@
-# Build Stage
-FROM node:18-alpine AS builder
+# =============================================================================
+# Dockerfile — imagen de producción del backend Ceveco (Express + frontend estático)
+#
+# Multi-stage:
+#   1) deps-backend   → instala dependencias del backend SIN devDeps.
+#   2) build-frontend → instala deps del frontend y compila Tailwind a CSS.
+#   3) runtime        → imagen final mínima Alpine con sólo lo necesario.
+# =============================================================================
 
-WORKDIR /app
+# ---------- 1) Backend deps -------------------------------------------------
+FROM node:18-alpine AS deps-backend
 
-# Copiar dependencias del backend
-COPY backend/package*.json ./backend/
-
-# Instalar dependencias puras (sin devDependencies si fuera posible, pero necesitamos nodemon/etc en dev?)
-# En producción usamos --production
 WORKDIR /app/backend
-RUN npm ci --only=production
+COPY backend/package*.json ./
+RUN npm ci --omit=dev
 
-# Copiar el resto del código
-WORKDIR /app
-COPY backend ./backend
-COPY frontend ./frontend
 
-# Runtime Stage (Imagen final ligera)
+# ---------- 2) Frontend build (Tailwind) ------------------------------------
+FROM node:18-alpine AS build-frontend
+
+WORKDIR /app/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+
+COPY frontend ./
+RUN npm run build:css
+
+
+# ---------- 3) Runtime ------------------------------------------------------
 FROM node:18-alpine
 
+# curl para HEALTHCHECK; tini para señales correctas (kill, SIGTERM)
+RUN apk add --no-cache curl tini
+
 WORKDIR /app
 
-# Copiar desde el builder (node_modules y código fuente limpio)
-COPY --from=builder /app /app
+# Backend con sus node_modules
+COPY backend/ ./backend/
+COPY --from=deps-backend /app/backend/node_modules ./backend/node_modules
 
-# Variables de entorno por defecto (pueden sobreescribirse en docker-compose)
-ENV NODE_ENV=production
-ENV PORT=3000
+# Frontend ya construido (incluye assets/css/tailwind.min.css)
+COPY --from=build-frontend /app/frontend ./frontend
 
-# Usuario no root por seguridad
-RUN addgroup -S ceveco && adduser -S ceveco -G ceveco
-
-# Create directory for uploads and fix permissions
-RUN mkdir -p /app/frontend/assets/img/banner-hero && \
-    mkdir -p /app/backend/uploads && \
+# Usuario sin privilegios + directorios de uploads
+RUN addgroup -S ceveco && adduser -S ceveco -G ceveco && \
+    mkdir -p /app/backend/public/images/productos && \
+    mkdir -p /app/frontend/assets/img/banner-hero && \
     chown -R ceveco:ceveco /app
 
 USER ceveco
 
-# Exponer puerto
+ENV NODE_ENV=production
+ENV PORT=3000
+
 EXPOSE 3000
 
-# Comando de inicio (ajustando la ruta ya que WORKDIR es /app)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD curl -fsS http://localhost:3000/api/v1/productos?limit=1 > /dev/null || exit 1
+
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "backend/index.js"]

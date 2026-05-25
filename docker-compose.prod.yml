@@ -1,0 +1,140 @@
+# =============================================================================
+# docker-compose.prod.yml — Stack completo de producción
+#
+# Servicios:
+#   db       PostgreSQL 17 con datos persistentes (volumen pgdata)
+#   app      Backend Node.js + frontend estático (Express)
+#   nginx    Reverse proxy + estáticos + HTTPS (puertos 80/443)
+#   certbot  Renovación automática de certificado Let's Encrypt
+#
+# Uso:
+#   ./deploy.sh --first    # primera vez: crea volúmenes, restaura BD, emite cert
+#   ./deploy.sh            # redeploy normal
+#
+# Variables esperadas en .env (raíz del repo):
+#   DB_PASSWORD, JWT_SECRET, DOMAIN, CERTBOT_EMAIL,
+#   EMAIL_USER, EMAIL_PASS   (Gmail App Password para reset de contraseña)
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — persistente en volumen pgdata
+  # ---------------------------------------------------------------------------
+  db:
+    image: postgres:17-alpine
+    container_name: ceveco-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD requerido en .env}
+      POSTGRES_DB: ${DB_NAME:-ceveco_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Seeds que docker-entrypoint corre SÓLO la primera vez que el volumen está vacío.
+      # Orden alfabético importa: 01_ va antes que 02_.
+      - ./bd.sql:/docker-entrypoint-initdb.d/01_bd.sql:ro
+      - ./backups/ceveco-seed.sql:/docker-entrypoint-initdb.d/02_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-ceveco_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ceveco-net
+
+  # ---------------------------------------------------------------------------
+  # Backend Node + frontend estático
+  # ---------------------------------------------------------------------------
+  app:
+    container_name: ceveco-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME:-ceveco_db}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET requerido en .env}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASS: ${EMAIL_PASS:-}
+      FRONTEND_URL: https://${DOMAIN:-ceveco.com.co}
+    volumes:
+      # Persistir imágenes subidas por admin (no las del repo) entre redeploys
+      - app_uploads:/app/backend/public/images/productos
+    networks:
+      - ceveco-net
+
+  # ---------------------------------------------------------------------------
+  # Nginx — reverse proxy + estáticos + HTTPS
+  # Sirve /assets/ y /images/ directamente (más rápido) y proxy el resto a app:3000.
+  # ---------------------------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: ceveco-nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      # Assets que nginx sirve directo (sin pasar por node)
+      - ./frontend/assets:/usr/share/nginx/html/assets:ro
+      - app_uploads:/usr/share/nginx/html/images/productos:ro
+      # Cert + ACME challenge compartidos con certbot
+      - certbot_certs:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+      - nginx_logs:/var/log/nginx
+    # Reload nginx cada 6 horas para refrescar certs renovados por certbot
+    command: >
+      /bin/sh -c "while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
+    networks:
+      - ceveco-net
+
+  # ---------------------------------------------------------------------------
+  # Certbot — emite y renueva certificados (HTTP-01 challenge)
+  # Intenta renovar cada 12h; sólo renueva si faltan <30 días.
+  # ---------------------------------------------------------------------------
+  certbot:
+    image: certbot/certbot:latest
+    container_name: ceveco-certbot
+    restart: unless-stopped
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
+    entrypoint: >
+      /bin/sh -c "trap exit TERM;
+                  while :; do
+                    certbot renew --webroot -w /var/www/certbot --quiet;
+                    sleep 12h & wait $${!};
+                  done"
+
+# ===========================================================================
+# Volúmenes nombrados (persisten entre redeploys)
+# ===========================================================================
+volumes:
+  pgdata:
+    name: ceveco_pgdata
+  app_uploads:
+    name: ceveco_uploads
+  certbot_certs:
+    name: ceveco_certs
+  certbot_www:
+    name: ceveco_certbot_www
+  nginx_logs:
+    name: ceveco_nginx_logs
+
+networks:
+  ceveco-net:
+    driver: bridge

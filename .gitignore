@@ -58,10 +58,20 @@ docs/superpowers/
 verify-*.png
 *-screenshot.png
 
-# Database backups (no commitear dumps; sí migraciones .sql en migrations/)
-backups/
-*.sql
+# Database backups — ignora todo lo de dentro pero NO la carpeta misma,
+# así podemos excluir excepciones (ceveco-seed.sql) explícitamente.
+backups/*
 *.backup
 *.dump
+
+# Cualquier .sql suelto fuera de carpetas controladas
+*.sql
+
+# Excepciones: archivos versionados necesarios para producción
 !migrations/*.sql
 !bd.sql
+!backups/ceveco-seed.sql
+
+# SSL certs gestionados por certbot (NO commitear claves)
+certbot/conf/
+certbot/www/
