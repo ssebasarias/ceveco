@@ -21,15 +21,51 @@
             </button>
         </div>
 
-        <!-- Dynamic Attribute Filters -->
-        <div id="dynamic-filters-container">
-            <!-- Filters will be loaded dynamically here -->
-            <div class="filter-loading">
-                <div class="filter-loading-spinner"></div>
+        <!-- Active Filters Chips -->
+        <div id="active-filters-chips" class="hidden px-4 py-2 flex flex-wrap gap-1 border-b border-gray-100"></div>
+
+        <!-- Group: Marca (checkbox list + search input + count badges) -->
+        <div class="filter-group open" id="marca-filter-group">
+            <button class="filter-group-header" type="button">
+                <div class="filter-group-title">
+                    <i data-lucide="tag" class="w-4 h-4 filter-group-icon"></i>
+                    <span>Marca</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="filter-group-count-badge" id="marca-badge">0</span>
+                    <i data-lucide="chevron-down" class="filter-chevron"></i>
+                </div>
+            </button>
+            <div class="filter-group-content">
+                <div class="px-4 pt-3 pb-1">
+                    <input type="text" id="marca-search-input" placeholder="Buscar marca..." class="w-full text-xs border border-gray-200 rounded-md px-2 py-1.5 focus:outline-none focus:border-blue-400">
+                </div>
+                <div class="filter-options scrollable" id="marca-options">
+                    <div class="text-xs text-gray-400 py-2 text-center">Cargando marcas...</div>
+                </div>
             </div>
         </div>
 
-        <!-- Price Filter (Accordion Style) -->
+        <!-- Group: Subcategoría (checkbox, only visible if category selected) -->
+        <div class="filter-group open hidden" id="subcategoria-filter-group">
+            <button class="filter-group-header" type="button">
+                <div class="filter-group-title">
+                    <i data-lucide="folder" class="w-4 h-4 filter-group-icon"></i>
+                    <span>Subcategoría</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="filter-group-count-badge" id="subcategoria-badge">0</span>
+                    <i data-lucide="chevron-down" class="filter-chevron"></i>
+                </div>
+            </button>
+            <div class="filter-group-content">
+                <div class="filter-options scrollable" id="subcategoria-options">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Group: Precio -->
         <div class="filter-group open" id="price-filter-group">
             <button class="filter-group-header" type="button">
                 <div class="filter-group-title">
@@ -56,6 +92,60 @@
                     <button id="apply-price-filter" class="btn-price-apply">
                         Aplicar
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group: Stock disponible -->
+        <div class="filter-group" id="stock-filter-group">
+            <button class="filter-group-header" type="button">
+                <div class="filter-group-title">
+                    <i data-lucide="package-check" class="w-4 h-4 filter-group-icon"></i>
+                    <span>Disponibilidad</span>
+                </div>
+                <div class="flex items-center">
+                    <i data-lucide="chevron-down" class="filter-chevron"></i>
+                </div>
+            </button>
+            <div class="filter-group-content">
+                <div class="filter-options">
+                    <label class="filter-option" for="filter-stock">
+                        <input type="checkbox" id="filter-stock" name="stock" value="1" class="filter-checkbox">
+                        <span class="filter-label">Solo con stock disponible</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Group: Calificación -->
+        <div class="filter-group" id="rating-filter-group">
+            <button class="filter-group-header" type="button">
+                <div class="filter-group-title">
+                    <i data-lucide="star" class="w-4 h-4 filter-group-icon"></i>
+                    <span>Calificación mínima</span>
+                </div>
+                <div class="flex items-center">
+                    <i data-lucide="chevron-down" class="filter-chevron"></i>
+                </div>
+            </button>
+            <div class="filter-group-content">
+                <div class="filter-options">
+                    <label class="filter-option" for="filter-rating-4">
+                        <input type="radio" id="filter-rating-4" name="rating" value="4" class="filter-checkbox">
+                        <span class="filter-label">⭐⭐⭐⭐ 4+ estrellas</span>
+                    </label>
+                    <label class="filter-option" for="filter-rating-3">
+                        <input type="radio" id="filter-rating-3" name="rating" value="3" class="filter-checkbox">
+                        <span class="filter-label">⭐⭐⭐ 3+ estrellas</span>
+                    </label>
+                    <label class="filter-option" for="filter-rating-2">
+                        <input type="radio" id="filter-rating-2" name="rating" value="2" class="filter-checkbox">
+                        <span class="filter-label">⭐⭐ 2+ estrellas</span>
+                    </label>
+                    <label class="filter-option" for="filter-rating-any">
+                        <input type="radio" id="filter-rating-any" name="rating" value="" class="filter-checkbox" checked>
+                        <span class="filter-label">Cualquier calificación</span>
+                    </label>
                 </div>
             </div>
         </div>

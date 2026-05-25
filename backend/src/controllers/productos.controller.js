@@ -174,20 +174,14 @@ class ProductoController {
         }
     }
     /**
-     * Obtener atributos para filtros
-     * GET /api/v1/productos/filtros?categoria=slug
+     * Obtener filtros completos (marcas, subcategorias, rango precio)
+     * GET /api/v1/productos/filters?categoria=slug
+     * GET /api/v1/productos/filtros?categoria=slug  (legacy alias)
      */
     async getFilters(req, res) {
         try {
             const { categoria } = req.query;
-            if (!categoria) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Categoría requerida'
-                });
-            }
-
-            const result = await ProductoService.getAttributes(categoria);
+            const result = await ProductoService.getFullFilters(categoria);
             res.json(result);
         } catch (error) {
             console.error('Error en getFilters:', error);

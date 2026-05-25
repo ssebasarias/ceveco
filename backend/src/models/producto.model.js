@@ -10,11 +10,13 @@ class ProductoModel {
     const {
       categoria,
       subcategoria,
-      marca,
+      marca,          // now an array of ids
       precioMin,
       precioMax,
       destacado,
       busqueda,
+      stock,          // true = only with stock > 0
+      rating,         // minimum calificacion_promedio
       limit = 12,
       offset = 0,
       orderBy = 'fecha_creacion',
@@ -76,22 +78,22 @@ class ProductoModel {
       paramIndex++;
     }
 
-    // Filtro por marca
-    if (marca) {
-      queryText += ` AND m.id_marca = $${paramIndex}`;
+    // Filtro por marca (array de ids)
+    if (marca && Array.isArray(marca) && marca.length > 0) {
+      queryText += ` AND m.id_marca = ANY($${paramIndex}::int[])`;
       params.push(marca);
       paramIndex++;
     }
 
     // Filtro por precio mínimo
-    if (precioMin) {
+    if (precioMin != null) {
       queryText += ` AND p.precio_actual >= $${paramIndex}`;
       params.push(precioMin);
       paramIndex++;
     }
 
     // Filtro por precio máximo
-    if (precioMax) {
+    if (precioMax != null) {
       queryText += ` AND p.precio_actual <= $${paramIndex}`;
       params.push(precioMax);
       paramIndex++;
@@ -101,6 +103,18 @@ class ProductoModel {
     if (destacado !== undefined) {
       queryText += ` AND p.destacado = $${paramIndex}`;
       params.push(destacado);
+      paramIndex++;
+    }
+
+    // Filtro stock disponible
+    if (stock === true) {
+      queryText += ` AND p.stock > 0`;
+    }
+
+    // Filtro calificación mínima
+    if (rating != null) {
+      queryText += ` AND p.calificacion_promedio >= $${paramIndex}`;
+      params.push(rating);
       paramIndex++;
     }
 
@@ -299,12 +313,13 @@ class ProductoModel {
    * @returns {Promise<number>} Número total de productos
    */
   static async count(filters = {}) {
-    const { categoria, marca, precioMin, precioMax, destacado, busqueda } = filters;
+    const { categoria, subcategoria, marca, precioMin, precioMax, destacado, busqueda, stock, rating } = filters;
 
     let queryText = `
       SELECT COUNT(*) as total
       FROM productos p
       INNER JOIN categorias c ON p.id_categoria = c.id_categoria
+      LEFT JOIN subcategorias sc ON p.id_subcategoria = sc.id_subcategoria
       INNER JOIN marcas m ON p.id_marca = m.id_marca
       WHERE p.activo = TRUE
     `;
@@ -318,19 +333,25 @@ class ProductoModel {
       paramIndex++;
     }
 
-    if (marca) {
-      queryText += ` AND m.id_marca = $${paramIndex}`;
+    if (subcategoria) {
+      queryText += ` AND sc.slug = $${paramIndex}`;
+      params.push(subcategoria);
+      paramIndex++;
+    }
+
+    if (marca && Array.isArray(marca) && marca.length > 0) {
+      queryText += ` AND m.id_marca = ANY($${paramIndex}::int[])`;
       params.push(marca);
       paramIndex++;
     }
 
-    if (precioMin) {
+    if (precioMin != null) {
       queryText += ` AND p.precio_actual >= $${paramIndex}`;
       params.push(precioMin);
       paramIndex++;
     }
 
-    if (precioMax) {
+    if (precioMax != null) {
       queryText += ` AND p.precio_actual <= $${paramIndex}`;
       params.push(precioMax);
       paramIndex++;
@@ -342,9 +363,19 @@ class ProductoModel {
       paramIndex++;
     }
 
+    if (stock === true) {
+      queryText += ` AND p.stock > 0`;
+    }
+
+    if (rating != null) {
+      queryText += ` AND p.calificacion_promedio >= $${paramIndex}`;
+      params.push(rating);
+      paramIndex++;
+    }
+
     if (busqueda) {
       queryText += ` AND (
-        to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '') || ' ' || m.nombre || ' ' || c.nombre) 
+        to_tsvector('spanish', p.nombre || ' ' || COALESCE(p.descripcion_corta, '') || ' ' || m.nombre || ' ' || c.nombre)
         @@ plainto_tsquery('spanish', $${paramIndex})
         OR LOWER(p.nombre) ILIKE LOWER($${paramIndex + 1})
         OR LOWER(COALESCE(p.descripcion_corta, '')) ILIKE LOWER($${paramIndex + 1})
