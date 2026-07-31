@@ -1,5 +1,5 @@
 (function () {
-  const WHATSAPP = '573216453672';
+  const WHATSAPP = (window.CONSTANTS && window.CONSTANTS.WHATSAPP_PRINCIPAL) || '573106650678';
   function formatCOP(n) {
     if (n == null) return 'consultar';
     return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(n);

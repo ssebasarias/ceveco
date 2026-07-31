@@ -100,6 +100,51 @@
             }
         };
 
+        // Iconos por tipo de contacto
+        const WA_ICONS = {
+            sede: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`,
+            moto: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18.5" cy="17.5" r="3.5"></circle><circle cx="5.5" cy="17.5" r="3.5"></circle><path d="M15 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path><path d="M5.5 17.5 8 12h5l-2-4h4l3 5.5"></path></svg>`
+        };
+
+        // Renderiza un item de contacto (sede o línea de motos)
+        function renderWaItem(item, tipo) {
+            const phone = item.whatsapp || (item.telefono ? item.telefono.replace(/\D/g, '') : '');
+            if (!phone) return '';
+            const msg = encodeURIComponent(
+                tipo === 'moto'
+                    ? `Hola, estoy interesado en motos ${item.nombre}`
+                    : `Hola, estoy interesado en contactar con la sede ${item.nombre}`
+            );
+            return `
+            <a href="https://wa.me/${phone}?text=${msg}" target="_blank" rel="noopener"
+               class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200 hover:bg-green-50 transition-all group">
+                <div class="bg-green-100 text-green-600 p-2.5 rounded-full group-hover:bg-[#25D366] group-hover:text-white transition-colors">
+                    ${WA_ICONS[tipo] || WA_ICONS.sede}
+                </div>
+                <div class="flex-1">
+                    <div class="font-bold text-gray-800 text-sm group-hover:text-green-800">${item.nombre}</div>
+                    <div class="text-xs text-gray-500 group-hover:text-green-700 flex items-center gap-1">
+                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                       ${item.ciudad || 'Colombia'}
+                    </div>
+                </div>
+                <div class="text-gray-300 group-hover:text-green-500">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+            </a>
+            `;
+        }
+
+        function renderWaGroup(titulo, items, tipo) {
+            if (!Array.isArray(items) || !items.length) return '';
+            const cards = items.map(i => renderWaItem(i, tipo)).join('');
+            if (!cards) return '';
+            return `
+            <div class="px-1 pt-1 pb-0.5 text-[10px] font-bold tracking-wider text-gray-400 uppercase">${titulo}</div>
+            ${cards}
+            `;
+        }
+
         // Load Sedes Function
         function loadWaSedes() {
             const list = document.getElementById('wa-sedes-list');
@@ -107,43 +152,26 @@
 
             try {
                 // Use HARDCODED Constants first if available
-                let sedes = [];
-                if (window.CONSTANTS && window.CONSTANTS.SEDES_CONTACT) {
-                    sedes = window.CONSTANTS.SEDES_CONTACT;
-                } else {
+                const C = window.CONSTANTS || {};
+                const sedes = Array.isArray(C.SEDES_CONTACT) ? C.SEDES_CONTACT : [];
+                const motos = Array.isArray(C.MOTOS_CONTACT) ? C.MOTOS_CONTACT : [];
+
+                if (!sedes.length) {
                     console.warn('CONSTANTS.SEDES_CONTACT not found, falling back to empty');
                 }
 
-                if (Array.isArray(sedes) && sedes.length > 0) {
-                    list.innerHTML = sedes.map(sede => {
-                        const phone = sede.whatsapp || (sede.telefono ? sede.telefono.replace(/\D/g, '') : '573000000000');
-                        const msg = encodeURIComponent(`Hola, estoy interesado en contactar con la sede ${sede.nombre}`);
-                        return `
-                        <a href="https://wa.me/${phone}?text=${msg}" target="_blank" 
-                           class="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-green-200 hover:bg-green-50 transition-all group">
-                            <div class="bg-green-100 text-green-600 p-2.5 rounded-full group-hover:bg-[#25D366] group-hover:text-white transition-colors">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-bold text-gray-800 text-sm group-hover:text-green-800">${sede.nombre}</div>
-                                <div class="text-xs text-gray-500 group-hover:text-green-700 flex items-center gap-1">
-                                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                                   ${sede.ciudad || 'Colombia'}
-                                </div>
-                            </div>
-                            <div class="text-gray-300 group-hover:text-green-500">
-                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                            </div>
-                        </a>
-                        `;
-                    }).join('');
+                const html = renderWaGroup('Sedes', sedes, 'sede') + renderWaGroup('Motos', motos, 'moto');
+
+                if (html) {
+                    list.innerHTML = html;
                     waSedesLoaded = true;
                 } else {
+                    const fallback = C.WHATSAPP_PRINCIPAL || '573106650678';
                     list.innerHTML = `
                      <div class="flex flex-col items-center justify-center py-6 text-center">
                         <i data-lucide="message-circle" class="w-8 h-8 text-gray-300 mb-2"></i>
                         <p class="text-sm text-gray-500 mb-2">No hay sedes disponibles</p>
-                        <a href="https://wa.me/573001234567" target="_blank" class="text-xs font-semibold text-green-600 hover:underline">Contactar por defecto</a>
+                        <a href="https://wa.me/${fallback}" target="_blank" rel="noopener" class="text-xs font-semibold text-green-600 hover:underline">Contactar por defecto</a>
                      </div>`;
                     if (window.lucide) window.lucide.createIcons();
                 }

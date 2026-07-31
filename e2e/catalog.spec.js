@@ -29,7 +29,7 @@ test.describe('Catálogo de productos', () => {
             page.waitForEvent('popup'),
             page.locator('button[data-action="cotizar"]').first().click()
         ]);
-        expect(popup.url()).toContain('wa.me/573216453672');
+        expect(popup.url()).toContain('wa.me/573106650678');
         expect(popup.url()).toContain('text=');
         await popup.close();
     });

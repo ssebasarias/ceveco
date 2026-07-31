@@ -31,9 +31,9 @@ const CONFIG = {
     // App Info
     APP: {
         nombre: 'Ceveco',
-        whatsapp: '+573001234567',
+        whatsapp: '+573106650678',
         email: 'contacto@ceveco.com.co',
-        telefono: '+57 (606) 859 1234'
+        telefono: '+57 (606) 859 2032'
     },
 
     // Storage Keys (Referencia a constantes nuevas)

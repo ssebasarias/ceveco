@@ -542,7 +542,7 @@ document.addEventListener('click', (e) => {
 });
 
 function openWhatsAppFallback(product) {
-    const wa = '573216453672';
+    const wa = (window.CONSTANTS && window.CONSTANTS.WHATSAPP_PRINCIPAL) || '573106650678';
     const precio = product.precio_actual
         ? new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(product.precio_actual)
         : 'consultar';

@@ -539,7 +539,7 @@
                     abrirModalAsesor(productInfo);
                 } else {
                     console.warn('Modal de asesores no disponible, usando WhatsApp directo');
-                    let phone = '573001234567';
+                    let phone = (window.CONSTANTS && window.CONSTANTS.WHATSAPP_PRINCIPAL) || '573106650678';
                     if (window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.whatsapp) {
                         phone = window.CONFIG.APP.whatsapp.replace(/\D/g, '');
                     }

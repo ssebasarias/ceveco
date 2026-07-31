@@ -770,8 +770,8 @@ INSERT INTO producto_atributos (id_producto, id_atributo, valor_texto, valor_num
 INSERT INTO configuracion (clave, valor, tipo, descripcion, grupo) VALUES
 ('sitio_nombre', 'Ceveco', 'string', 'Nombre del sitio web', 'general'),
 ('sitio_email', 'contacto@ceveco.com.co', 'string', 'Email de contacto', 'general'),
-('sitio_telefono', '+57 (606) 859 1234', 'string', 'Teléfono principal', 'general'),
-('sitio_whatsapp', '+573001234567', 'string', 'WhatsApp de contacto', 'general'),
+('sitio_telefono', '+57 (606) 859 2032', 'string', 'Teléfono principal', 'general'),
+('sitio_whatsapp', '+573106650678', 'string', 'WhatsApp de contacto', 'general'),
 ('envio_gratis_minimo', '500000', 'number', 'Monto mínimo para envío gratis', 'envios'),
 ('iva_porcentaje', '19', 'number', 'Porcentaje de IVA', 'impuestos'),
 ('moneda', 'COP', 'string', 'Moneda del sitio', 'general'),
@@ -779,7 +779,7 @@ INSERT INTO configuracion (clave, valor, tipo, descripcion, grupo) VALUES
 
 -- Insertar sede principal
 INSERT INTO sedes (nombre, codigo, departamento, ciudad, direccion, telefono, celular, email, whatsapp, es_principal, activo) VALUES
-('Ceveco Riosucio', 'RS001', 'Caldas', 'Riosucio', 'Carrera 5 # 9-45', '(606) 859 1234', '+573001234567', 'riosucio@ceveco.com.co', '+573001234567', TRUE, TRUE);
+('Ceveco Riosucio', 'RS001', 'Caldas', 'Riosucio', 'Cl. 9 #575', '3106650678', '3106650678', 'riosucio@ceveco.com.co', '573106650678', TRUE, TRUE);
 
 -- ============================================
 -- VISTAS ÚTILES
